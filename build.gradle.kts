@@ -1,11 +1,13 @@
+import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 
 plugins {
     alias(libs.plugins.kmp)
     alias(libs.plugins.android.library)
     alias(libs.plugins.mavenPublish)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.ben.manes.versions)
     alias(libs.plugins.dependency.analysis)
@@ -41,7 +43,12 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                //put your multiplatform dependencies here
+                api(libs.kotlinx.serialization.json)
+                api(libs.dc.polyfill)
+                api(libs.dc.aviator.core)
+                api(libs.kotlinx.datetime)
+                api(libs.kotlinx.datetime)
+                api(libs.koin.annotations)
             }
         }
     }
@@ -58,6 +65,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.koin.ksp)
+    add("kspAndroid", libs.koin.ksp)
+    add("kspIosX64", libs.koin.ksp)
+    add("kspIosArm64", libs.koin.ksp)
+    add("kspIosSimulatorArm64", libs.koin.ksp)
 }
 
 mavenPublishing {

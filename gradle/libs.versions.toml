@@ -8,15 +8,43 @@ android-minSdk = "24"
 ben-manes-versions-v = "0.52.0"
 dependency-analysis-v = "2.19.0"
 kotlin = "2.2.10"
+kotlinx-datetime = "0.7.1"
+serialization = "1.9.0"
+ktor = "3.2.3"
 version-catalog-update-v = "1.0.0"
+koin = "4.1.0"
+koin-annotations = "2.1.0"
+ksp = "2.2.10-2.0.2"
+dc-aviator = "1.0.0-SNAPSHOT"
+dc-polyfill = "1.0.0-SNAPSHOT"
+dc-weaver = "1.0.0-SNAPSHOT"
 
 [libraries]
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
+koin-ksp = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+dc-aviator-client-ktor = { module = "cloud.mallne.dicentra.aviator.client:ktor", version.ref = "dc-aviator" }
+dc-aviator-core = { module = "cloud.mallne.dicentra.aviator:core", version.ref = "dc-aviator" }
+dc-aviator-koas = { module = "cloud.mallne.dicentra.aviator:koas", version.ref = "dc-aviator" }
+dc-aviator-plugin-interception = { module = "cloud.mallne.dicentra.aviator.plugin:interception", version.ref = "dc-aviator" }
+dc-aviator-plugin-synapse = { module = "cloud.mallne.dicentra.aviator.plugin:synapse", version.ref = "dc-aviator" }
+dc-aviator-plugin-translationkeys = { module = "cloud.mallne.dicentra.aviator.plugin:translation-keys", version.ref = "dc-aviator" }
+dc-aviator-plugin-weaver = { module = "cloud.mallne.dicentra.aviator.plugin:weaver", version.ref = "dc-aviator" }
+dc-aviator-ressourceserver = { module = "cloud.mallne.dicentra.aviator:aviator-resourcee-server", version.ref = "dc-aviator" }
+dc-polyfill = { module = "cloud.mallne.dicentra:polyfill", version.ref = "dc-polyfill" }
+dc-weaver-core = { module = "cloud.mallne.dicentra.weaver:core", version.ref = "dc-weaver" }
+dc-weaver-tokenizer = { module = "cloud.mallne.dicentra.weaver:tokenizer", version.ref = "dc-weaver" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
 ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions-v" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis-v" }
 kmp = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 mavenPublish = "com.vanniktech.maven.publish:0.34.0"
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update-v" }

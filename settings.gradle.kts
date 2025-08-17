@@ -21,5 +21,5 @@ if (polyfillDir.exists()) {
         }
     }
 } else {
-    println("[SYNAPSE:polyfill] This Project seems to be running without the Monorepo Context, please consider using the Monorepo")
+    println("[AREAASSIST_SHARED:polyfill] This Project seems to be running without the Monorepo Context, please consider using the Monorepo")
 }
