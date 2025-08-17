@@ -1,0 +1,22 @@
+[versions]
+# @pin
+agp = "8.11.0"
+# @keep
+android-compileSdk = "36"
+# @keep
+android-minSdk = "24"
+ben-manes-versions-v = "0.52.0"
+dependency-analysis-v = "2.19.0"
+kotlin = "2.2.10"
+version-catalog-update-v = "1.0.0"
+
+[libraries]
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
+ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions-v" }
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis-v" }
+kmp = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+mavenPublish = "com.vanniktech.maven.publish:0.34.0"
+version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update-v" }
