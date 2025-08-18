@@ -108,5 +108,5 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates(group.toString(), "shared", version.toString())
+    coordinates(group.toString(), project.name, version.toString())
 }

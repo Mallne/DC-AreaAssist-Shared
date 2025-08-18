@@ -1,5 +1,7 @@
 package cloud.mallne.dicentra.areaassist.statics
 
+import cloud.mallne.dicentra.areaassist.statics.parcel.ParcelConstants
+import cloud.mallne.dicentra.areaassist.statics.weather.WeatherConstants
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
@@ -11,7 +13,7 @@ import cloud.mallne.dicentra.aviator.koas.info.License
 import cloud.mallne.dicentra.aviator.koas.servers.Server
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
 
-object APIService {
+object APIs {
     val discovery = OpenAPI(
         extensions = mapOf(
             AviatorExtensionSpec.Version.key to Serialization().parseToJsonElement(
