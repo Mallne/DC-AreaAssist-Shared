@@ -1,10 +1,13 @@
 package cloud.mallne.dicentra.areaassist.statics
 
+import cloud.mallne.dicentra.areaassist.model.AuthServiceOptions
 import cloud.mallne.dicentra.areaassist.statics.parcel.ParcelConstants
 import cloud.mallne.dicentra.areaassist.statics.weather.WeatherConstants
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
+import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
+import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
 import cloud.mallne.dicentra.aviator.koas.Components
 import cloud.mallne.dicentra.aviator.koas.OpenAPI
 import cloud.mallne.dicentra.aviator.koas.Operation
@@ -142,6 +145,48 @@ object APIs {
             "/weather" to WeatherConstants.WEATHER,
         )
     )
+    object OAuth2 {
+        const val CLIENT_ID = "client_id"
+        const val REDIRECT_URI = "redirect_uri"
+        const val STATE = "state"
+        const val RESPONSE_TYPE = "response_type"
+        const val CODE = "code"
+        const val GRANT_TYPE = "grant_type"
+        const val REFRESH_TOKEN = "refresh_token"
+
+        const val APP_REDIRECT_URI = "dcaa://areaassist.mallne.cloud/login"
+
+        fun paramsForAuthorization(
+            redirectUri: String = APP_REDIRECT_URI,
+            state: String,
+            responseType: String = "code",
+            serviceOptions: AuthServiceOptions
+        ): RequestParameters  = serviceOptions.asParameter(mapOf(
+            REDIRECT_URI to RequestParameter.Single(redirectUri),
+            STATE to RequestParameter.Single(state),
+            RESPONSE_TYPE to RequestParameter.Single(responseType),
+        ))
+
+        fun paramsForToken(
+            code: String,
+            redirectUri: String = APP_REDIRECT_URI,
+            grantType: String = "authorization_code",
+            serviceOptions: AuthServiceOptions
+        ): RequestParameters  = serviceOptions.asParameter(mapOf(
+            REDIRECT_URI to RequestParameter.Single(redirectUri),
+            CODE to RequestParameter.Single(code),
+            GRANT_TYPE to RequestParameter.Single(grantType),
+        ))
+        fun paramsForRefreshToken(
+            refreshToken: String,
+            grantType: String = "refresh_token",
+            serviceOptions: AuthServiceOptions
+        ): RequestParameters  = serviceOptions.asParameter(mapOf(
+            REFRESH_TOKEN to RequestParameter.Single(refreshToken),
+            GRANT_TYPE to RequestParameter.Single(grantType),
+        ))
+    }
+
     val apis = listOf(
         mapLight,
         mapDark,
@@ -158,7 +203,10 @@ object APIs {
         WEATHER_SERVICE_FORECAST("&.scribe.weatherService.forecast"),
         MAPLAYER_DARK("&.surveyor.map.dark"),
         MAPLAYER_LIGHT("&.surveyor.map.light"),
-        PARCEL_SERVICE("&.curator.parcelService");
+        PARCEL_SERVICE("&.curator.parcelService"),
+        AUTH_TOKEN("&.warden.token"),
+        AUTH_AUTHORIZATION("&.warden.auth"),
+        AUTH_ACCOUNT("&.warden.account");
 
         fun locator(flavour: ServiceMethods): ServiceLocator {
             return ServiceLocator(
