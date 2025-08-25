@@ -174,8 +174,8 @@ object ParcelConstants {
     }
 
     object Path {
-        val params = listOf(
-            ReferenceOr.value(
+        val params = mapOf(
+            Parameters.WHERE to ReferenceOr.value(
                 Parameter(
                     Parameters.WHERE,
                     Parameter.Input.Query,
@@ -186,7 +186,7 @@ object ParcelConstants {
                     )
                 )
             ),
-            ReferenceOr.value(
+            Parameters.OUT_FIELDS to ReferenceOr.value(
                 Parameter(
                     Parameters.OUT_FIELDS,
                     Parameter.Input.Query,
@@ -197,7 +197,7 @@ object ParcelConstants {
                     )
                 )
             ),
-            ReferenceOr.value(
+            Parameters.GEOMETRY to ReferenceOr.value(
                 Parameter(
                     Parameters.GEOMETRY,
                     Parameter.Input.Query,
@@ -208,7 +208,7 @@ object ParcelConstants {
                     )
                 ),
             ),
-            ReferenceOr.value(
+            Parameters.RETURN_GEOMETRY to ReferenceOr.value(
                 Parameter(
                     Parameters.RETURN_GEOMETRY,
                     Parameter.Input.Query,
@@ -219,7 +219,7 @@ object ParcelConstants {
                     )
                 ),
             ),
-            ReferenceOr.value(
+            Parameters.OUT_SR to ReferenceOr.value(
                 Parameter(
                     Parameters.OUT_SR,
                     Parameter.Input.Query,
@@ -230,7 +230,7 @@ object ParcelConstants {
                     )
                 ),
             ),
-            ReferenceOr.value(
+            Parameters.IN_SR to ReferenceOr.value(
                 Parameter(
                     Parameters.IN_SR,
                     Parameter.Input.Query,
@@ -241,7 +241,7 @@ object ParcelConstants {
                     )
                 ),
             ),
-            ReferenceOr.value(
+            Parameters.GEOMETRY_TYPE to ReferenceOr.value(
                 Parameter(
                     Parameters.GEOMETRY_TYPE,
                     Parameter.Input.Query,
@@ -252,7 +252,7 @@ object ParcelConstants {
                     )
                 ),
             ),
-            ReferenceOr.value(
+            Parameters.SPATIAL_REL to ReferenceOr.value(
                 Parameter(
                     Parameters.SPATIAL_REL,
                     Parameter.Input.Query,
@@ -263,7 +263,7 @@ object ParcelConstants {
                     )
                 ),
             ),
-            ReferenceOr.value(
+            Parameters.FILE to ReferenceOr.value(
                 Parameter(
                     Parameters.FILE,
                     Parameter.Input.Query,
@@ -332,7 +332,7 @@ object ParcelConstants {
                 ).usable()
             ),
         ),
-        parameters = Path.params
+        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_SN = PathItem(
         summary = "Flurstücke Sachsen",
@@ -359,7 +359,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params
+        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_BB = PathItem(
         summary = "Flurstücke Brandenburg",
@@ -388,7 +388,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params
+        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_HE = PathItem(
         summary = "Flurstücke Hessen",
@@ -411,7 +411,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params
+        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_HH = PathItem(
         summary = "Flurstücke Hamburg",
@@ -436,7 +436,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params
+        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_NW = PathItem(
         summary = "Flurstücke Nordrhein-Westfalen",
@@ -460,7 +460,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params
+        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_ST = PathItem(
         summary = "Flurstücke Sachsen-Anhalt",
@@ -491,7 +491,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params
+        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_BE = PathItem(
         summary = "Flurstücke Berlin",
@@ -520,7 +520,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params
+        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_NI = PathItem(
         summary = "Flurstücke Niedersachsen",
@@ -549,6 +549,6 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params
+        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
     )
 }

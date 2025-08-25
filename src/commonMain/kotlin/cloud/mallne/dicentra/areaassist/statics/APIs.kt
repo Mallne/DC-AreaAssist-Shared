@@ -5,6 +5,7 @@ import cloud.mallne.dicentra.areaassist.statics.weather.WeatherConstants
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
+import cloud.mallne.dicentra.aviator.koas.Components
 import cloud.mallne.dicentra.aviator.koas.OpenAPI
 import cloud.mallne.dicentra.aviator.koas.Operation
 import cloud.mallne.dicentra.aviator.koas.PathItem
@@ -14,42 +15,6 @@ import cloud.mallne.dicentra.aviator.koas.servers.Server
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
 
 object APIs {
-    val discovery = OpenAPI(
-        extensions = mapOf(
-            AviatorExtensionSpec.Version.key to Serialization().parseToJsonElement(
-                AviatorExtensionSpec.SpecVersion
-            )
-        ),
-        servers = listOf(
-            Server(
-                "https://cloud.mallne.cloud/api/areaassist/relay"
-            ),
-        ),
-        info = Info(
-            title = "DiCentra AreaAssist Discovery",
-            description = "The an exposed Aviator Discovery Endpoint to update the config",
-            version = AviatorExtensionSpec.SpecVersion,
-            license = License(
-                "Apache 2.0",
-                identifier = "DiCentra AreaAssist Discovery",
-                url = "https://github.com/Mallne/DC-AreaAssist-Server"
-            )
-        ),
-        paths = mapOf(
-            "/discovery" to PathItem(
-                get = Operation(
-                    extensions = mapOf(
-                        AviatorExtensionSpec.ServiceLocator.O.key to
-                                Services.DISCOVERY_SERVICE.locator(
-                                    ServiceMethods.GATHER
-                                ).usable(),
-                        AviatorExtensionSpec.ServiceOptions.O.key to
-                                InflatedServiceOptions.empty.usable()
-                    ),
-                )
-            )
-        )
-    )
     val mapLight = OpenAPI(
         extensions = mapOf(
             AviatorExtensionSpec.Version.key to Serialization().parseToJsonElement(
@@ -143,6 +108,9 @@ object APIs {
             "/Flurst_Berlin/FeatureServer/0/query" to ParcelConstants.DE_BE,
             "/NDS_Flurstuecke/FeatureServer/0/query" to ParcelConstants.DE_NI,
         ),
+        components = Components(
+            parameters = ParcelConstants.Path.params
+        )
     )
     val brightSky = OpenAPI(
         extensions = mapOf(
@@ -175,7 +143,6 @@ object APIs {
         )
     )
     val apis = listOf(
-        discovery,
         mapLight,
         mapDark,
         esri,
@@ -185,7 +152,7 @@ object APIs {
     enum class Services(
         private val serviceLocator: String,
     ) {
-        DISCOVERY_SERVICE("&.dicentraDiscoveryAgent"),
+        DISCOVERY_SERVICE("DCAACodexDiscoveryBundle"),
         WEATHER_SERVICE_CURRENT("&.scribe.weatherService.current"),
         WEATHER_SERVICE_WARNING("&.scribe.weatherService.warning"),
         WEATHER_SERVICE_FORECAST("&.scribe.weatherService.forecast"),

@@ -47,7 +47,6 @@ kotlin {
                 api(libs.dc.polyfill)
                 api(libs.dc.aviator.core)
                 api(libs.kotlinx.datetime)
-                api(libs.kotlinx.datetime)
                 api(libs.koin.annotations)
             }
         }
