@@ -15,6 +15,6 @@ data class AuthServiceOptions(
 ) : InflatedServiceOptions {
     override fun usable(): ServiceOptions = Serialization().encodeToJsonElement(this)
     fun asParameter(map: Map<String, RequestParameter>): RequestParameters = RequestParameters(
-        map + (APIs.OAuth2.CLIENT_ID to RequestParameter.Single(clientId))
+        (map + (APIs.OAuth2.CLIENT_ID to RequestParameter.Single(clientId))).toMutableMap()
     )
 }
