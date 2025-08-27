@@ -1,4 +1,4 @@
-package cloud.mallne.dicentra.areaassist.statics.parcel
+package cloud.mallne.dicentra.areaassist.model.parcel
 
 import cloud.mallne.dicentra.polyfill.Validation
 import kotlinx.serialization.Serializable

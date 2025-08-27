@@ -1,5 +1,6 @@
 package cloud.mallne.dicentra.areaassist.statics.weather
 
+import cloud.mallne.dicentra.areaassist.model.weather.WeatherServiceOptions
 import cloud.mallne.dicentra.areaassist.statics.APIs
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.ServiceMethods

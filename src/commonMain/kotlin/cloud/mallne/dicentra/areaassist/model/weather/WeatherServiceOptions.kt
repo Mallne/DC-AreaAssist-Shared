@@ -1,4 +1,4 @@
-package cloud.mallne.dicentra.areaassist.statics.weather
+package cloud.mallne.dicentra.areaassist.model.weather
 
 import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions

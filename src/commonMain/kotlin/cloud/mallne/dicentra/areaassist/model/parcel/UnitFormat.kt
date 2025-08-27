@@ -1,4 +1,4 @@
-package cloud.mallne.dicentra.areaassist.statics.parcel
+package cloud.mallne.dicentra.areaassist.model.parcel
 
 import cloud.mallne.dicentra.areaassist.units.Units
 import kotlinx.serialization.Serializable

@@ -1,5 +1,6 @@
 package cloud.mallne.dicentra.areaassist.statics.parcel
 
+import cloud.mallne.dicentra.areaassist.model.parcel.*
 import cloud.mallne.dicentra.areaassist.statics.APIs
 import cloud.mallne.dicentra.areaassist.statics.bundeslaender.Bundesland
 import cloud.mallne.dicentra.areaassist.units.Area
