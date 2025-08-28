@@ -1,8 +1,8 @@
 package cloud.mallne.dicentra.areaassist.model.parcel
 
 import cloud.mallne.dicentra.areaassist.model.Point
+import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
 import cloud.mallne.dicentra.areaassist.statics.Serialization
-import cloud.mallne.dicentra.areaassist.statics.bundeslaender.Bundesland
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
 import cloud.mallne.dicentra.aviator.core.ServiceOptions
 import cloud.mallne.dicentra.aviator.koas.info.License

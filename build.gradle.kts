@@ -47,6 +47,8 @@ kotlin {
                 api(libs.dc.polyfill)
                 api(libs.dc.aviator.core)
                 api(libs.kotlinx.datetime)
+                api(libs.ktor.client.core)
+                api(libs.ktor.http)
                 api(libs.koin.annotations)
             }
         }

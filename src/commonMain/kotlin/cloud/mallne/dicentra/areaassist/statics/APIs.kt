@@ -1,8 +1,12 @@
 package cloud.mallne.dicentra.areaassist.statics
 
 import cloud.mallne.dicentra.areaassist.model.AuthServiceOptions
-import cloud.mallne.dicentra.areaassist.statics.parcel.ParcelConstants
-import cloud.mallne.dicentra.areaassist.statics.weather.WeatherConstants
+import cloud.mallne.dicentra.areaassist.model.map.MapLayer
+import cloud.mallne.dicentra.areaassist.model.map.MapSource
+import cloud.mallne.dicentra.areaassist.model.map.MapStyleServiceOptions
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants
+import cloud.mallne.dicentra.areaassist.model.screen.DeepLinks
+import cloud.mallne.dicentra.areaassist.model.weather.WeatherConstants
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
@@ -39,13 +43,15 @@ object APIs {
             )
         ),
         paths = mapOf(
-            "/gdz_basemapde_vektor/styles/bm_web_top.json" to PathItem(
+            "/gdz_basemapworld_vektor/styles/bm_web_wld_col.json" to PathItem(
                 get = Operation(
                     extensions = mapOf(
-                        AviatorExtensionSpec.ServiceLocator.O.key to Services.MAPLAYER_LIGHT.locator(
+                        AviatorExtensionSpec.ServiceLocator.O.key to Services.MAPLAYER.locator(
                             ServiceMethods.GATHER
                         ).usable(),
-                        AviatorExtensionSpec.ServiceOptions.O.key to InflatedServiceOptions.empty.usable()
+                        AviatorExtensionSpec.ServiceOptions.O.key to MapStyleServiceOptions(
+                            mode= MapStyleServiceOptions.MapMode.Light
+                        ).usable()
                     ),
                 )
             )
@@ -75,10 +81,30 @@ object APIs {
             "/data/produkte/web_vektor/styles/bm_web_drk.json" to PathItem(
                 get = Operation(
                     extensions = mapOf(
-                        AviatorExtensionSpec.ServiceLocator.O.key to Services.MAPLAYER_DARK.locator(
+                        AviatorExtensionSpec.ServiceLocator.O.key to Services.MAPLAYER.locator(
                             ServiceMethods.GATHER
                         ).usable(),
-                        AviatorExtensionSpec.ServiceOptions.O.key to InflatedServiceOptions.empty.usable()
+                        AviatorExtensionSpec.ServiceOptions.O.key to MapStyleServiceOptions(
+                            mode= MapStyleServiceOptions.MapMode.Dark,
+                            extraSources = listOf(
+                                MapSource.RasterMapSource(
+                                    id= "topplus",
+                                    tiles = listOf(
+                                        "https://sgx.geodatenzentrum.de/wms_topplus_open?bbox={bbox-epsg-3857}&service=WMS&version=1.1.0&request=GetMap&layers=web_light_grau&styles=&srs=EPSG:3857&width=256&height=256&format=image/png&transparent=true"
+                                    ),
+                                    tileSize = 256
+                                )
+                            ),
+                            extraLayers = listOf(
+                                MapLayer.RasterMapLayer(
+                                    id= "l_topplus",
+                                    source = "topplus",
+                                    opacity = 0.5f,
+                                    userToggle = false,
+                                    position = MapLayer.LayerPositioning(MapLayer.LayerPositioning.Where.Below, "Hintergrund")
+                                )
+                            )
+                        ).usable()
                     ),
                 )
             )
@@ -145,6 +171,7 @@ object APIs {
             "/weather" to WeatherConstants.WEATHER,
         )
     )
+
     object OAuth2 {
         const val CLIENT_ID = "client_id"
         const val REDIRECT_URI = "redirect_uri"
@@ -154,37 +181,44 @@ object APIs {
         const val GRANT_TYPE = "grant_type"
         const val REFRESH_TOKEN = "refresh_token"
 
-        const val APP_REDIRECT_URI = "dcaa://areaassist.mallne.cloud/login"
+        val APP_REDIRECT_URI = DeepLinks.DCAA.login
 
         fun paramsForAuthorization(
             redirectUri: String = APP_REDIRECT_URI,
             state: String,
             responseType: String = "code",
             serviceOptions: AuthServiceOptions
-        ): RequestParameters  = serviceOptions.asParameter(mapOf(
-            REDIRECT_URI to RequestParameter.Single(redirectUri),
-            STATE to RequestParameter.Single(state),
-            RESPONSE_TYPE to RequestParameter.Single(responseType),
-        ))
+        ): RequestParameters = serviceOptions.asParameter(
+            mapOf(
+                REDIRECT_URI to RequestParameter.Single(redirectUri),
+                STATE to RequestParameter.Single(state),
+                RESPONSE_TYPE to RequestParameter.Single(responseType),
+            )
+        )
 
         fun paramsForToken(
             code: String,
             redirectUri: String = APP_REDIRECT_URI,
             grantType: String = "authorization_code",
             serviceOptions: AuthServiceOptions
-        ): RequestParameters  = serviceOptions.asParameter(mapOf(
-            REDIRECT_URI to RequestParameter.Single(redirectUri),
-            CODE to RequestParameter.Single(code),
-            GRANT_TYPE to RequestParameter.Single(grantType),
-        ))
+        ): RequestParameters = serviceOptions.asParameter(
+            mapOf(
+                REDIRECT_URI to RequestParameter.Single(redirectUri),
+                CODE to RequestParameter.Single(code),
+                GRANT_TYPE to RequestParameter.Single(grantType),
+            )
+        )
+
         fun paramsForRefreshToken(
             refreshToken: String,
             grantType: String = "refresh_token",
             serviceOptions: AuthServiceOptions
-        ): RequestParameters  = serviceOptions.asParameter(mapOf(
-            REFRESH_TOKEN to RequestParameter.Single(refreshToken),
-            GRANT_TYPE to RequestParameter.Single(grantType),
-        ))
+        ): RequestParameters = serviceOptions.asParameter(
+            mapOf(
+                REFRESH_TOKEN to RequestParameter.Single(refreshToken),
+                GRANT_TYPE to RequestParameter.Single(grantType),
+            )
+        )
     }
 
     val apis = listOf(
@@ -201,8 +235,7 @@ object APIs {
         WEATHER_SERVICE_CURRENT("&.scribe.weatherService.current"),
         WEATHER_SERVICE_WARNING("&.scribe.weatherService.warning"),
         WEATHER_SERVICE_FORECAST("&.scribe.weatherService.forecast"),
-        MAPLAYER_DARK("&.surveyor.map.dark"),
-        MAPLAYER_LIGHT("&.surveyor.map.light"),
+        MAPLAYER("&.surveyor.map"),
         PARCEL_SERVICE("&.curator.parcelService"),
         AUTH_TOKEN("&.warden.token"),
         AUTH_AUTHORIZATION("&.warden.auth"),

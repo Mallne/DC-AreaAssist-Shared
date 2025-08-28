@@ -1,9 +1,13 @@
 package cloud.mallne.dicentra.areaassist.model.curator
 
 import cloud.mallne.dicentra.areaassist.model.parcel.KeyType
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
+@JsonClassDiscriminator("content_type")
 sealed class QueryContentHolder() {
 
     @Serializable
