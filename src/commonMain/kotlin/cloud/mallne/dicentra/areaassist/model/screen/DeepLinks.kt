@@ -1,5 +1,6 @@
 package cloud.mallne.dicentra.areaassist.model.screen
 
+import cloud.mallne.dicentra.areaassist.model.curator.Query
 import cloud.mallne.dicentra.areaassist.model.geokit.GeokitPosition
 import cloud.mallne.dicentra.areaassist.statics.Serialization
 import io.ktor.http.*
@@ -31,5 +32,21 @@ object DeepLinks {
             parcelId: String,
         ): String =
             "$singleParcel/${parcelId.encodeURLParameter()}"
+
+        fun generateSearchDeeplink(
+            queries: List<Query>? = null,
+            startImmediately: Boolean = false,
+            serviceHints: List<String>? = null
+        ): String {
+            val queryParams = mutableListOf<String>()
+            if (queries != null) {
+                queryParams.add("queries=${Serialization().encodeToString(queries).encodeURLParameter()}")
+            }
+            queryParams.add("start_immediately=${Serialization().encodeToString(startImmediately).encodeURLParameter()}")
+            if (serviceHints != null) {
+                queryParams.add("service_hints=${Serialization().encodeToString(serviceHints).encodeURLParameter()}")
+            }
+            return "$search${queryParams.joinToString("&", prefix = "?")}"
+        }
     }
 }

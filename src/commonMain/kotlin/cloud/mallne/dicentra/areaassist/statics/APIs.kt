@@ -8,7 +8,6 @@ import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants
 import cloud.mallne.dicentra.areaassist.model.screen.DeepLinks
 import cloud.mallne.dicentra.areaassist.model.weather.WeatherConstants
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
-import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
@@ -50,7 +49,24 @@ object APIs {
                             ServiceMethods.GATHER
                         ).usable(),
                         AviatorExtensionSpec.ServiceOptions.O.key to MapStyleServiceOptions(
-                            mode= MapStyleServiceOptions.MapMode.Light
+                            mode = MapStyleServiceOptions.MapMode.Light,
+                            extraSources = listOf(
+                                MapSource.RasterMapSource(
+                                    id = "bayern",
+                                    tiles = listOf(
+                                        "https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=by_alkis_parzellarkarte_umr_schwarz"
+                                    ),
+                                    tileSize = 512
+                                )
+                            ),
+                            extraLayers = listOf(
+                                MapLayer.RasterMapLayer(
+                                    id = "l_bayern",
+                                    source = "bayern",
+                                    visible = false,
+                                )
+                            ),
+                            serviceHint = "basemap_light_default"
                         ).usable()
                     ),
                 )
@@ -85,25 +101,41 @@ object APIs {
                             ServiceMethods.GATHER
                         ).usable(),
                         AviatorExtensionSpec.ServiceOptions.O.key to MapStyleServiceOptions(
-                            mode= MapStyleServiceOptions.MapMode.Dark,
+                            mode = MapStyleServiceOptions.MapMode.Dark,
                             extraSources = listOf(
                                 MapSource.RasterMapSource(
-                                    id= "topplus",
+                                    id = "topplus",
                                     tiles = listOf(
                                         "https://sgx.geodatenzentrum.de/wms_topplus_open?bbox={bbox-epsg-3857}&service=WMS&version=1.1.0&request=GetMap&layers=web_light_grau&styles=&srs=EPSG:3857&width=256&height=256&format=image/png&transparent=true"
                                     ),
                                     tileSize = 256
+                                ),
+                                MapSource.RasterMapSource(
+                                    id = "bayern",
+                                    tiles = listOf(
+                                        "https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=by_alkis_parzellarkarte_umr_gelb"
+                                    ),
+                                    tileSize = 512
                                 )
                             ),
                             extraLayers = listOf(
                                 MapLayer.RasterMapLayer(
-                                    id= "l_topplus",
+                                    id = "l_topplus",
                                     source = "topplus",
                                     opacity = 0.5f,
                                     userToggle = false,
-                                    position = MapLayer.LayerPositioning(MapLayer.LayerPositioning.Where.Below, "Hintergrund")
+                                    position = MapLayer.LayerPositioning(
+                                        MapLayer.LayerPositioning.Where.Below,
+                                        "Hintergrund"
+                                    )
+                                ),
+                                MapLayer.RasterMapLayer(
+                                    id = "l_bayern",
+                                    source = "bayern",
+                                    visible = false,
                                 )
-                            )
+                            ),
+                            serviceHint = "basemap_dark_default"
                         ).usable()
                     ),
                 )

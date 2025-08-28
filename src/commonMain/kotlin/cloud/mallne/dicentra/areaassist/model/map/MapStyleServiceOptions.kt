@@ -5,12 +5,15 @@ import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
 import cloud.mallne.dicentra.aviator.core.ServiceOptions
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
-data class MapStyleServiceOptions(
+data class MapStyleServiceOptions @OptIn(ExperimentalUuidApi::class) constructor(
+    val serviceHint: String = Uuid.random().toString(),
     val extraLayers: List<MapLayer> = listOf(),
     val extraSources: List<MapSource> = listOf(),
-    val mode: MapMode,
+    val mode: MapMode
 ) : InflatedServiceOptions {
     override fun usable(): ServiceOptions = Serialization().encodeToJsonElement(this)
 
