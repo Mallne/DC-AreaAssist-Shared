@@ -66,7 +66,8 @@ object APIs {
                                     visible = false,
                                 )
                             ),
-                            serviceHint = "basemap_light_default"
+                            serviceHint = "basemap_light_default",
+                            name = "Basemap.world"
                         ).usable()
                     ),
                 )
@@ -135,7 +136,8 @@ object APIs {
                                     visible = false,
                                 )
                             ),
-                            serviceHint = "basemap_dark_default"
+                            serviceHint = "basemap_dark_default",
+                            name = "Basemap.de Dark + TopPlusOpen"
                         ).usable()
                     ),
                 )

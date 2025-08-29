@@ -11,6 +11,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class MapStyleServiceOptions @OptIn(ExperimentalUuidApi::class) constructor(
     val serviceHint: String = Uuid.random().toString(),
+    val name: String = serviceHint,
     val extraLayers: List<MapLayer> = listOf(),
     val extraSources: List<MapSource> = listOf(),
     val mode: MapMode
