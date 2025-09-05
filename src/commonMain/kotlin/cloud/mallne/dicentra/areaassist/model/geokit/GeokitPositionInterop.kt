@@ -4,8 +4,8 @@ import cloud.mallne.dicentra.areaassist.model.Point
 
 object GeokitPositionInterop {
     fun GeokitPosition.toPoint(): Point<Double> {
-        return Point(this.latitude, this.longitude)
+        return Point(this.longitude, this.latitude)
     }
     fun Point<Double>.toGeokitPosition(): GeokitPosition =
-        GeokitPosition(this.x, this.y)
+        GeokitPosition(this.y, this.x)
 }

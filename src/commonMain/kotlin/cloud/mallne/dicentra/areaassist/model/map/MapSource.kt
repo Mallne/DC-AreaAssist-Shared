@@ -9,10 +9,10 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 @JsonClassDiscriminator("type")
-sealed class MapSource() {
+sealed interface MapSource {
+    val layers: List<MapLayer>
     @Serializable
-    data class RasterMapSource(
-        val id: String,
+    class RasterMapSource(
         val tiles: List<String>,
         val tileSize: Int = 512,
         val bounds: GeokitBounds? = null,
@@ -20,8 +20,8 @@ sealed class MapSource() {
         val maxZoom: Int = 22,
         val scheme: SourceScheme = SourceScheme.XYZ,
         val attribution: String? = null,
-        val volatile: Boolean = false,
-    ) : MapSource()
+        override val layers: List<MapLayer>
+    ) : MapSource
 
     enum class SourceScheme {
         @SerialName("xyz")

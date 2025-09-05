@@ -36,8 +36,8 @@ data class GeokitBounds(
         get() = abs(east - west)
 
     constructor(north: Double, east: Double, south: Double, west: Double) : this(
-        GeokitPosition(north, east),
-        GeokitPosition(south, west)
+        southWest = GeokitPosition(south, west),
+        northEast = GeokitPosition(north, east)
     )
 
     private fun containsLatitude(latitude: Double): Boolean {
@@ -53,5 +53,16 @@ data class GeokitBounds(
      */
     operator fun contains(latLng: GeokitPosition): Boolean {
         return (containsLatitude(latLng.latitude) && containsLongitude(latLng.longitude))
+    }
+
+    init {
+        require(!(north.isNaN() || south.isNaN())) { "latitude must not be NaN" }
+        require(!(east.isNaN() || west.isNaN())) { "longitude must not be NaN" }
+        require(!(east.isInfinite() || west.isInfinite())) { "longitude must not be infinite" }
+        require(
+            !(north > 90 || north < -90 || south > 90 || south < -90)
+        ) { "latitude must be between -90 and 90" }
+        require(north >= south) { "latNorth cannot be less than latSouth" }
+        require(east >= west) { "lonEast cannot be less than lonWest" }
     }
 }

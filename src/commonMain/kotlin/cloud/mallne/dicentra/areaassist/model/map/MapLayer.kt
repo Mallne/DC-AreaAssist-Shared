@@ -8,21 +8,25 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 @JsonClassDiscriminator("type")
-sealed class MapLayer {
+sealed interface MapLayer {
+    val id: String
+    val userToggle: Boolean
+    val description: String?
+    val visible: Boolean
     @Serializable
     data class RasterMapLayer(
-        val id: String,
-        val source: String,
+        override val id: String,
         @SerialName("minzoom")
-        val minZoom: Int = 0,
+        val minZoom: Float = 0f,
         @SerialName("maxzoom")
-        val maxZoom: Int = 24,
+        val maxZoom: Float = 24f,
         @SerialName("raster-opacity")
         val opacity: Float = 1f,
-        val visible: Boolean = true,
-        val userToggle: Boolean = true,
+        override val visible: Boolean = true,
         val position: LayerPositioning? = null,
-    ) : MapLayer()
+        override val userToggle: Boolean = true,
+        override val description: String? = null,
+    ) : MapLayer
 
     @Serializable
     data class LayerPositioning(
@@ -30,7 +34,7 @@ sealed class MapLayer {
         val otherLayer: String,
     ) {
         enum class Where {
-            Above, Below
+            Above, Below, Top, Bottom
         }
     }
 }

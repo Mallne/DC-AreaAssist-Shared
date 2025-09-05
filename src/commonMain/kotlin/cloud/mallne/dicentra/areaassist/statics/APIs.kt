@@ -1,6 +1,7 @@
 package cloud.mallne.dicentra.areaassist.statics
 
 import cloud.mallne.dicentra.areaassist.model.AuthServiceOptions
+import cloud.mallne.dicentra.areaassist.model.geokit.GeokitBounds
 import cloud.mallne.dicentra.areaassist.model.map.MapLayer
 import cloud.mallne.dicentra.areaassist.model.map.MapSource
 import cloud.mallne.dicentra.areaassist.model.map.MapStyleServiceOptions
@@ -50,20 +51,41 @@ object APIs {
                         ).usable(),
                         AviatorExtensionSpec.ServiceOptions.O.key to MapStyleServiceOptions(
                             mode = MapStyleServiceOptions.MapMode.Light,
+                            backgroundColor = "#fafafa",
                             extraSources = listOf(
                                 MapSource.RasterMapSource(
-                                    id = "bayern",
+                                    tiles = listOf(
+                                        "https://www.geoproxy.geoportal-th.de/geoproxy/services/DOP?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=th_dop"
+                                    ),
+                                    bounds = GeokitBounds(
+                                        north = 51.66367013,
+                                        east = 12.71188404,
+                                        south = 50.15442687,
+                                        west = 9.85484026,
+                                    ),
+                                    tileSize = 512,
+                                    layers = listOf(
+                                        MapLayer.RasterMapLayer(
+                                            id = "l_dopTh",
+                                            visible = false,
+                                            description = "Orthofotos Thüringen",
+                                            minZoom = 14.5f
+                                        )
+                                    )
+                                ),
+                                MapSource.RasterMapSource(
                                     tiles = listOf(
                                         "https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=by_alkis_parzellarkarte_umr_schwarz"
                                     ),
-                                    tileSize = 512
-                                )
-                            ),
-                            extraLayers = listOf(
-                                MapLayer.RasterMapLayer(
-                                    id = "l_bayern",
-                                    source = "bayern",
-                                    visible = false,
+                                    tileSize = 512,
+                                    layers = listOf(
+                                        MapLayer.RasterMapLayer(
+                                            id = "l_bayern",
+                                            visible = false,
+                                            description = "Passive Flurstücke Bayern",
+                                            minZoom = 14.5f
+                                        )
+                                    )
                                 )
                             ),
                             serviceHint = "basemap_light_default",
@@ -105,35 +127,55 @@ object APIs {
                             mode = MapStyleServiceOptions.MapMode.Dark,
                             extraSources = listOf(
                                 MapSource.RasterMapSource(
-                                    id = "topplus",
+                                    tiles = listOf(
+                                        "https://www.geoproxy.geoportal-th.de/geoproxy/services/DOP?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=th_dop"
+                                    ),
+//                                    bounds = GeokitBounds(
+//                                        north = 51.66367013,
+//                                        east = 12.71188404,
+//                                        south = 50.15442687,
+//                                        west = 9.85484026,
+//                                    ),
+                                    tileSize = 512,
+                                    layers = listOf(
+                                        MapLayer.RasterMapLayer(
+                                            id = "l_dopTh",
+                                            visible = false,
+                                            description = "Orthofotos Thüringen",
+                                            minZoom = 14.5f
+                                        )
+                                    )
+                                ),
+                                MapSource.RasterMapSource(
                                     tiles = listOf(
                                         "https://sgx.geodatenzentrum.de/wms_topplus_open?bbox={bbox-epsg-3857}&service=WMS&version=1.1.0&request=GetMap&layers=web_light_grau&styles=&srs=EPSG:3857&width=256&height=256&format=image/png&transparent=true"
                                     ),
-                                    tileSize = 256
+                                    tileSize = 256,
+                                    layers = listOf(
+                                        MapLayer.RasterMapLayer(
+                                            id = "l_topplus",
+                                            opacity = 0.5f,
+                                            userToggle = false,
+                                            position = MapLayer.LayerPositioning(
+                                                MapLayer.LayerPositioning.Where.Below,
+                                                "Hintergrund"
+                                            )
+                                        ),
+                                    )
                                 ),
                                 MapSource.RasterMapSource(
-                                    id = "bayern",
                                     tiles = listOf(
                                         "https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=by_alkis_parzellarkarte_umr_gelb"
                                     ),
-                                    tileSize = 512
-                                )
-                            ),
-                            extraLayers = listOf(
-                                MapLayer.RasterMapLayer(
-                                    id = "l_topplus",
-                                    source = "topplus",
-                                    opacity = 0.5f,
-                                    userToggle = false,
-                                    position = MapLayer.LayerPositioning(
-                                        MapLayer.LayerPositioning.Where.Below,
-                                        "Hintergrund"
+                                    tileSize = 512,
+                                    layers = listOf(
+                                        MapLayer.RasterMapLayer(
+                                            id = "l_bayern",
+                                            visible = false,
+                                            description = "Passive Flurstücke Bayern",
+                                            minZoom = 14.5f
+                                        )
                                     )
-                                ),
-                                MapLayer.RasterMapLayer(
-                                    id = "l_bayern",
-                                    source = "bayern",
-                                    visible = false,
                                 )
                             ),
                             serviceHint = "basemap_dark_default",

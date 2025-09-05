@@ -7,6 +7,7 @@ import cloud.mallne.dicentra.aviator.core.ServiceOptions
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 
 @Serializable

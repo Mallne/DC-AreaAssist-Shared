@@ -1,5 +1,6 @@
 package cloud.mallne.dicentra.areaassist.model.geokit
 
+import cloud.mallne.dicentra.areaassist.units.Length.Companion.kilometers
 import cloud.mallne.dicentra.areaassist.units.Length.Companion.meters
 import cloud.mallne.dicentra.areaassist.units.times
 
@@ -8,6 +9,8 @@ object GeokitConstants {
      * Earth's radius in meters.
      */
     val EARTH_RADIUS = 6378137.0 * meters
+
+    val EARTH_CIRCUMFERENCE = 40007.863 * kilometers
 
     /**
      * This constant represents the lowest longitude value available to represent a wrapped geolocation.
@@ -58,4 +61,6 @@ object GeokitConstants {
      * Minimum latitude value in Mercator projection.
      */
     const val MIN_MERCATOR_LATITUDE: Double = -85.05112877980659
+
+    const val WORLD_SIZE_AT_0 = 512
 }
