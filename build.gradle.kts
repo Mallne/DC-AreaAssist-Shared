@@ -50,6 +50,7 @@ kotlin {
                 api(libs.ktor.client.core)
                 api(libs.ktor.http)
                 api(libs.koin.annotations)
+                api(libs.xml)
             }
         }
     }

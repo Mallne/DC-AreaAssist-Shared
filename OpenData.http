@@ -1,0 +1,40 @@
+### Esri Request
+GET https://services2.arcgis.com/jUpNdisbWqRpMo35/arcgis/rest/services/thueringen_flstck/FeatureServer/0/query?
+    where=1%3D1&
+    outFields=flurstnr,flstnrzae,flstnrnen,flaeche,gemarkung,gemaschl,flur,flurschl,gemeinde,gmdschl,kreis,kreisschl,lagebeztxt,tntext,abwrecht,flstkennz&
+    geometry=11.065034792881335%2C50.959109019034884%2C11.070242497097468%2C50.95270307179814&returnGeometry=true&
+    outSR=4326&inSR=4326&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&f=geojson
+
+### WFS Capability
+GET https://www.geoproxy.geoportal-th.de/geoproxy/services/adv_alkis_wfs?SERVICE=WFS&REQUEST=GetCapabilities&
+    VERSION=2.0.0
+
+### WFS Describe Feature
+GET https://www.geoproxy.geoportal-th.de/geoproxy/services/adv_alkis_wfs?SERVICE=WFS&REQUEST=DescribeFeatureType&
+    VERSION=2.0.0&typeNames=ave:Flurstueck
+
+### WFS Open Data Request
+POST https://www.geoproxy.geoportal-th.de/geoproxy/services/adv_alkis_wfs
+Content-Type: application/xml
+
+<wfs:GetFeature
+        service="WFS"
+        version="2.0.0"
+        xmlns:wfs="http://www.opengis.net/wfs/2.0"
+        xmlns:fes="http://www.opengis.net/fes/2.0"
+        xmlns:gml="http://www.opengis.net/gml/3.2"
+        xmlns:ave="http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/1.0"
+        outputFormat="application/gml+xml; version=3.2">
+    <wfs:Query typeNames="ave:Flurstueck" srsName="urn:ogc:def:crs:EPSG::4326">
+        <fes:Filter>
+            <fes:BBOX>
+                <fes:ValueReference>geometrie</fes:ValueReference>
+                <gml:Envelope srsName="urn:ogc:def:crs:EPSG::25832">
+                    <!-- BBOX for Erfurt (Anger 1) in EPSG::25832. -->
+                    <gml:lowerCorner>665042.87 5645532.79</gml:lowerCorner>
+                    <gml:upperCorner>665243.32 5645754.78</gml:upperCorner>
+                </gml:Envelope>
+            </fes:BBOX>
+        </fes:Filter>
+    </wfs:Query>
+</wfs:GetFeature>

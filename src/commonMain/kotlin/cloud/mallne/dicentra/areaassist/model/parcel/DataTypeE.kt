@@ -12,5 +12,6 @@ enum class DataTypeE {
     LOCATION_ENGINE,
     NAV_BAR_CONFIGURATION,
     MAP_STYLE_SETTING,
+    COLOR,
     JSON
 }
