@@ -308,6 +308,7 @@ object APIs {
         private val serviceLocator: String,
     ) {
         DISCOVERY_SERVICE("DCAACodexDiscoveryBundle"),
+        SERVERSIDE_ACTIONS("DCAACodexServerSideActions"),
         WEATHER_SERVICE_CURRENT("&.scribe.weatherService.current"),
         WEATHER_SERVICE_WARNING("&.scribe.weatherService.warning"),
         WEATHER_SERVICE_FORECAST("&.scribe.weatherService.forecast"),

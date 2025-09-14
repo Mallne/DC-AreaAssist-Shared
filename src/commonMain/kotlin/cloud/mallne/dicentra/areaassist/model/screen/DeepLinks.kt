@@ -19,6 +19,7 @@ object DeepLinks {
         val compass = "$base/computist/compass"
         val agrimensor = "$base/computist/agrimensor"
         val login = "$base/login"
+        val action = "$base/action"
 
         fun generateCompassDeeplink(positions: List<GeokitPosition>): String =
             "$compass?r=${Serialization().encodeToString(positions).encodeURLParameter()}"
@@ -42,11 +43,19 @@ object DeepLinks {
             if (queries != null) {
                 queryParams.add("queries=${Serialization().encodeToString(queries).encodeURLParameter()}")
             }
-            queryParams.add("start_immediately=${Serialization().encodeToString(startImmediately).encodeURLParameter()}")
+            queryParams.add(
+                "start_immediately=${
+                    Serialization().encodeToString(startImmediately).encodeURLParameter()
+                }"
+            )
             if (serviceHints != null) {
                 queryParams.add("service_hints=${Serialization().encodeToString(serviceHints).encodeURLParameter()}")
             }
             return "$search${queryParams.joinToString("&", prefix = "?")}"
         }
+
+        fun generateActionDeeplink(
+            actionId: String,
+        ): String = "$action/${actionId.encodeURLParameter()}"
     }
 }
