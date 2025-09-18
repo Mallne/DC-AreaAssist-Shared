@@ -7,4 +7,6 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 @JsonClassDiscriminator("crate_type")
-sealed class ParcelCrate
+sealed interface ParcelCrate {
+    val parcelId: String
+}

@@ -1,7 +1,6 @@
 package cloud.mallne.dicentra.areaassist.statics
 
 import cloud.mallne.dicentra.areaassist.model.AuthServiceOptions
-import cloud.mallne.dicentra.areaassist.model.geokit.GeokitBounds
 import cloud.mallne.dicentra.areaassist.model.map.MapLayer
 import cloud.mallne.dicentra.areaassist.model.map.MapSource
 import cloud.mallne.dicentra.areaassist.model.map.MapStyleServiceOptions
@@ -20,6 +19,7 @@ import cloud.mallne.dicentra.aviator.koas.info.Info
 import cloud.mallne.dicentra.aviator.koas.info.License
 import cloud.mallne.dicentra.aviator.koas.servers.Server
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
+import cloud.mallne.geokit.Boundary
 
 object APIs {
     val mapLight = OpenAPI(
@@ -57,7 +57,7 @@ object APIs {
                                     tiles = listOf(
                                         "https://www.geoproxy.geoportal-th.de/geoproxy/services/DOP?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=th_dop"
                                     ),
-                                    bounds = GeokitBounds(
+                                    bounds = Boundary(
                                         north = 51.66367013,
                                         east = 12.71188404,
                                         south = 50.15442687,
@@ -130,7 +130,7 @@ object APIs {
                                     tiles = listOf(
                                         "https://www.geoproxy.geoportal-th.de/geoproxy/services/DOP?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=th_dop"
                                     ),
-//                                    bounds = GeokitBounds(
+//                                    bounds = Boundary(
 //                                        north = 51.66367013,
 //                                        east = 12.71188404,
 //                                        south = 50.15442687,

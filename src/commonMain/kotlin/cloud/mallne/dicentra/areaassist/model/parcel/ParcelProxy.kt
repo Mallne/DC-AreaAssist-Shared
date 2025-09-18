@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ParcelProxy(
-    val parcelId: String,
+    override val parcelId: String,
     val serviceHint: String,
-): ParcelCrate()
+) : ParcelCrate

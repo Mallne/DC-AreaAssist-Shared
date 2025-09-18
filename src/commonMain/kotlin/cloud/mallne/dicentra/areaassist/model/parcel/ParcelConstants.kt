@@ -2,8 +2,6 @@ package cloud.mallne.dicentra.areaassist.model.parcel
 
 import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
 import cloud.mallne.dicentra.areaassist.statics.APIs
-import cloud.mallne.dicentra.areaassist.units.Area
-import cloud.mallne.dicentra.areaassist.units.Units
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import cloud.mallne.dicentra.aviator.koas.Operation
@@ -12,6 +10,8 @@ import cloud.mallne.dicentra.aviator.koas.extensions.ReferenceOr
 import cloud.mallne.dicentra.aviator.koas.info.License
 import cloud.mallne.dicentra.aviator.koas.io.Schema
 import cloud.mallne.dicentra.aviator.koas.parameters.Parameter
+import cloud.mallne.units.Area
+import cloud.mallne.units.Units
 
 object ParcelConstants {
     val locator = APIs.Services.PARCEL_SERVICE.locator(

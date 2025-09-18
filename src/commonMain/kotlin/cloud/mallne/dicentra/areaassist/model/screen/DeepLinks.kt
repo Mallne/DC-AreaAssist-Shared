@@ -1,8 +1,8 @@
 package cloud.mallne.dicentra.areaassist.model.screen
 
 import cloud.mallne.dicentra.areaassist.model.curator.Query
-import cloud.mallne.dicentra.areaassist.model.geokit.GeokitPosition
 import cloud.mallne.dicentra.areaassist.statics.Serialization
+import cloud.mallne.geokit.Vertex
 import io.ktor.http.*
 
 object DeepLinks {
@@ -21,7 +21,7 @@ object DeepLinks {
         val login = "$base/login"
         val action = "$base/action"
 
-        fun generateCompassDeeplink(positions: List<GeokitPosition>): String =
+        fun generateCompassDeeplink(positions: List<Vertex>): String =
             "$compass?r=${Serialization().encodeToString(positions).encodeURLParameter()}"
 
         fun generateAgrimensorDeeplink(

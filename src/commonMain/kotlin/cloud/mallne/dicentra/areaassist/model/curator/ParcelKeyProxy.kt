@@ -5,4 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ParcelKeyProxy(
     val identifier: String
-)
+) {
+    override fun toString(): String = identifier
+}

@@ -1,6 +1,6 @@
 package cloud.mallne.dicentra.areaassist.model.map
 
-import cloud.mallne.dicentra.areaassist.model.geokit.GeokitBounds
+import cloud.mallne.geokit.Boundary
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -15,7 +15,7 @@ sealed interface MapSource {
     class RasterMapSource(
         val tiles: List<String>,
         val tileSize: Int = 512,
-        val bounds: GeokitBounds? = null,
+        val bounds: Boundary? = null,
         val minZoom: Int = 0,
         val maxZoom: Int = 22,
         val scheme: SourceScheme = SourceScheme.XYZ,

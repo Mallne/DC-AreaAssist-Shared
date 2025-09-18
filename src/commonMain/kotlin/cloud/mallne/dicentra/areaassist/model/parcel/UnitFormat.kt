@@ -1,6 +1,6 @@
 package cloud.mallne.dicentra.areaassist.model.parcel
 
-import cloud.mallne.dicentra.areaassist.units.Units
+import cloud.mallne.units.Units
 import kotlinx.serialization.Serializable
 
 @Serializable

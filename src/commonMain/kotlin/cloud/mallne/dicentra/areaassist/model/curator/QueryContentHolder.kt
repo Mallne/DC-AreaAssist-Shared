@@ -11,13 +11,19 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 sealed class QueryContentHolder() {
 
     @Serializable
-    class STRING(val string: String?) : QueryContentHolder()
+    class STRING(val string: String?) : QueryContentHolder() {
+        override fun toString(): String = string ?: ""
+    }
 
     @Serializable
-    class RANGE(val range: Pair<Double, Double>?) : QueryContentHolder()
+    class RANGE(val range: Pair<Double, Double>?) : QueryContentHolder() {
+        override fun toString(): String = "${range?.first}..${range?.second}"
+    }
 
     @Serializable
-    class BOOLEAN(val boolean: Boolean?) : QueryContentHolder()
+    class BOOLEAN(val boolean: Boolean?) : QueryContentHolder() {
+        override fun toString(): String = "${boolean ?: false}"
+    }
 
     fun sameAs(keyType: KeyType): Boolean {
         return when (keyType) {
