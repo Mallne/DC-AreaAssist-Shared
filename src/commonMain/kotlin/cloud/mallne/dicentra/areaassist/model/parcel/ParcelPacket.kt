@@ -1,12 +1,11 @@
 package cloud.mallne.dicentra.areaassist.model.parcel
 
+import cloud.mallne.geokit.geojson.Feature
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class ParcelPacket(
     override val parcelId: String,
     val origin: String,
-    val json: JsonElement,
-    val properties: List<ParcelPacketProperty>
+    val json: Feature
 ) : ParcelCrate
