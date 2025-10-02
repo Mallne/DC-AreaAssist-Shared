@@ -64,6 +64,9 @@ object ChronoExtensions {
     fun Instant.toLocalDateTime() = this.toLocalDateTime(TimeZone.currentSystemDefault())
 
     @OptIn(ExperimentalTime::class)
+    fun LocalDateTime.toInstant() = this.toInstant(TimeZone.currentSystemDefault())
+
+    @OptIn(ExperimentalTime::class)
     fun LocalDateTime.isToday(): Boolean {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         return this.year == now.year && this.month == now.month && day == now.day
