@@ -46,6 +46,7 @@ kotlin {
                 api(libs.kotlinx.serialization.json)
                 api(libs.dc.polyfill)
                 api(libs.dc.aviator.core)
+                api(libs.dc.aviator.koas)
                 api(libs.mlln.units)
                 api(libs.mlln.geokit.calculation)
                 api(libs.mlln.geokit.geojson)
@@ -57,7 +58,7 @@ kotlin {
             }
         }
     }
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 android {
