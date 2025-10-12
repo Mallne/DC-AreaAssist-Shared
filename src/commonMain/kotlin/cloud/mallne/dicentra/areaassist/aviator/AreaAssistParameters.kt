@@ -1,6 +1,9 @@
 package cloud.mallne.dicentra.areaassist.aviator
 
+import cloud.mallne.dicentra.areaassist.model.curator.ParcelKeyProxy
 import cloud.mallne.dicentra.areaassist.model.curator.Query
+import cloud.mallne.dicentra.areaassist.model.curator.QueryContentHolder
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
 import cloud.mallne.geokit.Boundary
@@ -11,6 +14,16 @@ object AreaAssistParameters {
     const val QUERIES = "DCAA_QUERIES"
     fun queries(queries: List<Query> = listOf()): Pair<String, RequestParameter> =
         QUERIES to RequestParameter.Multi(queries)
+
+    fun parcelId(parcelId: String): Pair<String, RequestParameter> =
+        QUERIES to RequestParameter.Multi(
+            listOf(
+                Query(
+                    field = ParcelKeyProxy(ParcelConstants.DefaultKeys.PARCELID.identifier),
+                    content = QueryContentHolder.STRING(parcelId)
+                )
+            )
+        )
 
     const val RETURN_GEOMETRY = "DCAA_RETURN_GEOMETRY"
     fun returnGeometry(returnGeometry: Boolean = true): Pair<String, RequestParameter> =

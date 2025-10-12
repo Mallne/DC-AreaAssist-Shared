@@ -19,7 +19,6 @@ import cloud.mallne.dicentra.aviator.koas.info.Info
 import cloud.mallne.dicentra.aviator.koas.info.License
 import cloud.mallne.dicentra.aviator.koas.servers.Server
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
-import cloud.mallne.geokit.Boundary
 
 object APIs {
     val mapLight = OpenAPI(
@@ -57,12 +56,12 @@ object APIs {
                                     tiles = listOf(
                                         "https://www.geoproxy.geoportal-th.de/geoproxy/services/DOP?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=th_dop"
                                     ),
-                                    bounds = Boundary(
-                                        north = 51.66367013,
-                                        east = 12.71188404,
-                                        south = 50.15442687,
-                                        west = 9.85484026,
-                                    ),
+                                    //bounds = Boundary(
+                                    //    north = 51.66367013,
+                                    //    east = 12.71188404,
+                                    //    south = 50.15442687,
+                                    //    west = 9.85484026,
+                                    //),
                                     tileSize = 512,
                                     layers = listOf(
                                         MapLayer.RasterMapLayer(
