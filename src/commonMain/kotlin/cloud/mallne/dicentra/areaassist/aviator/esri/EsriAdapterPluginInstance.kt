@@ -1,12 +1,16 @@
 package cloud.mallne.dicentra.areaassist.aviator.esri
 
 import cloud.mallne.dicentra.areaassist.aviator.AreaAssistParameters
+import cloud.mallne.dicentra.areaassist.exceptions.ExceededTransferLimitException
 import cloud.mallne.dicentra.areaassist.model.curator.Query
 import cloud.mallne.dicentra.areaassist.model.curator.QueryContentHolder
 import cloud.mallne.dicentra.areaassist.model.parcel.GenericJson
-import cloud.mallne.dicentra.areaassist.model.parcel.KeyType
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
+import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelCrateEntity
+import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelEntity
+import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelPropertyEntity
+import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelPropertyEntity.Companion.convert
 import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.execution.AviatorExecutionContext
 import cloud.mallne.dicentra.aviator.core.execution.AviatorExecutionStages
@@ -14,23 +18,19 @@ import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.plugins.AviatorPluginInstance
 import cloud.mallne.dicentra.aviator.core.plugins.PluginStagedExecutor
 import cloud.mallne.dicentra.aviator.core.plugins.PluginStagedExecutorBuilder
-import cloud.mallne.dicentra.aviator.model.AviatorServiceUtils
 import cloud.mallne.dicentra.aviator.model.AviatorServiceUtils.optionBundle
 import cloud.mallne.geokit.Boundary
 import cloud.mallne.geokit.geojson.FeatureCollection
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlin.collections.get
+import kotlinx.serialization.json.*
+import kotlin.time.ExperimentalTime
 
 data class EsriAdapterPluginInstance(
     override val configurationBundle: EsriAdapterPluginConfig,
     override val identity: String,
 ) : AviatorPluginInstance {
+    @OptIn(ExperimentalTime::class)
     override val x: PluginStagedExecutor<AviatorExecutionContext<@Serializable Any, @Serializable Any>, @Serializable Any, @Serializable Any> =
         PluginStagedExecutorBuilder.steps {
             before(AviatorExecutionStages.PathMatching) { context ->
@@ -70,10 +70,9 @@ data class EsriAdapterPluginInstance(
             after(AviatorExecutionStages.PaintingResponse) { context ->
                 val successful =
                     context.networkChain.find { (it.response?.status?.value ?: 500) < 400 }
-                val serviceOptions =
-                    AviatorServiceUtils.optionBundle<ParcelServiceOptions>(context.dataHolder.options)
+                val serviceOptions = optionBundle<ParcelServiceOptions>(context.dataHolder.options)
                 context.result = try {
-                    val parcels: MutableList<ParcelWithRelations> = mutableListOf()
+                    val parcels: MutableList<ParcelCrateEntity> = mutableListOf()
                     val json = successful?.response?.content
                     if (json != null) {
                         val featureCollection: FeatureCollection =
@@ -88,7 +87,7 @@ data class EsriAdapterPluginInstance(
                             throw ExceededTransferLimitException("Exceeded Transfer Limit for ${successful.url}")
                         }
                         for (feature in featureCollection) {
-                            val kvs = mutableListOf<ParcelProperty>()
+                            val kvs = mutableListOf<ParcelPropertyEntity>()
                             val props = mutableMapOf<String, JsonElement>()
                             val geo = mutableMapOf<String, JsonElement>()
                             var parcelId: String? = null
@@ -96,64 +95,18 @@ data class EsriAdapterPluginInstance(
                                 //Convert the K/V GoeJson Properties to the known Format
                                 val value = feature.properties[field.reference]
                                 if (value != null) {
-                                    when (field.type) {
-                                        KeyType.String -> {
-                                            val parcelProperty = field.toStringProp()
-                                            val kv = parcelProperty?.type?.decode(value)
-                                                ?.let {
-                                                    parcelProperty.construct(
-                                                        it
-                                                    )
-                                                }
-                                            if (kv != null) {
-                                                kvs.add(kv)
-                                            }
-                                            //separatly extract the parcel Id
-                                            if (field.identifier == ParcelConstants.DefaultKeys.PARCELID.identifier) {
-                                                parcelId =
-                                                    parcelProperty?.type?.decode(
-                                                        value
-                                                    )
-                                            }
-                                            props[field.identifier] = value
-                                        }
-
-                                        KeyType.Number -> {
-                                            val parcelProperty =
-                                                field.toNumberProp()
-                                            val kv =
-                                                parcelProperty?.type?.decode(value)
-                                                    ?.let {
-                                                        parcelProperty.construct(
-                                                            it
-                                                        )
-                                                    }
-                                            if (kv != null) {
-                                                kvs.add(kv)
-                                            }
-                                            props[field.identifier] = value
-                                        }
-
-                                        KeyType.Boolean -> {
-                                            val parcelProperty =
-                                                field.toBooleanProp()
-                                            val kv =
-                                                parcelProperty?.type?.decode(value)
-                                                    ?.let {
-                                                        parcelProperty.construct(
-                                                            it
-                                                        )
-                                                    }
-                                            if (kv != null) {
-                                                kvs.add(kv)
-                                            }
-                                            props[field.identifier] = value
-                                        }
-
-                                        KeyType.Nothing -> {
-                                            // do nothing
+                                    val parcelProperty = field.toParcelProperty()
+                                    if (parcelProperty != null) {
+                                        val kv = parcelProperty.convert(
+                                            value
+                                        )
+                                        kvs.add(kv)
+                                        //separatly extract the parcel Id
+                                        if (field.identifier == ParcelConstants.DefaultKeys.PARCELID.identifier) {
+                                            parcelId = Serialization().decodeFromJsonElement<String?>(value)
                                         }
                                     }
+                                    props[field.identifier] = value
                                 }
                             }
                             props[GenericJson.ORIGIN] =
@@ -163,11 +116,11 @@ data class EsriAdapterPluginInstance(
                             )
                             if (parcelId != null) {
                                 parcels.add(
-                                    ParcelWithRelations(
-                                        parcel = Parcel(
+                                    ParcelCrateEntity(
+                                        parcel = ParcelEntity(
+                                            parcelId = parcelId,
                                             origin = serviceOptions.parcelLinkReference,
                                             json = converted,
-                                            parcelId = parcelId
                                         ),
                                         properties = kvs
                                     )
@@ -183,7 +136,7 @@ data class EsriAdapterPluginInstance(
                             e
                         )
                     }
-                    emptyList<ParcelWithRelations>()
+                    emptyList<ParcelCrateEntity>()
                 }
             }
         }

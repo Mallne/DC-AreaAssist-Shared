@@ -18,11 +18,14 @@ object AreaAssistParameters {
     fun parcelId(parcelId: String): Pair<String, RequestParameter> =
         QUERIES to RequestParameter.Multi(
             listOf(
-                Query(
-                    field = ParcelKeyProxy(ParcelConstants.DefaultKeys.PARCELID.identifier),
-                    content = QueryContentHolder.STRING(parcelId)
-                )
+                parcelIdQuery(parcelId),
             )
+        )
+
+    fun parcelIdQuery(parcelId: String): Query =
+        Query(
+            field = ParcelKeyProxy(ParcelConstants.DefaultKeys.PARCELID.identifier),
+            content = QueryContentHolder.STRING(parcelId)
         )
 
     const val RETURN_GEOMETRY = "DCAA_RETURN_GEOMETRY"

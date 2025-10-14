@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class ParcelKey(
     val identifier: String,
     val reference: String? = null,
-    val type: KeyType = KeyType.String,
+    val type: KeyType = KeyType.STRING,
     val format: KeyFormat = KeyFormat(),
     val translations: KeyTranslation,
     val readonly: Boolean = false, //mark the Property as Readonly, note that an empty readonly Property will be hidden in the UI
@@ -17,6 +17,18 @@ data class ParcelKey(
         val id = identifier.split(".")
         val graphs = ofGraph.split(".")
         return id.containsAll(graphs)
+    }
+
+    fun toParcelProperty(): ParcelPropertyKeys? {
+        return if (type == KeyType.NOTHING) {
+            null
+        } else {
+            try {
+                ParcelPropertyKeys(type, identifier)
+            } catch (e: ClassCastException) {
+                null
+            }
+        }
     }
 
     companion object Extensions {

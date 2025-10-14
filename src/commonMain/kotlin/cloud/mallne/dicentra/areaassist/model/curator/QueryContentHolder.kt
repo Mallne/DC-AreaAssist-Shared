@@ -27,10 +27,10 @@ sealed class QueryContentHolder() {
 
     fun sameAs(keyType: KeyType): Boolean {
         return when (keyType) {
-            KeyType.String -> this is STRING
-            KeyType.Number -> this is RANGE
-            KeyType.Boolean -> this is BOOLEAN
-            KeyType.Nothing -> false
+            KeyType.STRING -> this is STRING
+            KeyType.NUMBER -> this is RANGE
+            KeyType.BOOLEAN -> this is BOOLEAN
+            KeyType.NOTHING -> false
         }
     }
 

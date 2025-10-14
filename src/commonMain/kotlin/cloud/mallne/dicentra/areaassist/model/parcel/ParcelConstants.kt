@@ -1,7 +1,10 @@
 package cloud.mallne.dicentra.areaassist.model.parcel
 
+import cloud.mallne.dicentra.areaassist.aviator.esri.EsriAdapterPlugin
+import cloud.mallne.dicentra.areaassist.aviator.esri.EsriAdapterPluginConfig
 import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
 import cloud.mallne.dicentra.areaassist.statics.APIs
+import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import cloud.mallne.dicentra.aviator.koas.Operation
@@ -12,6 +15,7 @@ import cloud.mallne.dicentra.aviator.koas.io.Schema
 import cloud.mallne.dicentra.aviator.koas.parameters.Parameter
 import cloud.mallne.units.Area
 import cloud.mallne.units.Units
+import kotlinx.serialization.json.encodeToJsonElement
 
 object ParcelConstants {
     val locator = APIs.Services.PARCEL_SERVICE.locator(
@@ -45,7 +49,7 @@ object ParcelConstants {
         )//plotDenominator/Zähler
         val AREA = ParcelKey(
             identifier = "area",
-            type = KeyType.Number,
+            type = KeyType.NUMBER,
             translations = PreDefined.AREA.toTranslatable(),
             format = KeyFormat(
                 unit = UnitFormat(
@@ -100,7 +104,7 @@ object ParcelConstants {
         )//landRegisterNumber/Grundbuchnummer
         val USAGE = ParcelKey(
             identifier = "usage",
-            type = KeyType.Nothing,
+            type = KeyType.NOTHING,
             translations = PreDefined.USAGE.toTranslatable(),
             icon = KeyIcon.Info
         )//_/Nutzung (von der API)
@@ -111,13 +115,13 @@ object ParcelConstants {
         )//_/Nutzung (von der API)
         val USAGE_BUILDINGS = ParcelKey(
             identifier = "usage.buildings",
-            type = KeyType.Boolean,
+            type = KeyType.BOOLEAN,
             translations = PreDefined.USAGE_BUILDINGS.toTranslatable(),
             icon = KeyIcon.House
         )//buildings/Bebauung
         val USAGE_LEGALDEVIATION = ParcelKey(
             identifier = "usage.legalDeviation",
-            type = KeyType.Boolean,
+            type = KeyType.BOOLEAN,
             translations = PreDefined.USAGE_LEGALDEVIATION.toTranslatable()
         )//_/Abweichender Rechtszustand
         val PARCELID = ParcelKey(
@@ -171,6 +175,9 @@ object ParcelConstants {
             PARCELID.copy(reference = parcelId),
         )
     }
+
+    val esriAdapterConfig =
+        Serialization().encodeToJsonElement(mapOf(EsriAdapterPlugin.identity to EsriAdapterPluginConfig(active = true)))
 
     object Path {
         val params = mapOf(
@@ -301,6 +308,7 @@ object ParcelConstants {
             operationId = Bundesland.THUERINGEN.iso3166_2,
             extensions = mapOf(
                 AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
                 AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                     bounds = Bundesland.THUERINGEN.roughBoundaries,
                     correspondsTo = Bundesland.THUERINGEN.iso3166_2,
@@ -339,6 +347,7 @@ object ParcelConstants {
             operationId = Bundesland.SACHSEN.iso3166_2,
             extensions = mapOf(
                 AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
                 AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                     bounds = Bundesland.SACHSEN.roughBoundaries,
                     correspondsTo = Bundesland.SACHSEN.iso3166_2,
@@ -366,6 +375,7 @@ object ParcelConstants {
             operationId = Bundesland.BRANDENBURG.iso3166_2,
             extensions = mapOf(
                 AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
                 AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                     bounds = Bundesland.BRANDENBURG.roughBoundaries,
                     correspondsTo = Bundesland.BRANDENBURG.iso3166_2,
@@ -395,6 +405,7 @@ object ParcelConstants {
             operationId = Bundesland.HESSEN.iso3166_2,
             extensions = mapOf(
                 AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
                 AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                     bounds = Bundesland.HESSEN.roughBoundaries,
                     correspondsTo = Bundesland.HESSEN.iso3166_2,
@@ -418,6 +429,7 @@ object ParcelConstants {
             operationId = Bundesland.HAMBURG.iso3166_2,
             extensions = mapOf(
                 AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
                 AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                     bounds = Bundesland.HAMBURG.roughBoundaries,
                     correspondsTo = Bundesland.HAMBURG.iso3166_2,
@@ -443,6 +455,7 @@ object ParcelConstants {
             operationId = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2,
             extensions = mapOf(
                 AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
                 AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                     bounds = Bundesland.NORDRHEIN_WESTFALEN.roughBoundaries,
                     correspondsTo = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2,
@@ -467,6 +480,7 @@ object ParcelConstants {
             operationId = Bundesland.SACHSEN_ANHALT.iso3166_2,
             extensions = mapOf(
                 AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
                 AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                     bounds = Bundesland.SACHSEN_ANHALT.roughBoundaries,
                     correspondsTo = Bundesland.SACHSEN_ANHALT.iso3166_2,
@@ -498,6 +512,7 @@ object ParcelConstants {
             operationId = Bundesland.BERLIN.iso3166_2,
             extensions = mapOf(
                 AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
                 AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                     bounds = Bundesland.BERLIN.roughBoundaries,
                     correspondsTo = Bundesland.BERLIN.iso3166_2,
@@ -527,6 +542,7 @@ object ParcelConstants {
             operationId = Bundesland.NIEDERSACHSEN.iso3166_2,
             extensions = mapOf(
                 AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
                 AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                     bounds = Bundesland.NIEDERSACHSEN.roughBoundaries,
                     correspondsTo = Bundesland.NIEDERSACHSEN.iso3166_2,

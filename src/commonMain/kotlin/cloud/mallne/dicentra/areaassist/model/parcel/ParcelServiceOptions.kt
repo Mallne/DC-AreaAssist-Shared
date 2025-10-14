@@ -16,7 +16,6 @@ data class ParcelServiceOptions @OptIn(ExperimentalUuidApi::class) constructor(
     val bounds: List<Point<Double>> = listOf(),
     val minimalDefinition: Boolean = true,
     val canInferWithParcelId: Boolean = true,
-    val serviceType: String = "ArcGIS",
     val correspondsTo: String = Bundesland.CUSTOM.iso3166_2,
     val parcelLinkReference: String = Uuid.random().toString(),
     val license: License? = null,
