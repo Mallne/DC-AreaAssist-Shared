@@ -1,10 +1,10 @@
 package cloud.mallne.dicentra.areaassist.model.parcel.domain
 
-interface ParcelCrateDomain<Landmark : LandmarkDomain, Task : TaskDomain, Note : NoteDomain, LandUsage : LandUsageDomain, ParcelProperty : ParcelPropertyDomain> {
-    var parcel: ParcelDomain
-    var landMarks: List<Landmark>
-    var tasks: List<Task>
-    var notes: List<Note>
-    var landUsages: List<LandUsage>
-    var properties: List<ParcelProperty>
+interface ParcelCrateDomain<out Parcel : ParcelDomain, out Landmark : LandmarkDomain, out Task : TaskDomain, out Note : NoteDomain, out LandUsage : LandUsageDomain, out ParcelProperty : ParcelPropertyDomain> {
+    val parcel: Parcel
+    val landMarks: List<Landmark>
+    val tasks: List<Task>
+    val notes: List<Note>
+    val landUsages: List<LandUsage>
+    val properties: List<ParcelProperty>
 }

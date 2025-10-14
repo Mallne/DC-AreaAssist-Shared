@@ -4,13 +4,8 @@ import cloud.mallne.dicentra.areaassist.aviator.AreaAssistParameters
 import cloud.mallne.dicentra.areaassist.exceptions.ExceededTransferLimitException
 import cloud.mallne.dicentra.areaassist.model.curator.Query
 import cloud.mallne.dicentra.areaassist.model.curator.QueryContentHolder
-import cloud.mallne.dicentra.areaassist.model.parcel.GenericJson
-import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelCrateEntity
-import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelEntity
-import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelPropertyEntity
-import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelPropertyEntity.Companion.convert
 import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.execution.AviatorExecutionContext
 import cloud.mallne.dicentra.aviator.core.execution.AviatorExecutionStages
@@ -23,7 +18,10 @@ import cloud.mallne.geokit.Boundary
 import cloud.mallne.geokit.geojson.FeatureCollection
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import kotlin.time.ExperimentalTime
 
 data class EsriAdapterPluginInstance(
@@ -77,7 +75,6 @@ data class EsriAdapterPluginInstance(
                     if (json != null) {
                         val featureCollection: FeatureCollection =
                             context.dataHolder.json.decodeFromJsonElement<FeatureCollection>(json)
-                        val fields = serviceOptions.keys.filter { it.reference != null }
                         // look if to many results
                         val outerProperties = json.jsonObject["properties"]
                         val exd = outerProperties?.jsonObject?.get("exceededTransferLimit")
@@ -87,45 +84,13 @@ data class EsriAdapterPluginInstance(
                             throw ExceededTransferLimitException("Exceeded Transfer Limit for ${successful.url}")
                         }
                         for (feature in featureCollection) {
-                            val kvs = mutableListOf<ParcelPropertyEntity>()
-                            val props = mutableMapOf<String, JsonElement>()
-                            val geo = mutableMapOf<String, JsonElement>()
-                            var parcelId: String? = null
-                            for (field in fields) {
-                                //Convert the K/V GoeJson Properties to the known Format
-                                val value = feature.properties[field.reference]
-                                if (value != null) {
-                                    val parcelProperty = field.toParcelProperty()
-                                    if (parcelProperty != null) {
-                                        val kv = parcelProperty.convert(
-                                            value
-                                        )
-                                        kvs.add(kv)
-                                        //separatly extract the parcel Id
-                                        if (field.identifier == ParcelConstants.DefaultKeys.PARCELID.identifier) {
-                                            parcelId = Serialization().decodeFromJsonElement<String?>(value)
-                                        }
-                                    }
-                                    props[field.identifier] = value
-                                }
-                            }
-                            props[GenericJson.ORIGIN] =
-                                context.dataHolder.json.encodeToJsonElement(serviceOptions.parcelLinkReference)
-                            val converted = feature.copy(
-                                properties = props
-                            )
-                            if (parcelId != null) {
-                                parcels.add(
-                                    ParcelCrateEntity(
-                                        parcel = ParcelEntity(
-                                            parcelId = parcelId,
-                                            origin = serviceOptions.parcelLinkReference,
-                                            json = converted,
-                                        ),
-                                        properties = kvs
-                                    )
-                                )
-                            }
+                            AreaAssistParameters.inflateParcelFromFeature(
+                                feature = feature,
+                                keys = serviceOptions.keys,
+                                origin = serviceOptions.parcelLinkReference,
+                                mode = AreaAssistParameters.InflationMode.Reference,
+                                json = context.dataHolder.json
+                            )?.let { parcels += it }
                         }
                     }
                     parcels

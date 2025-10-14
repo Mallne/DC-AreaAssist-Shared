@@ -11,4 +11,6 @@ interface ParcelDomain {
 
     @OptIn(ExperimentalTime::class)
     val fetchDate: Instant
+
+    companion object
 }
