@@ -59,6 +59,9 @@ if (geokitDir.exists()) {
         dependencySubstitution {
             substitute(module("cloud.mallne.geokit:calculation")).using(project(":calculation"))
             substitute(module("cloud.mallne.geokit:geojson")).using(project(":geojson"))
+            substitute(module("cloud.mallne.geokit:gml")).using(project(":gml"))
+            substitute(module("cloud.mallne.geokit:interop")).using(project(":interop"))
+            substitute(module("cloud.mallne.geokit:coordinates")).using(project(":coordinates"))
         }
     }
 } else {
