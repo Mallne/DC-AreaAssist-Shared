@@ -1,10 +1,16 @@
 package cloud.mallne.dicentra.areaassist.statics
 
 import cloud.mallne.dicentra.areaassist.model.AuthServiceOptions
+import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
 import cloud.mallne.dicentra.areaassist.model.map.MapLayer
 import cloud.mallne.dicentra.areaassist.model.map.MapSource
 import cloud.mallne.dicentra.areaassist.model.map.MapStyleServiceOptions
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants.DefaultKeys
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants.LC_DL_BY
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants.Path
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants.locator
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.model.screen.DeepLinks
 import cloud.mallne.dicentra.areaassist.model.weather.WeatherConstants
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
@@ -15,10 +21,12 @@ import cloud.mallne.dicentra.aviator.koas.Components
 import cloud.mallne.dicentra.aviator.koas.OpenAPI
 import cloud.mallne.dicentra.aviator.koas.Operation
 import cloud.mallne.dicentra.aviator.koas.PathItem
+import cloud.mallne.dicentra.aviator.koas.extensions.ReferenceOr
 import cloud.mallne.dicentra.aviator.koas.info.Info
 import cloud.mallne.dicentra.aviator.koas.info.License
 import cloud.mallne.dicentra.aviator.koas.servers.Server
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
+import cloud.mallne.geokit.coordinates.tokens.ast.expression.Identifier
 
 object APIs {
     val mapLight = OpenAPI(
@@ -213,9 +221,78 @@ object APIs {
             "/NDS_Flurstuecke/FeatureServer/0/query" to ParcelConstants.DE_NI,
         ),
         components = Components(
-            parameters = ParcelConstants.Path.params
+            parameters = Path.wfsParams
         )
     )
+
+    val thueringenWfs = OpenAPI(
+        extensions = mapOf(
+            AviatorExtensionSpec.Version.key to Serialization().parseToJsonElement(
+                AviatorExtensionSpec.SpecVersion
+            )
+        ),
+        servers = listOf(
+            Server(
+                "https://www.geoproxy.geoportal-th.de/geoproxy/services"
+            )
+        ),
+        info = Info(
+            title = "Geoproxy Thüringen",
+            description = "Location based Open Data for Thüringen",
+            version = AviatorExtensionSpec.SpecVersion
+        ),
+        paths = mapOf(
+            "/adv_alkis_wfs" to PathItem(
+                summary = "Flurstücke Thüringen",
+                get = Operation(
+                    operationId = Bundesland.THUERINGEN.iso3166_2,
+                    extensions = mapOf(
+                        AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                        AviatorExtensionSpec.PluginMaterialization.O.key to ParcelConstants.wfsAdapterConfig {
+                            typeNames = "ave:Flurstueck"
+                            namespace = "http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/1.0"
+                            nsPrefix = "ave"
+                            inputSRS = Identifier.constructUrn("EPSG", "25832")
+                            outputSRS = Identifier.constructUrn("EPSG", "4326")
+                        },
+                        AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
+                            bounds = Bundesland.THUERINGEN.roughBoundaries,
+                            correspondsTo = Bundesland.THUERINGEN.iso3166_2,
+                            keys = DefaultKeys.fillIn(
+                                area = "flaeche",
+                                parcelId = "flstkennz",
+                                district = "gemarkung",
+                                districtId = "gemaschl",
+                                districtCompartment = "flur",
+                                districtCompartmentId = "flurschl",
+                                districtMunicipality = "gemeinde",
+                                districtMunicipalityId = "gmdschl",
+                                districtRegion = "kreis",
+                                districtRegionId = "kreisschl",
+                                usageLegalDeviation = "abwrecht",
+                                plot = "flurstnr",
+                                plotNumerator = "flstnrzae",
+                                plotDenominator = "flstnrnen",
+                                location = "lagebeztxt",
+                                usageHint = "tntext"
+                            ),
+                            parcelLinkReference = Bundesland.THUERINGEN.iso3166_2 + "_default",
+                            license = License(
+                                name = "© GDI-Th",
+                                identifier = "Flurstücke Thüringen",
+                                url = LC_DL_BY
+                            )
+                        ).usable()
+                    ),
+                ),
+                parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+            ),
+        ),
+        components = Components(
+            parameters = Path.wfsParams
+        )
+    )
+
     val brightSky = OpenAPI(
         extensions = mapOf(
             AviatorExtensionSpec.Version.key to Serialization().parseToJsonElement(

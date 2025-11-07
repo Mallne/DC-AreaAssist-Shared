@@ -2,6 +2,8 @@ package cloud.mallne.dicentra.areaassist.model.parcel
 
 import cloud.mallne.dicentra.areaassist.aviator.esri.EsriAdapterPlugin
 import cloud.mallne.dicentra.areaassist.aviator.esri.EsriAdapterPluginConfig
+import cloud.mallne.dicentra.areaassist.aviator.wfs.WfsAdapterPlugin
+import cloud.mallne.dicentra.areaassist.aviator.wfs.WfsAdapterPluginConfig
 import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
 import cloud.mallne.dicentra.areaassist.statics.APIs
 import cloud.mallne.dicentra.areaassist.statics.Serialization
@@ -15,6 +17,7 @@ import cloud.mallne.dicentra.aviator.koas.io.Schema
 import cloud.mallne.dicentra.aviator.koas.parameters.Parameter
 import cloud.mallne.units.Area
 import cloud.mallne.units.Units
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 
 object ParcelConstants {
@@ -179,11 +182,17 @@ object ParcelConstants {
     val esriAdapterConfig =
         Serialization().encodeToJsonElement(mapOf(EsriAdapterPlugin.identity to EsriAdapterPluginConfig(active = true)))
 
+    fun wfsAdapterConfig(config: WfsAdapterPluginConfig.() -> Unit): JsonElement {
+        val c = WfsAdapterPluginConfig(true)
+        c.config()
+        return Serialization().encodeToJsonElement(mapOf(WfsAdapterPlugin.IDENTITY to c))
+    }
+
     object Path {
-        val params = mapOf(
-            Parameters.WHERE to ReferenceOr.value(
+        val esriParams = mapOf(
+            EsriAdapterPlugin.Parameters.WHERE to ReferenceOr.value(
                 Parameter(
-                    Parameters.WHERE,
+                    EsriAdapterPlugin.Parameters.WHERE,
                     Parameter.Input.Query,
                     schema = ReferenceOr.value(
                         Schema(
@@ -192,9 +201,9 @@ object ParcelConstants {
                     )
                 )
             ),
-            Parameters.OUT_FIELDS to ReferenceOr.value(
+            EsriAdapterPlugin.Parameters.OUT_FIELDS to ReferenceOr.value(
                 Parameter(
-                    Parameters.OUT_FIELDS,
+                    EsriAdapterPlugin.Parameters.OUT_FIELDS,
                     Parameter.Input.Query,
                     schema = ReferenceOr.value(
                         Schema(
@@ -203,9 +212,9 @@ object ParcelConstants {
                     )
                 )
             ),
-            Parameters.GEOMETRY to ReferenceOr.value(
+            EsriAdapterPlugin.Parameters.GEOMETRY to ReferenceOr.value(
                 Parameter(
-                    Parameters.GEOMETRY,
+                    EsriAdapterPlugin.Parameters.GEOMETRY,
                     Parameter.Input.Query,
                     schema = ReferenceOr.value(
                         Schema(
@@ -214,9 +223,9 @@ object ParcelConstants {
                     )
                 ),
             ),
-            Parameters.RETURN_GEOMETRY to ReferenceOr.value(
+            EsriAdapterPlugin.Parameters.RETURN_GEOMETRY to ReferenceOr.value(
                 Parameter(
-                    Parameters.RETURN_GEOMETRY,
+                    EsriAdapterPlugin.Parameters.RETURN_GEOMETRY,
                     Parameter.Input.Query,
                     schema = ReferenceOr.value(
                         Schema(
@@ -225,9 +234,9 @@ object ParcelConstants {
                     )
                 ),
             ),
-            Parameters.OUT_SR to ReferenceOr.value(
+            EsriAdapterPlugin.Parameters.OUT_SR to ReferenceOr.value(
                 Parameter(
-                    Parameters.OUT_SR,
+                    EsriAdapterPlugin.Parameters.OUT_SR,
                     Parameter.Input.Query,
                     schema = ReferenceOr.value(
                         Schema(
@@ -236,9 +245,9 @@ object ParcelConstants {
                     )
                 ),
             ),
-            Parameters.IN_SR to ReferenceOr.value(
+            EsriAdapterPlugin.Parameters.IN_SR to ReferenceOr.value(
                 Parameter(
-                    Parameters.IN_SR,
+                    EsriAdapterPlugin.Parameters.IN_SR,
                     Parameter.Input.Query,
                     schema = ReferenceOr.value(
                         Schema(
@@ -247,9 +256,9 @@ object ParcelConstants {
                     )
                 ),
             ),
-            Parameters.GEOMETRY_TYPE to ReferenceOr.value(
+            EsriAdapterPlugin.Parameters.GEOMETRY_TYPE to ReferenceOr.value(
                 Parameter(
-                    Parameters.GEOMETRY_TYPE,
+                    EsriAdapterPlugin.Parameters.GEOMETRY_TYPE,
                     Parameter.Input.Query,
                     schema = ReferenceOr.value(
                         Schema(
@@ -258,9 +267,9 @@ object ParcelConstants {
                     )
                 ),
             ),
-            Parameters.SPATIAL_REL to ReferenceOr.value(
+            EsriAdapterPlugin.Parameters.SPATIAL_REL to ReferenceOr.value(
                 Parameter(
-                    Parameters.SPATIAL_REL,
+                    EsriAdapterPlugin.Parameters.SPATIAL_REL,
                     Parameter.Input.Query,
                     schema = ReferenceOr.value(
                         Schema(
@@ -269,9 +278,9 @@ object ParcelConstants {
                     )
                 ),
             ),
-            Parameters.FILE to ReferenceOr.value(
+            EsriAdapterPlugin.Parameters.FILE to ReferenceOr.value(
                 Parameter(
-                    Parameters.FILE,
+                    EsriAdapterPlugin.Parameters.FILE,
                     Parameter.Input.Query,
                     schema = ReferenceOr.value(
                         Schema(
@@ -281,25 +290,92 @@ object ParcelConstants {
                 )
             )
         )
-
-        object Parameters {
-            const val WHERE = "where"
-            const val OUT_FIELDS = "outFields"
-            const val GEOMETRY = "geometry"
-            const val RETURN_GEOMETRY = "returnGeometry"
-            const val IN_SR = "inSR"
-            const val OUT_SR = "outSR"
-            const val GEOMETRY_TYPE = "geometryType"
-            const val SPATIAL_REL = "spatialRel"
-            const val FILE = "f"
-        }
+        val wfsParams = mapOf(
+            WfsAdapterPlugin.Parameters.COUNT to ReferenceOr.value(
+                Parameter(
+                    WfsAdapterPlugin.Parameters.COUNT,
+                    Parameter.Input.Query,
+                    schema = ReferenceOr.value(
+                        Schema(
+                            type = Schema.Type.Basic.String
+                        )
+                    )
+                )
+            ),
+            WfsAdapterPlugin.Parameters.BBOX to ReferenceOr.value(
+                Parameter(
+                    WfsAdapterPlugin.Parameters.BBOX,
+                    Parameter.Input.Query,
+                    schema = ReferenceOr.value(
+                        Schema(
+                            type = Schema.Type.Basic.String
+                        )
+                    )
+                )
+            ),
+            WfsAdapterPlugin.Parameters.SRS_NAME to ReferenceOr.value(
+                Parameter(
+                    WfsAdapterPlugin.Parameters.SRS_NAME,
+                    Parameter.Input.Query,
+                    schema = ReferenceOr.value(
+                        Schema(
+                            type = Schema.Type.Basic.String
+                        )
+                    )
+                )
+            ),
+            WfsAdapterPlugin.Parameters.TYPE_NAMES to ReferenceOr.value(
+                Parameter(
+                    WfsAdapterPlugin.Parameters.TYPE_NAMES,
+                    Parameter.Input.Query,
+                    schema = ReferenceOr.value(
+                        Schema(
+                            type = Schema.Type.Basic.String
+                        )
+                    )
+                )
+            ),
+            WfsAdapterPlugin.Parameters.REQUEST to ReferenceOr.value(
+                Parameter(
+                    WfsAdapterPlugin.Parameters.REQUEST,
+                    Parameter.Input.Query,
+                    schema = ReferenceOr.value(
+                        Schema(
+                            type = Schema.Type.Basic.String
+                        )
+                    )
+                )
+            ),
+            WfsAdapterPlugin.Parameters.VERSION to ReferenceOr.value(
+                Parameter(
+                    WfsAdapterPlugin.Parameters.VERSION,
+                    Parameter.Input.Query,
+                    schema = ReferenceOr.value(
+                        Schema(
+                            type = Schema.Type.Basic.String
+                        )
+                    )
+                )
+            ),
+            WfsAdapterPlugin.Parameters.SERVICE to ReferenceOr.value(
+                Parameter(
+                    WfsAdapterPlugin.Parameters.SERVICE,
+                    Parameter.Input.Query,
+                    schema = ReferenceOr.value(
+                        Schema(
+                            type = Schema.Type.Basic.String
+                        )
+                    )
+                )
+            ),
+        )
     }
 
     private val LC_DL_ZERO = License(
         name = "Datenlizenz Deutschland – Zero",
         url = "https://www.govdata.de/dl-de/zero-2-0"
     )
-    private const val LC_DL_BY = "https://www.govdata.de/dl-de/by-2-0"
+    const val LC_DL_BY = "https://www.govdata.de/dl-de/by-2-0"
     private const val LC_CC_BY = "https://creativecommons.org/licenses/by/4.0/"
 
     val DE_TH = PathItem(
@@ -339,7 +415,7 @@ object ParcelConstants {
                 ).usable()
             ),
         ),
-        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_SN = PathItem(
         summary = "Flurstücke Sachsen",
@@ -367,7 +443,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_BB = PathItem(
         summary = "Flurstücke Brandenburg",
@@ -397,7 +473,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_HE = PathItem(
         summary = "Flurstücke Hessen",
@@ -421,7 +497,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_HH = PathItem(
         summary = "Flurstücke Hamburg",
@@ -447,7 +523,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_NW = PathItem(
         summary = "Flurstücke Nordrhein-Westfalen",
@@ -472,7 +548,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_ST = PathItem(
         summary = "Flurstücke Sachsen-Anhalt",
@@ -504,7 +580,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_BE = PathItem(
         summary = "Flurstücke Berlin",
@@ -534,7 +610,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_NI = PathItem(
         summary = "Flurstücke Niedersachsen",
@@ -564,6 +640,6 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.params.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
     )
 }
