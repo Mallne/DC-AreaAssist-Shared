@@ -24,6 +24,9 @@ import cloud.mallne.dicentra.aviator.koas.PathItem
 import cloud.mallne.dicentra.aviator.koas.extensions.ReferenceOr
 import cloud.mallne.dicentra.aviator.koas.info.Info
 import cloud.mallne.dicentra.aviator.koas.info.License
+import cloud.mallne.dicentra.aviator.koas.io.MediaType
+import cloud.mallne.dicentra.aviator.koas.io.Schema
+import cloud.mallne.dicentra.aviator.koas.parameters.RequestBody
 import cloud.mallne.dicentra.aviator.koas.servers.Server
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
 import cloud.mallne.geokit.coordinates.tokens.ast.expression.Identifier
@@ -244,16 +247,21 @@ object APIs {
         paths = mapOf(
             "/adv_alkis_wfs" to PathItem(
                 summary = "Flurstücke Thüringen",
-                get = Operation(
+                post = Operation(
                     operationId = Bundesland.THUERINGEN.iso3166_2,
+                    requestBody = ReferenceOr.Value(RequestBody(
+                        content = mapOf(
+                            "application/xml" to MediaType(schema = ReferenceOr.Value(Schema()))
+                        )
+                    )),
                     extensions = mapOf(
                         AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
                         AviatorExtensionSpec.PluginMaterialization.O.key to ParcelConstants.wfsAdapterConfig {
                             typeNames = "ave:Flurstueck"
                             namespace = "http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/1.0"
                             nsPrefix = "ave"
-                            inputSRS = Identifier.constructUrn("EPSG", "25832")
-                            outputSRS = Identifier.constructUrn("EPSG", "4326")
+                            inputCRS = Identifier.constructUrn("EPSG", "25832")
+                            outputCRS = Identifier.constructUrn("EPSG", "4326")
                         },
                         AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                             bounds = Bundesland.THUERINGEN.roughBoundaries,

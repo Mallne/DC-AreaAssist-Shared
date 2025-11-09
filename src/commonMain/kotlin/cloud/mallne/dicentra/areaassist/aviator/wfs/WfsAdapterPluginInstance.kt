@@ -52,10 +52,10 @@ data class WfsAdapterPluginInstance(
                 context.requestParams[WfsAdapterPlugin.Parameters.TYPE_NAMES] =
                     RequestParameter.Single(configurationBundle.typeNames)
                 context.requestParams[WfsAdapterPlugin.Parameters.SRS_NAME] =
-                    RequestParameter.Single(configurationBundle.outputSRS)
+                    RequestParameter.Single(configurationBundle.outputCRS)
                 boundary?.let {
                     context.requestParams[WfsAdapterPlugin.Parameters.BBOX] =
-                        RequestParameter.Single(translateBBOX(it, configurationBundle.inputSRS))
+                        RequestParameter.Single(translateBBOX(it, configurationBundle.inputCRS))
                 }
                 context.requestParams[WfsAdapterPlugin.Parameters.COUNT] = RequestParameter.Single("200")
             }

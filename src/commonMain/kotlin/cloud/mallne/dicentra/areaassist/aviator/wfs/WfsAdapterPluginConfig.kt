@@ -17,6 +17,8 @@ data class WfsAdapterPluginConfig(
     var typeNames: String = ""
     var namespace: String = ""
     var nsPrefix: String = ""
-    var inputSRS: String = Identifier.constructUrn("EPSG", "4326")
-    var outputSRS: String = Identifier.constructUrn("EPSG", "4326")
+    var inputCRS: String = Identifier.constructUrn("EPSG", "4326")
+    var importCRS: String = Identifier.constructUrn("EPSG", "4326")
+    var outputCRS: String = Identifier.constructUrn("EPSG", "4326")
+    var exportCRS: String = Identifier.constructUrn("EPSG", "4326")
 }
