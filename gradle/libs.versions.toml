@@ -1,6 +1,6 @@
 [versions]
 # @pin
-agp = "8.12.3"
+agp = "8.13.0"
 # @keep
 android-compileSdk = "36"
 # @keep
@@ -11,11 +11,11 @@ dc-polyfill = "1.0.0-SNAPSHOT"
 dc-weaver = "1.0.0-SNAPSHOT"
 dependency-analysis-v = "3.4.1"
 koin = "4.1.1"
-koin-annotations = "2.3.0"
+koin-annotations = "2.3.1"
 kotlin = "2.2.21"
-kotlinx-datetime = "0.7.1"
-ksp = "2.2.20-2.0.3"
-ktor = "3.3.1"
+kotlinx-datetime = "0.7.1-0.6.x-compat"
+ksp = "2.3.2"
+ktor = "3.3.2"
 mlln-geokit = "1.0.0-SNAPSHOT"
 mlln-units = "1.0.0-SNAPSHOT"
 serialization = "1.9.0"
