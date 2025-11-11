@@ -14,11 +14,8 @@ import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
 import cloud.mallne.geokit.Boundary
-import cloud.mallne.geokit.geojson.Feature
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
+import cloud.mallne.geokit.geojson.JsonFeature
+import kotlinx.serialization.json.*
 import kotlin.time.ExperimentalTime
 
 object AreaAssistParameters {
@@ -62,7 +59,7 @@ object AreaAssistParameters {
 
     @OptIn(ExperimentalTime::class)
     fun inflateParcelFromFeature(
-        feature: Feature,
+        feature: JsonFeature,
         keys: List<ParcelKey>,
         origin: String,
         mode: InflationMode = InflationMode.Auto,
@@ -75,9 +72,11 @@ object AreaAssistParameters {
         for (field in fields) {
             //Convert the K/V GoeJson Properties to the known Format
             val value = when (mode) {
-                InflationMode.Auto -> feature.properties[field.identifier] ?: feature.properties[field.reference]
-                InflationMode.Reference -> feature.properties[field.reference]
-                InflationMode.Identifier -> feature.properties[field.identifier]
+                InflationMode.Auto -> feature.properties?.get(field.identifier)
+                    ?: feature.properties?.get(field.reference!!)
+
+                InflationMode.Reference -> feature.properties?.get(field.reference!!)
+                InflationMode.Identifier -> feature.properties?.get(field.identifier)
             }
             if (value != null) {
                 val parcelProperty = field.toParcelProperty()
@@ -94,7 +93,7 @@ object AreaAssistParameters {
         }
         props[GenericJson.ORIGIN] = json.encodeToJsonElement(origin)
         val converted = feature.copy(
-            properties = props
+            properties = JsonObject(props)
         )
         return if (parcelId != null) {
             ParcelCrateEntity(

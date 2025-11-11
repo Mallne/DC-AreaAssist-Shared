@@ -29,4 +29,6 @@ data class WfsAdapterPluginConfig(
 
     /** exported as CRS; used to convert client-side 4326 Coordinates to the WFS (plugin-only)  */
     var exportCRS: String = inputCRS
+
+    var importCRSData: Map<String, String> = mapOf()
 }

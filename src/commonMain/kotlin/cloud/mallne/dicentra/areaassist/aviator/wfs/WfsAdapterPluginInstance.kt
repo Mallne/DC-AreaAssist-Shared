@@ -36,6 +36,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlin.time.ExperimentalTime
 import cloud.mallne.geokit.gml.model.wfs.Query as WfsQuery
 
@@ -47,6 +48,13 @@ data class WfsAdapterPluginInstance(
     @OptIn(ExperimentalTime::class)
     override val x: PluginStagedExecutor<AviatorExecutionContext<@Serializable Any, @Serializable Any>, @Serializable Any, @Serializable Any> =
         PluginStagedExecutorBuilder.steps {
+            preExecution {
+                for ((epsgId, wktcrs) in configurationBundle.importCRSData) {
+                    if (!registry.understands(epsgId)) {
+                        registry.ingest(epsgId)
+                    }
+                }
+            }
             before(AviatorExecutionStages.PathMatching) { context ->
                 val returnGeometry =
                     (context.requestParams[AreaAssistParameters.RETURN_GEOMETRY] as? RequestParameter.Single<Boolean>)?.value
@@ -124,10 +132,13 @@ data class WfsAdapterPluginInstance(
                         )
                         // look if to many results
                         for (feature in geojson) {
-                            val translatedFeature = feature.copy(
+                            val translatedFeature = JsonFeature(
                                 geometry = feature.geometry?.translate(
                                     Identifier.deconstructUrnId(configurationBundle.importCRS), "EPSG:4326"
-                                )
+                                ),
+                                properties = JsonObject(feature.properties),
+                                id = feature.id,
+                                bbox = feature.bbox,
                             )
                             AreaAssistParameters.inflateParcelFromFeature(
                                 feature = translatedFeature,
@@ -152,7 +163,7 @@ data class WfsAdapterPluginInstance(
         }
 
     private fun Geometry.translate(from: String, to: String): Geometry = when (this) {
-        is GeometryCollection -> GeometryCollection(
+        is GeometryCollection<*> -> GeometryCollection(
             bbox = this.bbox?.t(from, to),
             geometries = this.geometries.map { it.translate(from, to) })
 

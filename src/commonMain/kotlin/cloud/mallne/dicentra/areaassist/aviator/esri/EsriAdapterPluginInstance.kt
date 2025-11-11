@@ -16,7 +16,7 @@ import cloud.mallne.dicentra.aviator.core.plugins.PluginStagedExecutorBuilder
 import cloud.mallne.dicentra.aviator.model.AviatorServiceUtils.optionBundle
 import cloud.mallne.dicentra.aviator.plugin.adapter.json.JsonAdapter.json
 import cloud.mallne.geokit.Boundary
-import cloud.mallne.geokit.geojson.FeatureCollection
+import cloud.mallne.geokit.geojson.JsonFeatureCollection
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -76,8 +76,8 @@ data class EsriAdapterPluginInstance(
                     if (json != null) {
                         val string = json.decodeToString()
                         val je = context.dataHolder.json.parseToJsonElement(string)
-                        val featureCollection: FeatureCollection =
-                            context.dataHolder.json.decodeFromJsonElement<FeatureCollection>(je)
+                        val featureCollection: JsonFeatureCollection =
+                            context.dataHolder.json.decodeFromJsonElement<JsonFeatureCollection>(je)
                         // look if to many results
                         val outerProperties = je.jsonObject["properties"]
                         val exd = outerProperties?.jsonObject?.get("exceededTransferLimit")
