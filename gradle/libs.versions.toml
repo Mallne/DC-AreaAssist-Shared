@@ -11,11 +11,11 @@ dc-polyfill = "1.0.0-SNAPSHOT"
 dc-weaver = "1.0.0-SNAPSHOT"
 dependency-analysis-v = "3.4.1"
 koin = "4.1.1"
-koin-annotations = "2.3.0"
+koin-annotations = "2.3.1"
 kotlin = "2.2.21"
 kotlinx-datetime = "0.7.1"
-ksp = "2.2.20-2.0.3"
-ktor = "3.3.1"
+ksp = "2.3.2"
+ktor = "3.3.2"
 mlln-geokit = "1.0.0-SNAPSHOT"
 mlln-units = "1.0.0-SNAPSHOT"
 serialization = "1.9.0"
@@ -23,13 +23,13 @@ version-catalog-update-v = "1.0.1"
 xml = "0.91.3"
 
 [libraries]
+dc-aviator-adapter-json = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-json", version.ref = "dc-aviator" }
+dc-aviator-adapter-xml = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-xml", version.ref = "dc-aviator" }
 dc-aviator-client-ktor = { module = "cloud.mallne.dicentra.aviator.client:ktor", version.ref = "dc-aviator" }
 dc-aviator-core = { module = "cloud.mallne.dicentra.aviator:core", version.ref = "dc-aviator" }
 dc-aviator-koas = { module = "cloud.mallne.dicentra.aviator:koas", version.ref = "dc-aviator" }
 dc-aviator-plugin-interception = { module = "cloud.mallne.dicentra.aviator.plugin:interception", version.ref = "dc-aviator" }
 dc-aviator-plugin-synapse = { module = "cloud.mallne.dicentra.aviator.plugin:synapse", version.ref = "dc-aviator" }
-dc-aviator-adapter-xml = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-xml", version.ref = "dc-aviator" }
-dc-aviator-adapter-json = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-json", version.ref = "dc-aviator" }
 dc-aviator-plugin-weaver = { module = "cloud.mallne.dicentra.aviator.plugin:weaver", version.ref = "dc-aviator" }
 dc-polyfill = { module = "cloud.mallne.dicentra:polyfill", version.ref = "dc-polyfill" }
 dc-weaver-core = { module = "cloud.mallne.dicentra.weaver:core", version.ref = "dc-weaver" }
@@ -42,10 +42,10 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-http = { module = "io.ktor:ktor-http", version.ref = "ktor" }
 mlln-geokit-calculation = { module = "cloud.mallne.geokit:calculation", version.ref = "mlln-geokit" }
+mlln-geokit-coordinates = { module = "cloud.mallne.geokit:coordinates", version.ref = "mlln-geokit" }
 mlln-geokit-geojson = { module = "cloud.mallne.geokit:geojson", version.ref = "mlln-geokit" }
 mlln-geokit-gml = { module = "cloud.mallne.geokit:gml", version.ref = "mlln-geokit" }
 mlln-geokit-interop = { module = "cloud.mallne.geokit:interop", version.ref = "mlln-geokit" }
-mlln-geokit-coordinates = { module = "cloud.mallne.geokit:coordinates", version.ref = "mlln-geokit" }
 mlln-units = { module = "cloud.mallne:units", version.ref = "mlln-units" }
 xml = { module = "io.github.pdvrieze.xmlutil:serialization", version.ref = "xml" }
 
@@ -57,5 +57,5 @@ kmp = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
-mavenPublish = "com.vanniktech.maven.publish:0.34.0"
+mavenPublish = "com.vanniktech.maven.publish:0.35.0"
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update-v" }
