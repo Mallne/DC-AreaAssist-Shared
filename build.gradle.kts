@@ -48,6 +48,8 @@ kotlin {
                 api(libs.dc.aviator.core)
                 api(libs.dc.aviator.client.ktor)
                 api(libs.dc.aviator.koas)
+                api(libs.dc.aviator.adapter.xml)
+                api(libs.dc.aviator.adapter.json)
                 api(libs.mlln.units)
                 api(libs.mlln.geokit.calculation)
                 api(libs.mlln.geokit.geojson)

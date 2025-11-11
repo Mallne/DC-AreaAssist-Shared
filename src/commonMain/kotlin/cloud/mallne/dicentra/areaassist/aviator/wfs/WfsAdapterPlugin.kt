@@ -3,9 +3,8 @@ package cloud.mallne.dicentra.areaassist.aviator.wfs
 import cloud.mallne.dicentra.aviator.core.plugins.AviatorPlugin
 import cloud.mallne.dicentra.aviator.core.plugins.AviatorPluginInstance
 import cloud.mallne.geokit.coordinates.CrsRegistry
-import nl.adaptivity.xmlutil.serialization.XML
 
-data class WfsAdapterPlugin(val registry: CrsRegistry, val xml: XML) : AviatorPlugin<WfsAdapterPluginConfig> {
+data class WfsAdapterPlugin(val registry: CrsRegistry) : AviatorPlugin<WfsAdapterPluginConfig> {
     override val identity: String = IDENTITY
     override fun install(config: WfsAdapterPluginConfig.() -> Unit): AviatorPluginInstance {
         val pluginConfig = WfsAdapterPluginConfig()
@@ -14,7 +13,6 @@ data class WfsAdapterPlugin(val registry: CrsRegistry, val xml: XML) : AviatorPl
             pluginConfig,
             identity,
             registry,
-            xml
         )
     }
 
