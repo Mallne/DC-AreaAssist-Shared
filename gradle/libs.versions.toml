@@ -21,6 +21,7 @@ mlln-units = "1.0.0-SNAPSHOT"
 serialization = "1.9.0"
 version-catalog-update-v = "1.0.1"
 xml = "0.91.3"
+mapLibre-spatialk = "0.6.1"
 
 [libraries]
 dc-aviator-adapter-json = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-json", version.ref = "dc-aviator" }
@@ -44,10 +45,11 @@ ktor-http = { module = "io.ktor:ktor-http", version.ref = "ktor" }
 mlln-geokit-calculation = { module = "cloud.mallne.geokit:calculation", version.ref = "mlln-geokit" }
 mlln-geokit-coordinates = { module = "cloud.mallne.geokit:coordinates", version.ref = "mlln-geokit" }
 mlln-geokit-geojson = { module = "cloud.mallne.geokit:geojson", version.ref = "mlln-geokit" }
-mlln-geokit-gml = { module = "cloud.mallne.geokit:gml", version.ref = "mlln-geokit" }
+mlln-geokit-ogc = { module = "cloud.mallne.geokit:ogc", version.ref = "mlln-geokit" }
 mlln-geokit-interop = { module = "cloud.mallne.geokit:interop", version.ref = "mlln-geokit" }
 mlln-units = { module = "cloud.mallne:units", version.ref = "mlln-units" }
 xml = { module = "io.github.pdvrieze.xmlutil:serialization", version.ref = "xml" }
+maplibre-spatialk = { module = "org.maplibre.spatialk:geojson", version.ref = "mapLibre-spatialk" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }

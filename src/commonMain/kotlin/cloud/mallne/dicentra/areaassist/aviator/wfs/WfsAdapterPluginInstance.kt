@@ -25,20 +25,21 @@ import cloud.mallne.geokit.coordinates.tokens.ast.expression.Identifier
 import cloud.mallne.geokit.geojson.*
 import cloud.mallne.geokit.geojson.CalculationInterop.toPosition
 import cloud.mallne.geokit.geojson.CalculationInterop.toVertex
-import cloud.mallne.geokit.gml.model.Envelope
-import cloud.mallne.geokit.gml.model.LowerCorner
-import cloud.mallne.geokit.gml.model.UpperCorner
-import cloud.mallne.geokit.gml.model.fes.BBOX
-import cloud.mallne.geokit.gml.model.fes.Filter
-import cloud.mallne.geokit.gml.model.wfs.FeatureCollection
 import cloud.mallne.geokit.interop.WfsExtensions.toGeoJson
+import cloud.mallne.geokit.ogc.model.Envelope
+import cloud.mallne.geokit.ogc.model.LowerCorner
+import cloud.mallne.geokit.ogc.model.UpperCorner
+import cloud.mallne.geokit.ogc.model.fes.BBOX
+import cloud.mallne.geokit.ogc.model.fes.Filter
+import cloud.mallne.geokit.ogc.model.wfs.FeatureCollection
+import cloud.mallne.geokit.ogc.model.wfs.GetFeature
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlin.time.ExperimentalTime
-import cloud.mallne.geokit.gml.model.wfs.Query as WfsQuery
+import cloud.mallne.geokit.ogc.model.wfs.Query as WfsQuery
 
 data class WfsAdapterPluginInstance(
     override val configurationBundle: WfsAdapterPluginConfig,
@@ -48,116 +49,124 @@ data class WfsAdapterPluginInstance(
     @OptIn(ExperimentalTime::class)
     override val x: PluginStagedExecutor<AviatorExecutionContext<@Serializable Any, @Serializable Any>, @Serializable Any, @Serializable Any> =
         PluginStagedExecutorBuilder.steps {
-            preExecution {
-                for ((epsgId, wktcrs) in configurationBundle.importCRSData) {
-                    if (!registry.understands(epsgId)) {
-                        registry.ingest(epsgId)
-                    }
-                }
-            }
-            before(AviatorExecutionStages.PathMatching) { context ->
-                val returnGeometry =
-                    (context.requestParams[AreaAssistParameters.RETURN_GEOMETRY] as? RequestParameter.Single<Boolean>)?.value
-                        ?: true
-                val boundary =
-                    (context.requestParams[AreaAssistParameters.BOUNDARY] as? RequestParameter.Single<Boundary>)?.value
-                val queries =
-                    (context.requestParams[AreaAssistParameters.QUERIES] as? RequestParameter.Multi<Query>)?.value
-                        ?: listOf()
-                val options = optionBundle<ParcelServiceOptions>(context.dataHolder.options, Serialization())
-
-                context.requestParams[WfsAdapterPlugin.Parameters.SERVICE] = RequestParameter.Single("WFS")
-                context.requestParams[WfsAdapterPlugin.Parameters.VERSION] = RequestParameter.Single("2.0.0")
-                context.requestParams[WfsAdapterPlugin.Parameters.REQUEST] = RequestParameter.Single("GetFeature")
-                context.requestParams[WfsAdapterPlugin.Parameters.COUNT] = RequestParameter.Single("200")
-                context.requestParams[WfsAdapterPlugin.Parameters.TYPE_NAMES] =
-                    RequestParameter.Single(configurationBundle.typeNames)
-                context.requestParams[WfsAdapterPlugin.Parameters.SRS_NAME] =
-                    RequestParameter.Single(configurationBundle.outputCRS)
-                boundary?.let {
-                    val sw = boundary.southWest.translate(targetUrn = configurationBundle.exportCRS)
-                    val ne = boundary.northEast.translate(targetUrn = configurationBundle.exportCRS)
-                    context.requestParams[WfsAdapterPlugin.Parameters.BBOX] =
-                        RequestParameter.Single(
-                            BBOX(
-                                envelope = Envelope(
-                                    lowerCorner = LowerCorner(sw.wfsCoord()),
-                                    upperCorner = UpperCorner(ne.wfsCoord()),
-                                    srsName = configurationBundle.inputCRS
-                                )
-                            )
-                        ) { bBOX ->
-                            "${bBOX.envelope.lowerCorner.values.joinToString(separator = ",") { it.toString() }},${
-                                bBOX.envelope.upperCorner.values.joinToString(
-                                    separator = ","
-                                ) { it.toString() }
-                            },${bBOX.envelope.srsName}"
-                        }
-                }
-            }
-            after(AviatorExecutionStages.FormingRequest) { context ->
-                val typeName = (context.requestParams[WfsAdapterPlugin.Parameters.TYPE_NAMES].toString())
-                val srs = (context.requestParams[WfsAdapterPlugin.Parameters.SRS_NAME].toString())
-                val bbox =
-                    (context.requestParams[WfsAdapterPlugin.Parameters.BBOX] as RequestParameter.Single<BBOX>).value
-
-                context.networkChain.forEach { net ->
-                    net.request?.outgoingContent = XmlBody(
-                        context.dataHolder.xml.encodeToElement(
-                            WfsQuery(
-                                typeNames = listOf(typeName),
-                                srsName = srs,
-                                filter = Filter(
-                                    bbox
-                                )
-                            )
-                        )
-                    )
-                }
-            }
-            after(AviatorExecutionStages.PaintingResponse) { context ->
-                val successful =
-                    context.networkChain.find { (it.response?.status?.value ?: 500) < 400 }
-                val serviceOptions = optionBundle<ParcelServiceOptions>(context.dataHolder.options)
-                context.result = try {
-                    val parcels: MutableList<ParcelCrateEntity> = mutableListOf()
-                    val byteArray = successful?.response?.content
-                    if (byteArray != null) {
-                        val string = byteArray.decodeToString()
-                        val featureCollection: FeatureCollection = context.dataHolder.xml.decodeFromString(string)
-                        val geojson = featureCollection.toGeoJson(
-                            configurationBundle.nsPrefix,
-                            configurationBundle.namespace,
-                            context.dataHolder.xml
-                        )
-                        // look if to many results
-                        for (feature in geojson) {
-                            val translatedFeature = JsonFeature(
-                                geometry = feature.geometry?.translate(
-                                    Identifier.deconstructUrnId(configurationBundle.importCRS), "EPSG:4326"
-                                ),
-                                properties = JsonObject(feature.properties),
-                                id = feature.id,
-                                bbox = feature.bbox,
-                            )
-                            AreaAssistParameters.inflateParcelFromFeature(
-                                feature = translatedFeature,
-                                keys = serviceOptions.keys,
-                                origin = serviceOptions.parcelLinkReference,
-                                mode = AreaAssistParameters.InflationMode.Reference,
-                                json = context.dataHolder.json
-                            )?.let { parcels += it }
+            if (configurationBundle.active) {
+                preExecution {
+                    for ((epsgId, wktcrs) in configurationBundle.importCRSData) {
+                        if (!registry.understands(epsgId)) {
+                            registry.ingest(epsgId)
                         }
                     }
-                    parcels
-                } catch (e: Exception) {
-                    context.log {
-                        error(
-                            "An unexpected Error occurred while parsing the response",
-                            e
+                }
+                before(AviatorExecutionStages.PathMatching) { context ->
+                    val returnGeometry =
+                        (context.requestParams[AreaAssistParameters.RETURN_GEOMETRY]?.asType<Boolean>()) ?: true
+                    val boundary = (context.requestParams[AreaAssistParameters.BOUNDARY]?.asType<Boundary>())
+                    val queries =
+                        (context.requestParams[AreaAssistParameters.QUERIES]?.asType<List<Query>>()) ?: listOf()
+                    val options = optionBundle<ParcelServiceOptions>(context.dataHolder.options, Serialization())
+
+                    context.requestParams[WfsAdapterPlugin.Parameters.SERVICE] = RequestParameter.Single("WFS")
+                    context.requestParams[WfsAdapterPlugin.Parameters.VERSION] = RequestParameter.Single("2.0.0")
+                    context.requestParams[WfsAdapterPlugin.Parameters.REQUEST] = RequestParameter.Single("GetFeature")
+                    context.requestParams[WfsAdapterPlugin.Parameters.COUNT] = RequestParameter.Single(2000)
+                    context.requestParams[WfsAdapterPlugin.Parameters.TYPE_NAMES] =
+                        RequestParameter.Single(configurationBundle.typeNames)
+                    context.requestParams[WfsAdapterPlugin.Parameters.SRS_NAME] =
+                        RequestParameter.Single(configurationBundle.outputCRS)
+                    boundary?.let {
+                        val sw = boundary.southWest.translate(targetUrn = configurationBundle.exportCRS)
+                        val ne = boundary.northEast.translate(targetUrn = configurationBundle.exportCRS)
+                        context.requestParams[WfsAdapterPlugin.Parameters.BBOX] =
+                            RequestParameter.Single(
+                                BBOX(
+                                    envelope = Envelope(
+                                        lowerCorner = LowerCorner(sw.wfsCoord()),
+                                        upperCorner = UpperCorner(ne.wfsCoord()),
+                                        srsName = configurationBundle.inputCRS
+                                    )
+                                )
+                            ) { bBOX ->
+                                "${bBOX.envelope.lowerCorner.values.joinToString(separator = ",") { it.toString() }},${
+                                    bBOX.envelope.upperCorner.values.joinToString(
+                                        separator = ","
+                                    ) { it.toString() }
+                                },${bBOX.envelope.srsName}"
+                            }
+                    }
+                }
+                after(AviatorExecutionStages.FormingRequest) { context ->
+                    val service = (context.requestParams[WfsAdapterPlugin.Parameters.SERVICE].toString())
+                    val version = (context.requestParams[WfsAdapterPlugin.Parameters.VERSION].toString())
+                    val count = (context.requestParams[WfsAdapterPlugin.Parameters.COUNT]?.asType<Int>())
+                    val typeName = (context.requestParams[WfsAdapterPlugin.Parameters.TYPE_NAMES].toString())
+                    val srs = (context.requestParams[WfsAdapterPlugin.Parameters.SRS_NAME].toString())
+                    val bbox = (context.requestParams[WfsAdapterPlugin.Parameters.BBOX]?.asType<BBOX>())
+
+                    context.networkChain.forEach { net ->
+                        val bboxFilter = bbox?.let { Filter(it) }
+                        net.request?.outgoingContent = XmlBody(
+                            context.dataHolder.xml.encodeToElement(
+                                GetFeature(
+                                    service = service,
+                                    version = version,
+                                    count = count,
+                                    queries = listOf(
+                                        WfsQuery(
+                                            typeNames = listOf(typeName),
+                                            srsName = srs,
+                                            filter = bboxFilter!!
+                                        )
+                                    )
+                                )
+                            )
                         )
                     }
-                    emptyList<ParcelCrateEntity>()
+                }
+                after(AviatorExecutionStages.PaintingResponse) { context ->
+                    val successful =
+                        context.networkChain.find { (it.response?.status?.value ?: 500) < 400 }
+                    val serviceOptions = optionBundle<ParcelServiceOptions>(context.dataHolder.options)
+                    context.result = try {
+                        val parcels: MutableList<ParcelCrateEntity> = mutableListOf()
+                        val byteArray = successful?.response?.content
+                        if (byteArray != null) {
+                            val string = byteArray.decodeToString()
+                            val featureCollection: FeatureCollection =
+                                context.dataHolder.xml.decodeFromString<FeatureCollection>(string)
+                            val geojson = featureCollection.toGeoJson(
+                                configurationBundle.nsPrefix,
+                                configurationBundle.geometryPointer,
+                                context.dataHolder.xml
+                            )
+                            // look if to many results
+                            for (feature in geojson) {
+                                val translatedFeature = JsonFeature(
+                                    geometry = feature.geometry?.translate(
+                                        Identifier.deconstructUrnId(configurationBundle.importCRS), "EPSG:4326"
+                                    ),
+                                    properties = JsonObject(feature.properties),
+                                    id = feature.id,
+                                    bbox = feature.bbox,
+                                )
+                                AreaAssistParameters.inflateParcelFromFeature(
+                                    feature = translatedFeature,
+                                    keys = serviceOptions.keys,
+                                    origin = serviceOptions.parcelLinkReference,
+                                    mode = AreaAssistParameters.InflationMode.Reference,
+                                    json = context.dataHolder.json
+                                )?.let { parcels += it }
+                            }
+                        }
+                        parcels
+                    } catch (e: Exception) {
+                        context.log {
+                            error(
+                                "An unexpected Error occurred while parsing the response",
+                                e
+                            )
+                        }
+                        emptyList<ParcelCrateEntity>()
+                    }
                 }
             }
         }
@@ -215,8 +224,8 @@ data class WfsAdapterPluginInstance(
         Identifier.deconstructUrnId(targetUrn)
     ).execute()
 
-    private fun AbstractCoordinate.wfsCoord() = listOf(longitude, latitude)
-    private fun Vertex.wfsCoord() = listOf(longitude, latitude)
+    private fun AbstractCoordinate.wfsCoord() = listOf(latitude, longitude)
+    private fun Vertex.wfsCoord() = listOf(latitude, longitude)
 
     override fun requestReconfigure(oasConfig: JsonElement): AviatorPluginInstance {
         try {

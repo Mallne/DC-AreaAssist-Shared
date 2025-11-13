@@ -32,79 +32,84 @@ data class EsriAdapterPluginInstance(
     @OptIn(ExperimentalTime::class)
     override val x: PluginStagedExecutor<AviatorExecutionContext<@Serializable Any, @Serializable Any>, @Serializable Any, @Serializable Any> =
         PluginStagedExecutorBuilder.steps {
-            before(AviatorExecutionStages.PathMatching) { context ->
-                val returnGeometry =
-                    (context.requestParams[AreaAssistParameters.RETURN_GEOMETRY] as? RequestParameter.Single<Boolean>)?.value
-                        ?: true
-                val boundary =
-                    (context.requestParams[AreaAssistParameters.BOUNDARY] as? RequestParameter.Single<Boundary>)?.value
-                val queries =
-                    (context.requestParams[AreaAssistParameters.QUERIES] as? RequestParameter.Multi<Query>)?.value
-                        ?: listOf()
-                val options = optionBundle<ParcelServiceOptions>(context.dataHolder.options, Serialization())
+            if (configurationBundle.active) {
+                before(AviatorExecutionStages.PathMatching) { context ->
+                    val returnGeometry =
+                        (context.requestParams[AreaAssistParameters.RETURN_GEOMETRY]?.asType<Boolean>()) ?: true
+                    val boundary =
+                        (context.requestParams[AreaAssistParameters.BOUNDARY]?.asType<Boundary>())
+                    val queries =
+                        (context.requestParams[AreaAssistParameters.QUERIES]?.asType<List<Query>>()) ?: listOf()
+                    val options = optionBundle<ParcelServiceOptions>(context.dataHolder.options, Serialization())
 
-                val queryString = buildQueryString(queries, options)
+                    val queryString = buildQueryString(queries, options)
 
-                context.requestParams[EsriAdapterPlugin.Parameters.WHERE] =
-                    RequestParameter.Single(queryString.encodeURLParameter(false))
-                boundary?.let { boundingBox ->
-                    val geo = "${boundingBox.west},${boundingBox.north},${boundingBox.east},${boundingBox.south}"
-                    context.requestParams[EsriAdapterPlugin.Parameters.GEOMETRY] =
-                        RequestParameter.Single(geo.encodeURLParameter(false))
-                    context.requestParams[EsriAdapterPlugin.Parameters.IN_SR] = RequestParameter.Single("4326")
-                    context.requestParams[EsriAdapterPlugin.Parameters.SPATIAL_REL] =
-                        RequestParameter.Single("esriSpatialRelIntersects")
-                    context.requestParams[EsriAdapterPlugin.Parameters.GEOMETRY_TYPE] =
-                        RequestParameter.Single("esriGeometryEnvelope")
-                }
-                context.requestParams[EsriAdapterPlugin.Parameters.OUT_FIELDS] =
-                    RequestParameter.Single(getOutFields(options))
-                context.requestParams[EsriAdapterPlugin.Parameters.OUT_SR] = RequestParameter.Single("4326")
-                if (returnGeometry) {
-                    context.requestParams[EsriAdapterPlugin.Parameters.RETURN_GEOMETRY] =
-                        RequestParameter.Single("true")
-                }
-                context.requestParams[EsriAdapterPlugin.Parameters.FILE] = RequestParameter.Single("geojson")
-            }
-            after(AviatorExecutionStages.PaintingResponse) { context ->
-                val successful =
-                    context.networkChain.find { (it.response?.status?.value ?: 500) < 400 }
-                val serviceOptions = optionBundle<ParcelServiceOptions>(context.dataHolder.options)
-                context.result = try {
-                    val parcels: MutableList<ParcelCrateEntity> = mutableListOf()
-                    val json = successful?.response?.content
-                    if (json != null) {
-                        val string = json.decodeToString()
-                        val je = context.dataHolder.json.parseToJsonElement(string)
-                        val featureCollection: JsonFeatureCollection =
-                            context.dataHolder.json.decodeFromJsonElement<JsonFeatureCollection>(je)
-                        // look if to many results
-                        val outerProperties = je.jsonObject["properties"]
-                        val exd = outerProperties?.jsonObject?.get("exceededTransferLimit")
-                            ?.let { context.dataHolder.json.decodeFromJsonElement<Boolean>(it) }
-                        if (exd == true) {
-                            context.log { warn("Exceeded Transfer Limit for ${successful.url}") }
-                            throw ExceededTransferLimitException("Exceeded Transfer Limit for ${successful.url}")
-                        }
-                        for (feature in featureCollection) {
-                            AreaAssistParameters.inflateParcelFromFeature(
-                                feature = feature,
-                                keys = serviceOptions.keys,
-                                origin = serviceOptions.parcelLinkReference,
-                                mode = AreaAssistParameters.InflationMode.Reference,
-                                json = context.dataHolder.json
-                            )?.let { parcels += it }
-                        }
+                    context.requestParams[EsriAdapterPlugin.Parameters.WHERE] =
+                        RequestParameter.Single(queryString.encodeURLParameter(false))
+                    boundary?.let { boundingBox ->
+                        val geo = "${boundingBox.west},${boundingBox.north},${boundingBox.east},${boundingBox.south}"
+                        context.requestParams[EsriAdapterPlugin.Parameters.GEOMETRY] =
+                            RequestParameter.Single(geo.encodeURLParameter(false))
+                        context.requestParams[EsriAdapterPlugin.Parameters.IN_SR] = RequestParameter.Single("4326")
+                        context.requestParams[EsriAdapterPlugin.Parameters.SPATIAL_REL] =
+                            RequestParameter.Single("esriSpatialRelIntersects")
+                        context.requestParams[EsriAdapterPlugin.Parameters.GEOMETRY_TYPE] =
+                            RequestParameter.Single("esriGeometryEnvelope")
                     }
-                    parcels
-                } catch (e: Exception) {
-                    context.log {
-                        error(
-                            "An unexpected Error occurred while parsing the response",
-                            e
-                        )
+                    context.requestParams[EsriAdapterPlugin.Parameters.OUT_FIELDS] =
+                        RequestParameter.Single(getOutFields(options))
+                    context.requestParams[EsriAdapterPlugin.Parameters.OUT_SR] = RequestParameter.Single("4326")
+                    if (returnGeometry) {
+                        context.requestParams[EsriAdapterPlugin.Parameters.RETURN_GEOMETRY] =
+                            RequestParameter.Single("true")
                     }
-                    emptyList<ParcelCrateEntity>()
+                    context.requestParams[EsriAdapterPlugin.Parameters.FILE] = RequestParameter.Single("geojson")
+                }
+                after(AviatorExecutionStages.PaintingResponse) { context ->
+                    val successful =
+                        context.networkChain.find { (it.response?.status?.value ?: 500) < 400 }
+                    val serviceOptions = optionBundle<ParcelServiceOptions>(context.dataHolder.options)
+                    context.result = try {
+                        val parcels: MutableList<ParcelCrateEntity> = mutableListOf()
+                        val json = successful?.response?.content
+                        if (json != null) {
+                            val string = json.decodeToString()
+                            val je = context.dataHolder.json.parseToJsonElement(string)
+                            val featureCollection: JsonFeatureCollection = JsonFeatureCollection.fromJson(string)
+                            // look if to many results
+                            val outerProperties = je.jsonObject["properties"]
+                            val exd = outerProperties?.jsonObject?.get("exceededTransferLimit")
+                                ?.let { context.dataHolder.json.decodeFromJsonElement<Boolean>(it) }
+                            if (exd == true) {
+                                context.log { warn("Exceeded Transfer Limit for ${successful.url}") }
+                                throw ExceededTransferLimitException("Exceeded Transfer Limit for ${successful.url}")
+                            }
+                            for (feature in featureCollection) {
+                                AreaAssistParameters.inflateParcelFromFeature(
+                                    feature = feature,
+                                    keys = serviceOptions.keys,
+                                    origin = serviceOptions.parcelLinkReference,
+                                    mode = AreaAssistParameters.InflationMode.Reference,
+                                    json = context.dataHolder.json
+                                )?.let { parcels += it }
+                            }
+                        } else {
+                            val f = context.networkChain.firstOrNull()
+                            val text = f?.response?.content?.decodeToString()
+                            context.log {
+                                error("All responses returned not OK, the first one with: $text")
+                            }
+                        }
+                        parcels
+                    } catch (e: Exception) {
+                        context.log {
+                            error(
+                                "An unexpected Error occurred while parsing the response",
+                                e
+                            )
+                        }
+                        emptyList<ParcelCrateEntity>()
+                    }
                 }
             }
         }

@@ -4,12 +4,12 @@ import cloud.mallne.dicentra.areaassist.model.curator.ParcelKeyProxy
 import cloud.mallne.dicentra.areaassist.model.curator.Query
 import cloud.mallne.dicentra.areaassist.model.curator.QueryContentHolder
 import cloud.mallne.dicentra.areaassist.model.parcel.GenericJson
-import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelKey
 import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelCrateEntity
 import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelEntity
 import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelPropertyEntity
 import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelPropertyEntity.Companion.convert
+import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
 import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters

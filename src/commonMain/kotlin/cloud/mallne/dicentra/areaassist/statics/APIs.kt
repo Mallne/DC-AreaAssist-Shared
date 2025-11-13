@@ -5,14 +5,13 @@ import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
 import cloud.mallne.dicentra.areaassist.model.map.MapLayer
 import cloud.mallne.dicentra.areaassist.model.map.MapSource
 import cloud.mallne.dicentra.areaassist.model.map.MapStyleServiceOptions
-import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants
-import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants.DefaultKeys
-import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants.LC_DL_BY
-import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants.Path
-import cloud.mallne.dicentra.areaassist.model.parcel.ParcelConstants.locator
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.model.screen.DeepLinks
 import cloud.mallne.dicentra.areaassist.model.weather.WeatherConstants
+import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
+import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.LC_DL_BY
+import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.Path
+import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.locator
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
@@ -45,7 +44,7 @@ object APIs {
         info = Info(
             title = "Basemap Light",
             description = "Official German Vector Map",
-            version = AviatorExtensionSpec.SpecVersion,
+            version = ParcelConstants.endpointVersion.toString(),
             license = License(
                 "basemap.de / BKG | Datenquellen: © GeoBasis-DE",
                 identifier = "Basemap Light"
@@ -119,7 +118,7 @@ object APIs {
         info = Info(
             title = "Basemap Dark",
             description = "Official German Vector Map",
-            version = AviatorExtensionSpec.SpecVersion,
+            version = ParcelConstants.endpointVersion.toString(),
             license = License(
                 "basemap.de / BKG | Datenquellen: © GeoBasis-DE",
                 identifier = "Basemap Dark"
@@ -209,7 +208,7 @@ object APIs {
         info = Info(
             title = "Esri",
             description = "Location based Open Data for Germany",
-            version = AviatorExtensionSpec.SpecVersion
+            version = ParcelConstants.endpointVersion.toString()
         ),
         paths = mapOf(
             //"/thueringen_flstck/FeatureServer/0/query" to ParcelConstants.DE_TH,
@@ -223,7 +222,7 @@ object APIs {
             "/NDS_Flurstuecke/FeatureServer/0/query" to ParcelConstants.DE_NI,
         ),
         components = Components(
-            parameters = Path.wfsParams
+            parameters = Path.esriParams
         )
     )
 
@@ -241,7 +240,7 @@ object APIs {
         info = Info(
             title = "Geoproxy Thüringen",
             description = "Location based Open Data for Thüringen",
-            version = AviatorExtensionSpec.SpecVersion
+            version = ParcelConstants.endpointVersion.toString()
         ),
         paths = mapOf(
             "/adv_alkis_wfs" to PathItem(
@@ -251,7 +250,7 @@ object APIs {
                     requestBody = ReferenceOr.Value(
                         RequestBody(
                             content = mapOf(
-                                "application/xml" to MediaType(schema = ReferenceOr.Value(Schema()))
+                                "application/xml" to MediaType(schema = ReferenceOr.Value(Schema(type = Schema.Type.Basic.Object)))
                             )
                         )
                     ),
@@ -261,6 +260,7 @@ object APIs {
                             typeNames = "ave:Flurstueck"
                             namespace = "http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/1.0"
                             nsPrefix = "ave"
+                            geometryPointer = "geometrie"
                         },
                         AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
                             bounds = Bundesland.THUERINGEN.roughBoundaries,
@@ -313,7 +313,7 @@ object APIs {
         info = Info(
             title = "Brightsky",
             description = "Open Source API for German Weather Service",
-            version = AviatorExtensionSpec.SpecVersion,
+            version = ParcelConstants.endpointVersion.toString(),
             license = License(
                 identifier = "Brightsky",
                 name = "MIT License",

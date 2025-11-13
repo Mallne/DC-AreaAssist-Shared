@@ -1,12 +1,11 @@
-package cloud.mallne.dicentra.areaassist.model.parcel
+package cloud.mallne.dicentra.areaassist.statics
 
 import cloud.mallne.dicentra.areaassist.aviator.esri.EsriAdapterPlugin
 import cloud.mallne.dicentra.areaassist.aviator.esri.EsriAdapterPluginConfig
 import cloud.mallne.dicentra.areaassist.aviator.wfs.WfsAdapterPlugin
 import cloud.mallne.dicentra.areaassist.aviator.wfs.WfsAdapterPluginConfig
 import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
-import cloud.mallne.dicentra.areaassist.statics.APIs
-import cloud.mallne.dicentra.areaassist.statics.Serialization
+import cloud.mallne.dicentra.areaassist.model.parcel.*
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import cloud.mallne.dicentra.aviator.koas.Operation
@@ -15,12 +14,14 @@ import cloud.mallne.dicentra.aviator.koas.extensions.ReferenceOr
 import cloud.mallne.dicentra.aviator.koas.info.License
 import cloud.mallne.dicentra.aviator.koas.io.Schema
 import cloud.mallne.dicentra.aviator.koas.parameters.Parameter
+import cloud.mallne.dicentra.aviator.model.SemVer
 import cloud.mallne.units.Area
 import cloud.mallne.units.Units
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 
 object ParcelConstants {
+    val endpointVersion = SemVer(1, 0, 1, "c")
     val locator = APIs.Services.PARCEL_SERVICE.locator(
         ServiceMethods.GATHER
     )
@@ -415,7 +416,7 @@ object ParcelConstants {
                 ).usable()
             ),
         ),
-        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_SN = PathItem(
         summary = "Flurstücke Sachsen",
@@ -443,7 +444,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_BB = PathItem(
         summary = "Flurstücke Brandenburg",
@@ -473,7 +474,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_HE = PathItem(
         summary = "Flurstücke Hessen",
@@ -497,7 +498,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_HH = PathItem(
         summary = "Flurstücke Hamburg",
@@ -523,7 +524,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_NW = PathItem(
         summary = "Flurstücke Nordrhein-Westfalen",
@@ -548,7 +549,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_ST = PathItem(
         summary = "Flurstücke Sachsen-Anhalt",
@@ -580,7 +581,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_BE = PathItem(
         summary = "Flurstücke Berlin",
@@ -610,7 +611,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
     )
     val DE_NI = PathItem(
         summary = "Flurstücke Niedersachsen",
@@ -640,6 +641,6 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
     )
 }

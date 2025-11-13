@@ -53,7 +53,7 @@ kotlin {
                 api(libs.mlln.units)
                 api(libs.mlln.geokit.calculation)
                 api(libs.mlln.geokit.geojson)
-                api(libs.mlln.geokit.gml)
+                api(libs.mlln.geokit.ogc)
                 api(libs.mlln.geokit.interop)
                 api(libs.mlln.geokit.coordinates)
                 api(libs.kotlinx.datetime)
@@ -61,6 +61,7 @@ kotlin {
                 api(libs.ktor.http)
                 api(libs.koin.annotations)
                 api(libs.xml)
+                api(libs.maplibre.spatialk)
             }
         }
     }
