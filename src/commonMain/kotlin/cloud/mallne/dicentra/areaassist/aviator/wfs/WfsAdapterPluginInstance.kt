@@ -26,11 +26,9 @@ import cloud.mallne.geokit.geojson.*
 import cloud.mallne.geokit.geojson.CalculationInterop.toPosition
 import cloud.mallne.geokit.geojson.CalculationInterop.toVertex
 import cloud.mallne.geokit.interop.WfsExtensions.toGeoJson
-import cloud.mallne.geokit.ogc.model.Envelope
-import cloud.mallne.geokit.ogc.model.LowerCorner
-import cloud.mallne.geokit.ogc.model.UpperCorner
 import cloud.mallne.geokit.ogc.model.fes.BBOX
 import cloud.mallne.geokit.ogc.model.fes.Filter
+import cloud.mallne.geokit.ogc.model.gml.Envelope
 import cloud.mallne.geokit.ogc.model.wfs.FeatureCollection
 import cloud.mallne.geokit.ogc.model.wfs.GetFeature
 import kotlinx.serialization.Serializable
