@@ -28,5 +28,6 @@ data class WfsAdapterPlugin(val registry: CrsRegistry) : AviatorPlugin<WfsAdapte
         const val SRS_NAME = "SRSName"
         const val BBOX = "bbox"
         const val COUNT = "count"
+        const val QUERY = "query"
     }
 }

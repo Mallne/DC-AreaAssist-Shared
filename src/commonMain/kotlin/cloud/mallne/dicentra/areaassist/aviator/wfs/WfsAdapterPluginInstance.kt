@@ -2,6 +2,9 @@ package cloud.mallne.dicentra.areaassist.aviator.wfs
 
 import cloud.mallne.dicentra.areaassist.aviator.AreaAssistParameters
 import cloud.mallne.dicentra.areaassist.model.curator.Query
+import cloud.mallne.dicentra.areaassist.model.curator.QueryContentHolder
+import cloud.mallne.dicentra.areaassist.model.curator.QueryMethod
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelKey
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.model.parcel.domain.data.ParcelCrateEntity
 import cloud.mallne.dicentra.areaassist.statics.Serialization
@@ -26,8 +29,8 @@ import cloud.mallne.geokit.geojson.*
 import cloud.mallne.geokit.geojson.CalculationInterop.toPosition
 import cloud.mallne.geokit.geojson.CalculationInterop.toVertex
 import cloud.mallne.geokit.interop.WfsExtensions.toGeoJson
-import cloud.mallne.geokit.ogc.model.fes.BBOX
-import cloud.mallne.geokit.ogc.model.fes.Filter
+import cloud.mallne.geokit.ogc.model.fes.*
+import cloud.mallne.geokit.ogc.model.gml.DirectPositionType
 import cloud.mallne.geokit.ogc.model.gml.Envelope
 import cloud.mallne.geokit.ogc.model.wfs.FeatureCollection
 import cloud.mallne.geokit.ogc.model.wfs.GetFeature
@@ -56,8 +59,6 @@ data class WfsAdapterPluginInstance(
                     }
                 }
                 before(AviatorExecutionStages.PathMatching) { context ->
-                    val returnGeometry =
-                        (context.requestParams[AreaAssistParameters.RETURN_GEOMETRY]?.asType<Boolean>()) ?: true
                     val boundary = (context.requestParams[AreaAssistParameters.BOUNDARY]?.asType<Boundary>())
                     val queries =
                         (context.requestParams[AreaAssistParameters.QUERIES]?.asType<List<Query>>()) ?: listOf()
@@ -78,18 +79,24 @@ data class WfsAdapterPluginInstance(
                             RequestParameter.Single(
                                 BBOX(
                                     envelope = Envelope(
-                                        lowerCorner = LowerCorner(sw.wfsCoord()),
-                                        upperCorner = UpperCorner(ne.wfsCoord()),
+                                        lowerCorner = DirectPositionType(sw.wfsCoord()),
+                                        upperCorner = DirectPositionType(ne.wfsCoord()),
                                         srsName = configurationBundle.inputCRS
                                     )
                                 )
                             ) { bBOX ->
-                                "${bBOX.envelope.lowerCorner.values.joinToString(separator = ",") { it.toString() }},${
-                                    bBOX.envelope.upperCorner.values.joinToString(
+                                "${bBOX.envelope.lowerCorner.value.joinToString(separator = ",") { it.toString() }},${
+                                    bBOX.envelope.upperCorner.value.joinToString(
                                         separator = ","
                                     ) { it.toString() }
                                 },${bBOX.envelope.srsName}"
                             }
+                    }
+
+                    //Build Query
+                    val filter = buildFesFilter(queries, options)
+                    filter?.let {
+                        context.requestParams[WfsAdapterPlugin.Parameters.QUERY] = RequestParameter.Single(it)
                     }
                 }
                 after(AviatorExecutionStages.FormingRequest) { context ->
@@ -99,9 +106,12 @@ data class WfsAdapterPluginInstance(
                     val typeName = (context.requestParams[WfsAdapterPlugin.Parameters.TYPE_NAMES].toString())
                     val srs = (context.requestParams[WfsAdapterPlugin.Parameters.SRS_NAME].toString())
                     val bbox = (context.requestParams[WfsAdapterPlugin.Parameters.BBOX]?.asType<BBOX>())
+                    val query =
+                        (context.requestParams[WfsAdapterPlugin.Parameters.QUERY]?.asType<AbstractOperatorType>())
 
                     context.networkChain.forEach { net ->
-                        val bboxFilter = bbox?.let { Filter(it) }
+                        val filters = listOfNotNull(query, bbox)
+                        val filter = Filter.fromList(filters)
                         net.request?.outgoingContent = XmlBody(
                             context.dataHolder.xml.encodeToElement(
                                 GetFeature(
@@ -112,7 +122,7 @@ data class WfsAdapterPluginInstance(
                                         WfsQuery(
                                             typeNames = listOf(typeName),
                                             srsName = srs,
-                                            filter = bboxFilter!!
+                                            filter = filter
                                         )
                                     )
                                 )
@@ -169,10 +179,126 @@ data class WfsAdapterPluginInstance(
             }
         }
 
+    /**
+     * Builds an atomic FES node representing a single comparison.
+     */
+    private fun buildAtomicFesNode(query: Query, field: ParcelKey): ComparisonOpsType {
+        val content = query.content
+        val reference = field.reference
+
+        require(content != null && reference != null && content.sameAs(field.type)) {
+            "Invalid query: $query; its content and reference must not be null and the content type must be the same as the field type"
+        }
+        when (content) {
+            is QueryContentHolder.RANGE -> {
+                val range = content.range
+                require(range != null && !(range.first > range.second || range.first < 0.0 || (range.first == 0.0 && range.second == 0.0))) {
+                    "Invalid range: $range; it must not be null and must satisfy 0 <= first <= second"
+                }
+                return PropertyIsBetween(
+                    valueReference = ValueReference("${configurationBundle.nsPrefix}:${reference}"),
+                    lowerBoundary = LowerBoundary(Literal(range.first.toString())),
+                    upperBoundary = UpperBoundary(Literal(range.second.toString()))
+                )
+            }
+
+            is QueryContentHolder.STRING -> {
+                val string = content.string
+                require(string != null && string.isNotBlank()) {
+                    "Invalid string: $string; it must not be null and must not be blank"
+                }
+                return PropertyIsEqualTo(
+                    valueReference = ValueReference("${configurationBundle.nsPrefix}:${reference}"),
+                    literal = Literal(string.uppercase())
+                )
+            }
+
+            is QueryContentHolder.BOOLEAN -> {
+                val boolean = content.boolean
+                require(boolean != null) {
+                    "Invalid boolean: $boolean; it must not be null"
+                }
+                return PropertyIsEqualTo(
+                    valueReference = ValueReference("${configurationBundle.nsPrefix}:${reference}"),
+                    literal = Literal(boolean.toString())
+                )
+            }
+        }
+    }
+
+    /**
+     * Pass 1: Iterates through the input list and groups consecutive elements connected by AND.
+     *
+     * @return A list of FESNode structures. Each node is either an atomic condition
+     * or an <fes:And> group, and they are all intended to be OR'ed together.
+     */
+    private fun groupAnds(queries: List<Query>, options: ParcelServiceOptions): List<AbstractOperatorType> {
+        if (queries.isEmpty()) return emptyList()
+
+        val orGroupOperands = mutableListOf<AbstractOperatorType>()
+        // currentAndGroup holds the atomic nodes for the currently accumulating AND sequence
+        var currentAndGroup = mutableListOf<AbstractOperatorType>()
+
+        for (query in queries) {
+            val field = options.keys.find { it.identifier == query.field?.identifier }
+            query.content
+            field?.reference
+
+            if (field == null) {
+                //there is no backing field for this query
+                // we do not throw an error here, instead wi silently continue
+                continue
+            }
+
+            val atomicNode = buildAtomicFesNode(query, field)
+
+            if (query.method == QueryMethod.AND) {
+                // Found an AND: Add the current atomic condition to the active group.
+                currentAndGroup.add(atomicNode)
+            } else { // operator is OR or null (start of expression)
+                // 1. Finalize and save the previous AND group (if it existed)
+                if (currentAndGroup.isNotEmpty()) {
+                    val combinedNode = when (currentAndGroup.size) {
+                        1 -> currentAndGroup.first() // If only one, it's a standalone operand
+                        else -> And.fromList(currentAndGroup)
+                    }
+                    orGroupOperands.add(combinedNode)
+                }
+
+                // 2. Start a NEW group with the current atomic node.
+                // This node is the first element of a new logical sequence (starting after an OR).
+                currentAndGroup = mutableListOf(atomicNode)
+            }
+        }
+
+        // 3. CRITICAL: Handle the last group after the loop finishes.
+        if (currentAndGroup.isNotEmpty()) {
+            val combinedNode = when (currentAndGroup.size) {
+                1 -> currentAndGroup.first()
+                else -> And.fromList(currentAndGroup)
+            }
+            orGroupOperands.add(combinedNode)
+        }
+
+        return orGroupOperands
+    }
+
+    /**
+     * Pass 2: Takes the list of AND-grouped operands and combines them with a top-level OR,
+     * or returns the single node if only one group was found.
+     */
+    private fun buildFesFilter(queries: List<Query>, options: ParcelServiceOptions): AbstractOperatorType? {
+        val orGroupOperands = groupAnds(queries, options)
+
+        return when (orGroupOperands.size) {
+            0 -> null
+            1 -> orGroupOperands.first() // Simple filter, no top-level And/Or needed
+            else -> Or.fromList(orGroupOperands) // Combined by OR
+        }
+    }
+
     private fun Geometry.translate(from: String, to: String): Geometry = when (this) {
-        is GeometryCollection<*> -> GeometryCollection(
-            bbox = this.bbox?.t(from, to),
-            geometries = this.geometries.map { it.translate(from, to) })
+        is GeometryCollection<*> -> TODO("Converting from a GeometryCollection is not yet supported!")
 
         is LineString -> LineString(
             bbox = this.bbox?.t(from, to),
