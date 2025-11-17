@@ -21,7 +21,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 
 object ParcelConstants {
-    val endpointVersion = SemVer(1, 0, 1, "c")
+    val endpointVersion = SemVer(1, 0, 1, "d")
     val locator = APIs.Services.PARCEL_SERVICE.locator(
         ServiceMethods.GATHER
     )

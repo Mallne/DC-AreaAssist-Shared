@@ -1,11 +1,13 @@
 package cloud.mallne.dicentra.areaassist.model.parcel
 
+import cloud.mallne.dicentra.areaassist.model.parcel.recipes.KeyRecipe
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class ParcelKey(
     val identifier: String,
     val reference: String? = null,
+    val recipe: KeyRecipe? = null,
     val type: KeyType = KeyType.STRING,
     val format: KeyFormat = KeyFormat(),
     val translations: KeyTranslation,

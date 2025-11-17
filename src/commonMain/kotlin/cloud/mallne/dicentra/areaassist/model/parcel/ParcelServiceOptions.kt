@@ -20,6 +20,7 @@ data class ParcelServiceOptions @OptIn(ExperimentalUuidApi::class) constructor(
     val parcelLinkReference: String = Uuid.random().toString(),
     val license: License? = null,
     val keys: List<ParcelKey> = listOf()
+
 ) : InflatedServiceOptions {
 
     override fun usable(): ServiceOptions = Serialization().encodeToJsonElement(this)

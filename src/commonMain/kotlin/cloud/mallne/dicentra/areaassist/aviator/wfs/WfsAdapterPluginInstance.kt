@@ -39,6 +39,16 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import org.maplibre.spatialk.geojson.BoundingBox
+import org.maplibre.spatialk.geojson.Geometry
+import org.maplibre.spatialk.geojson.GeometryCollection
+import org.maplibre.spatialk.geojson.LineString
+import org.maplibre.spatialk.geojson.MultiLineString
+import org.maplibre.spatialk.geojson.MultiPoint
+import org.maplibre.spatialk.geojson.MultiPolygon
+import org.maplibre.spatialk.geojson.Point
+import org.maplibre.spatialk.geojson.Polygon
+import org.maplibre.spatialk.geojson.Position
 import kotlin.time.ExperimentalTime
 import cloud.mallne.geokit.ogc.model.wfs.Query as WfsQuery
 
@@ -146,7 +156,6 @@ data class WfsAdapterPluginInstance(
                                 configurationBundle.geometryPointer,
                                 context.dataHolder.xml
                             )
-                            // look if to many results
                             for (feature in geojson) {
                                 val translatedFeature = JsonFeature(
                                     geometry = feature.geometry?.translate(
