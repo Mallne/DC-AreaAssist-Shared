@@ -27,6 +27,7 @@ import cloud.mallne.dicentra.aviator.koas.io.MediaType
 import cloud.mallne.dicentra.aviator.koas.io.Schema
 import cloud.mallne.dicentra.aviator.koas.parameters.RequestBody
 import cloud.mallne.dicentra.aviator.koas.servers.Server
+import cloud.mallne.dicentra.aviator.model.SemVer
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
 
 object APIs {
@@ -240,7 +241,12 @@ object APIs {
         info = Info(
             title = "Geoproxy Thüringen",
             description = "Location based Open Data for Thüringen",
-            version = ParcelConstants.endpointVersion.toString()
+            version = ParcelConstants.endpointVersion.toString(),
+            license = License(
+                name = "© GDI-Th",
+                identifier = "Flurstücke Thüringen",
+                url = LC_DL_BY
+            )
         ),
         paths = mapOf(
             "/adv_alkis_wfs" to PathItem(
@@ -284,11 +290,71 @@ object APIs {
                                 usageHint = "tntext"
                             ),
                             parcelLinkReference = Bundesland.THUERINGEN.iso3166_2 + "_default",
-                            license = License(
-                                name = "© GDI-Th",
-                                identifier = "Flurstücke Thüringen",
-                                url = LC_DL_BY
+                        ).usable()
+                    ),
+                ),
+            ),
+        ),
+        components = Components(
+            parameters = Path.wfsParams
+        )
+    )
+    val badenWuerttembergWfs = OpenAPI(
+        extensions = mapOf(
+            AviatorExtensionSpec.Version.key to Serialization().parseToJsonElement(
+                AviatorExtensionSpec.SpecVersion
+            )
+        ),
+        servers = listOf(
+            Server(
+                "https://owsproxy.lgl-bw.de/owsproxy/wfs"
+            )
+        ),
+        info = Info(
+            title = "LGL Baden-Württemberg",
+            description = "Landesweiter, vollständiger Flurstückslayer ALKIS-Daten tagesaktuell",
+            version = ParcelConstants.endpointVersion.toString(),
+            license = License(
+                name = "LGL-BW: Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+                identifier = "Flurstücke Baden Württemberg",
+                url = LC_DL_BY
+            )
+        ),
+        paths = mapOf(
+            "/WFS_LGL-BW_ALKIS" to PathItem(
+                summary = "Flurstücke Baden Württemberg",
+                post = Operation(
+                    operationId = Bundesland.BADEN_WUERTTEMBERG.iso3166_2,
+                    requestBody = ReferenceOr.Value(
+                        RequestBody(
+                            content = mapOf(
+                                "application/xml" to MediaType(schema = ReferenceOr.Value(Schema(type = Schema.Type.Basic.Object)))
                             )
+                        )
+                    ),
+                    extensions = mapOf(
+                        AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
+                        AviatorExtensionSpec.PluginMaterialization.O.key to ParcelConstants.wfsAdapterConfig {
+                            typeNames = "nora:v_al_flurstueck"
+                            namespace = "http://nora-prod.lgl.bwl.de/nora"
+                            nsPrefix = "nora"
+                            geometryPointer = "geom"
+                        },
+                        AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
+                            bounds = Bundesland.BADEN_WUERTTEMBERG.roughBoundaries,
+                            correspondsTo = Bundesland.BADEN_WUERTTEMBERG.iso3166_2,
+                            keys = DefaultKeys.fillIn(
+                                parcelId = "flurstueckskennzeichen",
+                                area = "amtliche_flaeche",
+                                districtId = "gemarkung_id",
+                                district = "gemarkung_name",
+                                districtCompartmentId = "flurnummer",
+                                plotNumerator = "zaehler",
+                                plotDenominator = "nenner",
+                                districtMunicipalityId = "gemeinde_id",
+                                districtMunicipality = "gemeinde_name",
+                            ),
+                            parcelLinkReference = Bundesland.BADEN_WUERTTEMBERG.iso3166_2 + "_default",
                         ).usable()
                     ),
                 ),
@@ -384,8 +450,13 @@ object APIs {
         mapDark,
         esri,
         thueringenWfs,
+        badenWuerttembergWfs,
         brightSky,
     )
+
+    fun apiOverrideVersion(version: SemVer = ParcelConstants.endpointVersion): List<OpenAPI> {
+        return apis.map { it.copy(info = it.info.copy(version = version.toString())) }
+    }
 
     enum class Services(
         private val serviceLocator: String,
