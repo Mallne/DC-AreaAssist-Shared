@@ -21,7 +21,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 
 object ParcelConstants {
-    val endpointVersion = SemVer(1, 0, 1, "e")
+    val endpointVersion = SemVer(1, 0, 1, "g")
     val locator = APIs.Services.PARCEL_SERVICE.locator(
         ServiceMethods.GATHER
     )
@@ -369,6 +369,17 @@ object ParcelConstants {
                     )
                 )
             ),
+            WfsAdapterPlugin.Parameters.FILTER to ReferenceOr.value(
+                Parameter(
+                    WfsAdapterPlugin.Parameters.FILTER,
+                    Parameter.Input.Query,
+                    schema = ReferenceOr.value(
+                        Schema(
+                            type = Schema.Type.Basic.String
+                        )
+                    )
+                )
+            )
         )
     }
 

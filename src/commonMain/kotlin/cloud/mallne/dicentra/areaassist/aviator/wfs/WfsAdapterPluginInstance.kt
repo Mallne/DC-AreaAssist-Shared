@@ -25,30 +25,23 @@ import cloud.mallne.geokit.coordinates.CrsRegistry
 import cloud.mallne.geokit.coordinates.model.AbstractCoordinate
 import cloud.mallne.geokit.coordinates.model.AbstractCoordinate.Companion.toCoordinate
 import cloud.mallne.geokit.coordinates.tokens.ast.expression.Identifier
-import cloud.mallne.geokit.geojson.*
 import cloud.mallne.geokit.geojson.CalculationInterop.toPosition
 import cloud.mallne.geokit.geojson.CalculationInterop.toVertex
+import cloud.mallne.geokit.geojson.JsonFeature
 import cloud.mallne.geokit.interop.WfsExtensions.toGeoJson
 import cloud.mallne.geokit.ogc.model.fes.*
 import cloud.mallne.geokit.ogc.model.gml.DirectPositionType
 import cloud.mallne.geokit.ogc.model.gml.Envelope
 import cloud.mallne.geokit.ogc.model.wfs.FeatureCollection
 import cloud.mallne.geokit.ogc.model.wfs.GetFeature
+import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import org.maplibre.spatialk.geojson.BoundingBox
-import org.maplibre.spatialk.geojson.Geometry
-import org.maplibre.spatialk.geojson.GeometryCollection
-import org.maplibre.spatialk.geojson.LineString
-import org.maplibre.spatialk.geojson.MultiLineString
-import org.maplibre.spatialk.geojson.MultiPoint
-import org.maplibre.spatialk.geojson.MultiPolygon
-import org.maplibre.spatialk.geojson.Point
-import org.maplibre.spatialk.geojson.Polygon
-import org.maplibre.spatialk.geojson.Position
+import org.maplibre.spatialk.geojson.*
 import kotlin.time.ExperimentalTime
 import cloud.mallne.geokit.ogc.model.wfs.Query as WfsQuery
 
@@ -99,14 +92,18 @@ data class WfsAdapterPluginInstance(
                                     bBOX.envelope.upperCorner.value.joinToString(
                                         separator = ","
                                     ) { it.toString() }
-                                },${bBOX.envelope.srsName}"
+                                },${bBOX.envelope.srsName}".encodeURLParameter()
                             }
                     }
 
                     //Build Query
                     val filter = buildFesFilter(queries, options)
                     filter?.let {
-                        context.requestParams[WfsAdapterPlugin.Parameters.QUERY] = RequestParameter.Single(it)
+                        context.requestParams[WfsAdapterPlugin.Parameters.FILTER] =
+                            RequestParameter.Single(it) { abstractOperatorType ->
+                                val filter = Filter.fromList(listOf(abstractOperatorType))
+                                context.dataHolder.xml.encodeToString(filter).encodeURLParameter()
+                            }
                     }
                 }
                 after(AviatorExecutionStages.FormingRequest) { context ->
@@ -117,7 +114,7 @@ data class WfsAdapterPluginInstance(
                     val srs = (context.requestParams[WfsAdapterPlugin.Parameters.SRS_NAME].toString())
                     val bbox = (context.requestParams[WfsAdapterPlugin.Parameters.BBOX]?.asType<BBOX>())
                     val query =
-                        (context.requestParams[WfsAdapterPlugin.Parameters.QUERY]?.asType<AbstractOperatorType>())
+                        (context.requestParams[WfsAdapterPlugin.Parameters.FILTER]?.asType<AbstractOperatorType>())
 
                     context.networkChain.forEach { net ->
                         val filters = listOfNotNull(query, bbox)

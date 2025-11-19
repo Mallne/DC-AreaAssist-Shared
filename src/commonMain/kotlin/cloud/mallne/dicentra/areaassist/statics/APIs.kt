@@ -323,15 +323,8 @@ object APIs {
         paths = mapOf(
             "/WFS_LGL-BW_ALKIS" to PathItem(
                 summary = "Flurstücke Baden Württemberg",
-                post = Operation(
+                get = Operation(
                     operationId = Bundesland.BADEN_WUERTTEMBERG.iso3166_2,
-                    requestBody = ReferenceOr.Value(
-                        RequestBody(
-                            content = mapOf(
-                                "application/xml" to MediaType(schema = ReferenceOr.Value(Schema(type = Schema.Type.Basic.Object)))
-                            )
-                        )
-                    ),
                     extensions = mapOf(
                         AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
                         AviatorExtensionSpec.PluginMaterialization.O.key to ParcelConstants.wfsAdapterConfig {
@@ -357,6 +350,7 @@ object APIs {
                             parcelLinkReference = Bundesland.BADEN_WUERTTEMBERG.iso3166_2 + "_default",
                         ).usable()
                     ),
+                    parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
                 ),
             ),
         ),
