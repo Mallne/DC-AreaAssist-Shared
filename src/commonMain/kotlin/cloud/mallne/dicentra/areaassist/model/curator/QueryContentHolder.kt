@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 @JsonClassDiscriminator("content_type")
-sealed class QueryContentHolder() {
+sealed class QueryContentHolder {
 
     @Serializable
     class STRING(val string: String?) : QueryContentHolder() {

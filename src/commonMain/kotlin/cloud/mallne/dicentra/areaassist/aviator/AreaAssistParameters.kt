@@ -107,7 +107,7 @@ object AreaAssistParameters {
         } else null
     }
 
-    enum class InflationMode() {
+    enum class InflationMode {
         Auto, Identifier, Reference
     }
 }
