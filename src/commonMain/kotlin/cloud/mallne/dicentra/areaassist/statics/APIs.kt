@@ -398,6 +398,8 @@ object APIs {
         const val CODE = "code"
         const val GRANT_TYPE = "grant_type"
         const val REFRESH_TOKEN = "refresh_token"
+        const val REFERRER_URI = "referrer_uri"
+        const val REFERRER = "referrer"
 
         val APP_REDIRECT_URI = DeepLinks.DCAA.login
 
@@ -411,6 +413,17 @@ object APIs {
                 REDIRECT_URI to RequestParameter.Single(redirectUri),
                 STATE to RequestParameter.Single(state),
                 RESPONSE_TYPE to RequestParameter.Single(responseType),
+            )
+        )
+
+        fun paramsForAuthConsole(
+            referrerUri: String = APP_REDIRECT_URI,
+            serviceOptions: AuthServiceOptions,
+            referrer: String = serviceOptions.clientId
+        ): RequestParameters = serviceOptions.asParameter(
+            mapOf(
+                REFERRER_URI to RequestParameter.Single(referrerUri),
+                REFERRER to RequestParameter.Single(referrer),
             )
         )
 
