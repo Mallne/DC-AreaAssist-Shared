@@ -19,8 +19,9 @@ data class ParcelServiceOptions @OptIn(ExperimentalUuidApi::class) constructor(
     val correspondsTo: String = Bundesland.CUSTOM.iso3166_2,
     val parcelLinkReference: String = Uuid.random().toString(),
     val license: License? = null,
-    val keys: List<ParcelKey> = listOf()
-
+    val keys: List<ParcelKey> = listOf(),
+    val staticFeatures: List<StaticFeature> = StaticFeature.entries,
+    val 
 ) : InflatedServiceOptions {
 
     override fun usable(): ServiceOptions = Serialization().encodeToJsonElement(this)
