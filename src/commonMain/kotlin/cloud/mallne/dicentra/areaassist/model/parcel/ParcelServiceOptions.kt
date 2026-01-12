@@ -21,7 +21,6 @@ data class ParcelServiceOptions @OptIn(ExperimentalUuidApi::class) constructor(
     val license: License? = null,
     val keys: List<ParcelKey> = listOf(),
     val staticFeatures: List<StaticFeature> = StaticFeature.entries,
-    val 
 ) : InflatedServiceOptions {
 
     override fun usable(): ServiceOptions = Serialization().encodeToJsonElement(this)
