@@ -18,8 +18,7 @@ data class Query @OptIn(ExperimentalUuidApi::class) constructor(
         fun getEnabledFeatures(keys: List<List<ParcelKey>>): List<ParcelKey> {
             val all = mutableListOf<ParcelKey>()
             val requiredDups = keys.size
-            val flat =
-                keys.flatten().filter { it.type != KeyType.NOTHING }
+            val flat = keys.flatten().filter { it.type != KeyType.NOTHING }
             val distincts = flat.distinctBy { it.identifier }
             for (key in distincts) {
                 if (flat.count { it.identifier == key.identifier } == requiredDups) {
@@ -27,6 +26,12 @@ data class Query @OptIn(ExperimentalUuidApi::class) constructor(
                 }
             }
             return all
+        }
+
+        fun aggregateFeatures(keys: List<List<ParcelKey>>): List<ParcelKey> {
+            val flat = keys.flatten().filter { it.type != KeyType.NOTHING }
+            val distincts = flat.distinctBy { it.identifier }
+            return distincts
         }
     }
 }
