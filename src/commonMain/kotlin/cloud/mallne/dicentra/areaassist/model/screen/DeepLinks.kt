@@ -3,7 +3,7 @@ package cloud.mallne.dicentra.areaassist.model.screen
 import cloud.mallne.dicentra.areaassist.model.curator.Query
 import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.geokit.Vertex
-import io.ktor.http.*
+import io.ktor.http.encodeURLParameter
 
 object DeepLinks {
     const val BASE = "https://areaassist.mallne.cloud"
@@ -14,7 +14,6 @@ object DeepLinks {
 
     sealed class DeepLinkTarget(val base: String) {
         val parcel = "$base/parcel"
-        val singleParcel = parcel
         val search = "$base/search"
         val compass = "$base/computist/compass"
         val agrimensor = "$base/computist/agrimensor"
@@ -32,12 +31,12 @@ object DeepLinks {
         fun generateParcelDeeplink(
             parcelId: String,
         ): String =
-            "$singleParcel/${parcelId.encodeURLParameter()}"
+            "$parcel/${parcelId.encodeURLParameter()}"
 
         fun generateSearchDeeplink(
             queries: List<Query>? = null,
             startImmediately: Boolean = false,
-            serviceHints: List<String>? = null
+            serviceHints: List<String>? = null,
         ): String {
             val queryParams = mutableListOf<String>()
             if (queries != null) {
