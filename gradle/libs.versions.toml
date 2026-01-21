@@ -9,13 +9,13 @@ ben-manes-versions-v = "0.53.0"
 dc-aviator = "1.0.0-SNAPSHOT"
 dc-polyfill = "1.0.0-SNAPSHOT"
 dc-weaver = "1.0.0-SNAPSHOT"
-dependency-analysis-v = "3.4.1"
+dependency-analysis-v = "3.5.1"
 koin = "4.1.1"
 koin-annotations = "2.3.1"
-kotlin = "2.2.21"
+kotlin = "2.3.0"
 kotlinx-datetime = "0.7.1"
-ksp = "2.3.2"
-ktor = "3.3.2"
+ksp = "2.3.4"
+ktor = "3.3.3"
 mlln-geokit = "1.0.0-SNAPSHOT"
 mlln-units = "1.0.0-SNAPSHOT"
 serialization = "1.9.0"
@@ -52,7 +52,7 @@ xml = { module = "io.github.pdvrieze.xmlutil:serialization", version.ref = "xml"
 maplibre-spatialk = { module = "org.maplibre.spatialk:geojson", version.ref = "mapLibre-spatialk" }
 
 [plugins]
-android-library = { id = "com.android.library", version.ref = "agp" }
+android-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions-v" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis-v" }
 kmp = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
