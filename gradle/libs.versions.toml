@@ -1,6 +1,6 @@
 [versions]
 # @pin
-agp = "8.12.3"
+agp = "9.0.0"
 # @keep
 android-compileSdk = "36"
 # @keep
@@ -13,12 +13,12 @@ dependency-analysis-v = "3.5.1"
 koin = "4.1.1"
 koin-annotations = "2.3.1"
 kotlin = "2.3.0"
-kotlinx-datetime = "0.7.1"
-ksp = "2.3.4"
-ktor = "3.3.3"
+kotlinx-datetime = "0.7.1-0.6.x-compat"
+ksp = "2.3.5"
+ktor = "3.4.0"
 mlln-geokit = "1.0.0-SNAPSHOT"
 mlln-units = "1.0.0-SNAPSHOT"
-serialization = "1.9.0"
+serialization = "1.10.0"
 version-catalog-update-v = "1.0.1"
 xml = "0.91.3"
 mapLibre-spatialk = "0.6.1"
@@ -59,5 +59,5 @@ kmp = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
-mavenPublish = "com.vanniktech.maven.publish:0.35.0"
+mavenPublish = "com.vanniktech.maven.publish:0.36.0"
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update-v" }
