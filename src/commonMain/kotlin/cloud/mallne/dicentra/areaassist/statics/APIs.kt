@@ -95,6 +95,20 @@ object APIs {
                                             minZoom = 14.5f
                                         )
                                     )
+                                ),
+                                MapSource.RasterMapSource(
+                                    tiles = listOf(
+                                        "https://www.geoproxy.geoportal-th.de/geoproxy/services/adv_alkis_wms_th?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=adv_alkis_flurstuecke"
+                                    ),
+                                    tileSize = 512,
+                                    layers = listOf(
+                                        MapLayer.RasterMapLayer(
+                                            id = "l_alkis_thueringen",
+                                            visible = false,
+                                            description = "Passive Flurstücke Thüringen",
+                                            minZoom = 14.5f
+                                        )
+                                    )
                                 )
                             ),
                             serviceHint = "basemap_light_default",
@@ -407,7 +421,7 @@ object APIs {
             redirectUri: String = APP_REDIRECT_URI,
             state: String,
             responseType: String = "code",
-            serviceOptions: AuthServiceOptions
+            serviceOptions: AuthServiceOptions,
         ): RequestParameters = serviceOptions.asParameter(
             mapOf(
                 REDIRECT_URI to RequestParameter.Single(redirectUri),
@@ -419,7 +433,7 @@ object APIs {
         fun paramsForAuthConsole(
             referrerUri: String = APP_REDIRECT_URI,
             serviceOptions: AuthServiceOptions,
-            referrer: String = serviceOptions.clientId
+            referrer: String = serviceOptions.clientId,
         ): RequestParameters = serviceOptions.asParameter(
             mapOf(
                 REFERRER_URI to RequestParameter.Single(referrerUri),
@@ -431,7 +445,7 @@ object APIs {
             code: String,
             redirectUri: String = APP_REDIRECT_URI,
             grantType: String = "authorization_code",
-            serviceOptions: AuthServiceOptions
+            serviceOptions: AuthServiceOptions,
         ): RequestParameters = serviceOptions.asParameter(
             mapOf(
                 REDIRECT_URI to RequestParameter.Single(redirectUri),
@@ -443,7 +457,7 @@ object APIs {
         fun paramsForRefreshToken(
             refreshToken: String,
             grantType: String = "refresh_token",
-            serviceOptions: AuthServiceOptions
+            serviceOptions: AuthServiceOptions,
         ): RequestParameters = serviceOptions.asParameter(
             mapOf(
                 REFRESH_TOKEN to RequestParameter.Single(refreshToken),

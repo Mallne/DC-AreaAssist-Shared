@@ -5,7 +5,13 @@ import cloud.mallne.dicentra.areaassist.aviator.esri.EsriAdapterPluginConfig
 import cloud.mallne.dicentra.areaassist.aviator.wfs.WfsAdapterPlugin
 import cloud.mallne.dicentra.areaassist.aviator.wfs.WfsAdapterPluginConfig
 import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
-import cloud.mallne.dicentra.areaassist.model.parcel.*
+import cloud.mallne.dicentra.areaassist.model.parcel.KeyFormat
+import cloud.mallne.dicentra.areaassist.model.parcel.KeyIcon
+import cloud.mallne.dicentra.areaassist.model.parcel.KeyType
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelKey
+import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
+import cloud.mallne.dicentra.areaassist.model.parcel.PreDefined
+import cloud.mallne.dicentra.areaassist.model.parcel.UnitFormat
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import cloud.mallne.dicentra.aviator.koas.Operation
@@ -21,7 +27,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 
 object ParcelConstants {
-    val endpointVersion = SemVer(1, 0, 1, "g")
+    val endpointVersion = SemVer(1, 0, 2, "a")
     val locator = APIs.Services.PARCEL_SERVICE.locator(
         ServiceMethods.GATHER
     )
