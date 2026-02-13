@@ -29,5 +29,5 @@ enum class PreDefined {
     //Commons
     ID;
 
-    fun toTranslatable() = KeyTranslation(predef = this)
+    fun toTranslatable() = Translatable.Bundled(this)
 }

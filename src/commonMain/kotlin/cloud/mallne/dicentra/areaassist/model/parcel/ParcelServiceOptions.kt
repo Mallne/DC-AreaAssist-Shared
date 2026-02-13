@@ -1,5 +1,6 @@
 package cloud.mallne.dicentra.areaassist.model.parcel
 
+import cloud.mallne.dicentra.areaassist.model.DisplayConstraints
 import cloud.mallne.dicentra.areaassist.model.Point
 import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
 import cloud.mallne.dicentra.areaassist.statics.Serialization
@@ -21,6 +22,7 @@ data class ParcelServiceOptions @OptIn(ExperimentalUuidApi::class) constructor(
     val license: License? = null,
     val keys: List<ParcelKey> = listOf(),
     val staticFeatures: List<StaticFeature> = StaticFeature.entries,
+    val constraints: DisplayConstraints = DisplayConstraints(),
 ) : InflatedServiceOptions {
 
     override fun usable(): ServiceOptions = Serialization().encodeToJsonElement(this)

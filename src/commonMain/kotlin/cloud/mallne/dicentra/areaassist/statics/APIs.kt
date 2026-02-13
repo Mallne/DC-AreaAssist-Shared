@@ -1,11 +1,14 @@
 package cloud.mallne.dicentra.areaassist.statics
 
 import cloud.mallne.dicentra.areaassist.model.AuthServiceOptions
+import cloud.mallne.dicentra.areaassist.model.DisplayConstraints
+import cloud.mallne.dicentra.areaassist.model.SystemMode
 import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
 import cloud.mallne.dicentra.areaassist.model.map.MapLayer
 import cloud.mallne.dicentra.areaassist.model.map.MapSource
 import cloud.mallne.dicentra.areaassist.model.map.MapStyleServiceOptions
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
+import cloud.mallne.dicentra.areaassist.model.parcel.Translatable
 import cloud.mallne.dicentra.areaassist.model.screen.DeepLinks
 import cloud.mallne.dicentra.areaassist.model.weather.WeatherConstants
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
@@ -59,7 +62,7 @@ object APIs {
                             ServiceMethods.GATHER
                         ).usable(),
                         AviatorExtensionSpec.ServiceOptions.O.key to MapStyleServiceOptions(
-                            mode = MapStyleServiceOptions.MapMode.Light,
+                            constraints = DisplayConstraints(listOf(SystemMode.Light)),
                             backgroundColor = "#fafafa",
                             extraSources = listOf(
                                 MapSource.RasterMapSource(
@@ -77,7 +80,12 @@ object APIs {
                                         MapLayer.RasterMapLayer(
                                             id = "l_dopTh",
                                             visible = false,
-                                            description = "Orthofotos Thüringen",
+                                            display = Translatable.Localization(
+                                                mapOf(
+                                                    Translatable.Localization.ENGLISH to "Orthophotos Thuringia",
+                                                    Translatable.Localization.GERMAN to "Orthofotos Thüringen"
+                                                )
+                                            ),
                                             minZoom = 14.5f
                                         )
                                     )
@@ -91,28 +99,20 @@ object APIs {
                                         MapLayer.RasterMapLayer(
                                             id = "l_bayern",
                                             visible = false,
-                                            description = "Passive Flurstücke Bayern",
+                                            display = Translatable.Localization(
+                                                mapOf(
+                                                    Translatable.Localization.ENGLISH to "Parcels Bavaria",
+                                                    Translatable.Localization.GERMAN to "Flurstücke Bayern"
+                                                )
+                                            ),
                                             minZoom = 14.5f
                                         )
                                     )
                                 ),
-                                MapSource.RasterMapSource(
-                                    tiles = listOf(
-                                        "https://www.geoproxy.geoportal-th.de/geoproxy/services/adv_alkis_wms_th?bbox={bbox-epsg-3857}&service=WMS&request=GetMap&styles=&srs=EPSG:3857&width=512&height=512&format=image/png&transparent=true&version=1.1.1&layers=adv_alkis_flurstuecke"
-                                    ),
-                                    tileSize = 512,
-                                    layers = listOf(
-                                        MapLayer.RasterMapLayer(
-                                            id = "l_alkis_thueringen",
-                                            visible = false,
-                                            description = "Passive Flurstücke Thüringen",
-                                            minZoom = 14.5f
-                                        )
-                                    )
-                                )
                             ),
                             serviceHint = "basemap_light_default",
-                            name = "Basemap.world"
+                            name = Translatable.Localization.nonTranslatable("Basemap.world"),
+                            mapFont = "Roboto Regular"
                         ).usable()
                     ),
                 )
@@ -147,7 +147,7 @@ object APIs {
                             ServiceMethods.GATHER
                         ).usable(),
                         AviatorExtensionSpec.ServiceOptions.O.key to MapStyleServiceOptions(
-                            mode = MapStyleServiceOptions.MapMode.Dark,
+                            constraints = DisplayConstraints(listOf(SystemMode.Dark)),
                             extraSources = listOf(
                                 MapSource.RasterMapSource(
                                     tiles = listOf(
@@ -164,7 +164,12 @@ object APIs {
                                         MapLayer.RasterMapLayer(
                                             id = "l_dopTh",
                                             visible = false,
-                                            description = "Orthofotos Thüringen",
+                                            display = Translatable.Localization(
+                                                mapOf(
+                                                    Translatable.Localization.ENGLISH to "Orthophotos Thuringia",
+                                                    Translatable.Localization.GERMAN to "Orthofotos Thüringen"
+                                                )
+                                            ),
                                             minZoom = 14.5f
                                         )
                                     )
@@ -179,6 +184,7 @@ object APIs {
                                             id = "l_topplus",
                                             opacity = 0.5f,
                                             userToggle = false,
+                                            display = Translatable.Localization.nonTranslatable("TopPlusOpen"),
                                             position = MapLayer.LayerPositioning(
                                                 MapLayer.LayerPositioning.Where.Below,
                                                 "Hintergrund"
@@ -195,14 +201,20 @@ object APIs {
                                         MapLayer.RasterMapLayer(
                                             id = "l_bayern",
                                             visible = false,
-                                            description = "Passive Flurstücke Bayern",
+                                            display = Translatable.Localization(
+                                                mapOf(
+                                                    Translatable.Localization.ENGLISH to "Parcels Bavaria",
+                                                    Translatable.Localization.GERMAN to "Flurstücke Bayern"
+                                                )
+                                            ),
                                             minZoom = 14.5f
                                         )
                                     )
                                 )
                             ),
                             serviceHint = "basemap_dark_default",
-                            name = "Basemap.de Dark + TopPlusOpen"
+                            name = Translatable.Localization.nonTranslatable("Basemap.de Dark + TopPlusOpen"),
+                            mapFont = "Roboto Regular"
                         ).usable()
                     ),
                 )
@@ -264,7 +276,7 @@ object APIs {
         ),
         paths = mapOf(
             "/adv_alkis_wfs" to PathItem(
-                summary = "Flurstücke Thüringen",
+                summary = "Geoproxy Thüringen: Flurstücke",
                 post = Operation(
                     operationId = Bundesland.THUERINGEN.iso3166_2,
                     requestBody = ReferenceOr.Value(

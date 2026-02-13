@@ -1,5 +1,7 @@
 package cloud.mallne.dicentra.areaassist.model.map
 
+import cloud.mallne.dicentra.areaassist.model.DisplayConstraints
+import cloud.mallne.dicentra.areaassist.model.parcel.Translatable
 import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
 import cloud.mallne.dicentra.aviator.core.ServiceOptions
@@ -11,16 +13,11 @@ import kotlin.uuid.Uuid
 @Serializable
 data class MapStyleServiceOptions @OptIn(ExperimentalUuidApi::class) constructor(
     val serviceHint: String = Uuid.random().toString(),
-    val name: String = serviceHint,
+    val name: Translatable = Translatable.Localization(mapOf(Translatable.Localization.ENGLISH to serviceHint)),
     val extraSources: List<MapSource> = listOf(),
-    val mode: MapMode,
-    val backgroundColor: String = "#212121"
+    val constraints: DisplayConstraints = DisplayConstraints(),
+    val mapFont: String,
+    val backgroundColor: String = "#212121",
 ) : InflatedServiceOptions {
     override fun usable(): ServiceOptions = Serialization().encodeToJsonElement(this)
-
-    enum class MapMode {
-        Dark,
-        Light,
-        Other
-    }
 }
