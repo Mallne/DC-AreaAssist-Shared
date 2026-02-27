@@ -433,7 +433,7 @@ object ParcelConstants {
                 ).usable()
             ),
         ),
-        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_SN = PathItem(
         summary = "Flurstücke Sachsen",
@@ -461,7 +461,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_BB = PathItem(
         summary = "Flurstücke Brandenburg",
@@ -491,7 +491,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_HE = PathItem(
         summary = "Flurstücke Hessen",
@@ -515,7 +515,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_HH = PathItem(
         summary = "Flurstücke Hamburg",
@@ -541,7 +541,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_NW = PathItem(
         summary = "Flurstücke Nordrhein-Westfalen",
@@ -566,7 +566,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_ST = PathItem(
         summary = "Flurstücke Sachsen-Anhalt",
@@ -598,7 +598,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_BE = PathItem(
         summary = "Flurstücke Berlin",
@@ -628,7 +628,7 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_NI = PathItem(
         summary = "Flurstücke Niedersachsen",
@@ -658,6 +658,6 @@ object ParcelConstants {
                 ).usable(),
             )
         ),
-        parameters = Path.esriParams.keys.map { ReferenceOr.parameters(it) }
+        parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
 }

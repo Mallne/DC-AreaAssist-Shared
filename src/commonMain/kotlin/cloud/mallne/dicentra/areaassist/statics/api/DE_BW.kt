@@ -16,9 +16,6 @@ import cloud.mallne.dicentra.aviator.koas.PathItem
 import cloud.mallne.dicentra.aviator.koas.extensions.ReferenceOr
 import cloud.mallne.dicentra.aviator.koas.info.Info
 import cloud.mallne.dicentra.aviator.koas.info.License
-import cloud.mallne.dicentra.aviator.koas.io.MediaType
-import cloud.mallne.dicentra.aviator.koas.io.Schema
-import cloud.mallne.dicentra.aviator.koas.parameters.RequestBody
 import cloud.mallne.dicentra.aviator.koas.servers.Server
 
 object DE_BW : ApiObject {
@@ -73,7 +70,7 @@ object DE_BW : ApiObject {
                             parcelLinkReference = Bundesland.BADEN_WUERTTEMBERG.iso3166_2 + "_default",
                         ).usable()
                     ),
-                    parameters = Path.wfsParams.keys.map { ReferenceOr.parameters(it) }
+                    parameters = Path.wfsParams.keys.map { ReferenceOr.parameter(it) }
                 ),
             ),
         ),
