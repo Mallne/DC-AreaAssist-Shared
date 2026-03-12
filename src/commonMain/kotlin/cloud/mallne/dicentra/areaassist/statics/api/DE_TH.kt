@@ -51,7 +51,7 @@ object DE_TH : ApiObject {
                     requestBody = ReferenceOr.Value(
                         RequestBody(
                             content = mapOf(
-                                "application/xml" to MediaType(schema = ReferenceOr.Value(Schema(type = Schema.Type.Basic.Object)))
+                                "application/xml" to ReferenceOr.value(MediaType(schema = ReferenceOr.Value(Schema(type = Schema.Type.Basic.Object))))
                             )
                         )
                     ),
