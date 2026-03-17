@@ -11,6 +11,7 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 @JsonClassDiscriminator("type")
 sealed interface MapSource {
     val layers: List<MapLayer>
+
     @Serializable
     class RasterMapSource(
         val tiles: List<String>,
@@ -23,6 +24,7 @@ sealed interface MapSource {
         override val layers: List<MapLayer>
     ) : MapSource
 
+    @Serializable
     enum class SourceScheme {
         @SerialName("xyz")
         XYZ,

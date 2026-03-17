@@ -9,6 +9,7 @@ import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
 import cloud.mallne.dicentra.aviator.koas.OpenAPI
 import cloud.mallne.dicentra.aviator.model.SemVer
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
+import kotlinx.serialization.Serializable
 
 object APIs {
     val mapLight by MapLight
@@ -93,6 +94,7 @@ object APIs {
         return apis.map { it.copy(info = it.info.copy(version = version.toString())) }
     }
 
+    @Serializable
     enum class Services(
         private val serviceLocator: String,
     ) {

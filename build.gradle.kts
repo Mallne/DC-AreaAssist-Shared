@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.kmp)
     alias(libs.plugins.android.library)
     alias(libs.plugins.mavenPublish)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.ben.manes.versions)
@@ -74,21 +73,12 @@ kotlin {
                 api(libs.kotlinx.datetime)
                 api(libs.ktor.client.core)
                 api(libs.ktor.http)
-                api(libs.koin.annotations)
                 api(libs.xml)
                 api(libs.maplibre.spatialk)
             }
         }
     }
     jvmToolchain(21)
-}
-
-dependencies {
-    add("kspCommonMainMetadata", libs.koin.ksp)
-    add("kspAndroid", libs.koin.ksp)
-    add("kspIosX64", libs.koin.ksp)
-    add("kspIosArm64", libs.koin.ksp)
-    add("kspIosSimulatorArm64", libs.koin.ksp)
 }
 
 mavenPublishing {

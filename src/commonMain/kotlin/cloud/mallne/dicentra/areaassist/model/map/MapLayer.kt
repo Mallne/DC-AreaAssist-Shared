@@ -45,6 +45,7 @@ sealed interface MapLayer {
         val where: Where,
         val otherLayer: String,
     ) {
+        @Serializable
         enum class Where {
             Above, Below, Top, Bottom
         }

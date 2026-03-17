@@ -1,6 +1,9 @@
 package cloud.mallne.dicentra.areaassist.model.bundeslaender
 
+import kotlinx.serialization.Serializable
+
 @Suppress("SpellCheckingInspection")
+@Serializable
 enum class Bundesland(
     definition: BundeslandDefinition,
 ) : BundeslandDefinition by definition {

@@ -15,6 +15,7 @@ import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
 import cloud.mallne.geokit.Boundary
 import cloud.mallne.geokit.geojson.JsonFeature
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import kotlin.time.ExperimentalTime
 
@@ -107,6 +108,7 @@ object AreaAssistParameters {
         } else null
     }
 
+    @Serializable
     enum class InflationMode {
         Auto, Identifier, Reference
     }
