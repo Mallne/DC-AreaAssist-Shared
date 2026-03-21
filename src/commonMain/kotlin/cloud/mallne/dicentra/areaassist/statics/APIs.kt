@@ -107,7 +107,8 @@ object APIs {
         PARCEL_SERVICE("&.curator.parcelService"),
         AUTH_TOKEN("&.warden.token"),
         AUTH_AUTHORIZATION("&.warden.auth"),
-        AUTH_ACCOUNT("&.warden.account");
+        AUTH_ACCOUNT("&.warden.account"),
+        SYNC_SERVICE("&.sync.service");
 
         fun locator(flavour: ServiceMethods): ServiceLocator {
             return ServiceLocator(
