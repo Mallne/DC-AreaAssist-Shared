@@ -3,7 +3,7 @@ package cloud.mallne.dicentra.areaassist.model.screen
 import cloud.mallne.dicentra.areaassist.model.curator.Query
 import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.geokit.Vertex
-import io.ktor.http.encodeURLParameter
+import io.ktor.http.*
 
 object DeepLinks {
     const val BASE = "https://areaassist.mallne.cloud"
@@ -19,6 +19,7 @@ object DeepLinks {
         val agrimensor = "$base/computist/agrimensor"
         val login = "$base/login"
         val action = "$base/action"
+        val sync = "$base/sync"
 
         fun generateCompassDeeplink(positions: List<Vertex>): String =
             "$compass?r=${Serialization().encodeToString(positions).encodeURLParameter()}"
