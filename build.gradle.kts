@@ -73,6 +73,7 @@ kotlin {
                 api(libs.kotlinx.datetime)
                 api(libs.ktor.client.core)
                 api(libs.ktor.http)
+                api(libs.ktor.openapi.schema)
                 api(libs.xml)
                 api(libs.maplibre.spatialk)
             }

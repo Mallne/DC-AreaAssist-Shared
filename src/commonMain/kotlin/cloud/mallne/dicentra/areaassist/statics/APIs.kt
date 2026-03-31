@@ -11,9 +11,9 @@ import cloud.mallne.dicentra.areaassist.statics.api.MapLight
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
-import cloud.mallne.dicentra.aviator.koas.OpenAPI
 import cloud.mallne.dicentra.aviator.model.SemVer
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
+import io.ktor.openapi.*
 import kotlinx.serialization.Serializable
 
 object APIs {
@@ -95,7 +95,7 @@ object APIs {
         brightSky,
     )
 
-    fun apiOverrideVersion(version: SemVer = ParcelConstants.endpointVersion): List<OpenAPI> {
+    fun apiOverrideVersion(version: SemVer = ParcelConstants.endpointVersion): List<OpenApiDoc> {
         return apis.map { it.copy(info = it.info.copy(version = version.toString())) }
     }
 

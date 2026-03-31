@@ -1,13 +1,10 @@
 package cloud.mallne.dicentra.areaassist.model.weather
 
 import cloud.mallne.dicentra.areaassist.statics.APIs
-import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceDelegateCall`
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceOptions`
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
-import cloud.mallne.dicentra.aviator.koas.Operation
-import cloud.mallne.dicentra.aviator.koas.PathItem
-import cloud.mallne.dicentra.aviator.koas.extensions.ReferenceOr
-import cloud.mallne.dicentra.aviator.koas.io.Schema
-import cloud.mallne.dicentra.aviator.koas.parameters.Parameter
+import io.ktor.openapi.*
 
 object WeatherConstants {
     object Path {
@@ -31,470 +28,206 @@ object WeatherConstants {
 
     val WEATHER_ALERTS = PathItem(
         summary = "Weather Alerts",
-        get = Operation(
-            operationId = "WeatherAlerts",
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to APIs.Services.WEATHER_SERVICE_WARNING.locator(
-                    ServiceMethods.GATHER
-                ).usable(),
-                AviatorExtensionSpec.ServiceOptions.O.key to WeatherServiceOptions(
-                    serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-                ).usable(),
-            ),
-            parameters = listOf(
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LAT,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LON,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.WARN_CELL_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.TZ,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    )
-                )
+        get = Operation.build {
+            operationId = "WeatherAlerts"
+            `x-dicentra-aviator-serviceDelegateCall` = APIs.Services.WEATHER_SERVICE_WARNING.locator(
+                ServiceMethods.GATHER
             )
-        )
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
+                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
+            ).usable()
+            parameters {
+                query(Path.Parameters.LAT) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.LON) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.WARN_CELL_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.TZ) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+            }
+        }
     )
     val CURRENT_WEATHER = PathItem(
         summary = "Current Weather",
-        get = Operation(
-            operationId = "CurrentSources",
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to APIs.Services.WEATHER_SERVICE_CURRENT.locator(
-                    ServiceMethods.GATHER
-                ).usable(),
-                AviatorExtensionSpec.ServiceOptions.O.key to WeatherServiceOptions(
-                    serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-                ).usable(),
-            ),
-            parameters = listOf(
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LAT,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LON,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.DWD_STATION_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.WMO_STATION_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.SOURCE_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.MAX_DIST,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.TZ,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.UNITS,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
+        get = Operation.build {
+            operationId = "CurrentSources"
+            `x-dicentra-aviator-serviceDelegateCall` = APIs.Services.WEATHER_SERVICE_CURRENT.locator(
+                ServiceMethods.GATHER
             )
-        )
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
+                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
+            ).usable()
+            parameters {
+                query(Path.Parameters.LAT) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.LON) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.DWD_STATION_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.WMO_STATION_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.SOURCE_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.MAX_DIST) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.UNITS) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.TZ) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+            }
+        }
     )
     val WEATHER_RADAR = PathItem(
         summary = "Weather Radar",
-        get = Operation(
-            operationId = "WeatherRadar",
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceOptions.O.key to WeatherServiceOptions(
-                    serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-                ).usable(),
-            ),
-            parameters = listOf(
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.DATE,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LAST_DATE,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.BBOX,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LAT,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LON,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.DISTANCE,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.TZ,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.FORMAT,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(
-                            Schema(
-                                type = Schema.Type.Basic.String
-                            )
-                        )
-                    ),
-                )
-            )
-        )
+        get = Operation.build {
+            operationId = "WeatherRadar"
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
+                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
+            ).usable()
+            parameters {
+                query(Path.Parameters.LAT) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.LON) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.DATE) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.LAST_DATE) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.BBOX) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.DISTANCE) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.FORMAT) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.TZ) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+            }
+        }
     )
     val WEATHER_SOURCES = PathItem(
         summary = "Weather Sources",
-        get = Operation(
-            operationId = "WeatherSources",
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceOptions.O.key to WeatherServiceOptions(
-                    serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-                ).usable()
-            ),
-            parameters = listOf(
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LAT,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LON,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.DWD_STATION_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.WMO_STATION_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.SOURCE_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.MAX_DIST,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                )
-            )
-        )
+        get = Operation.build {
+            operationId = "WeatherSources"
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
+                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
+            ).usable()
+            parameters {
+                query(Path.Parameters.LAT) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.LON) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.DWD_STATION_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.WMO_STATION_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.SOURCE_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.MAX_DIST) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+            }
+        }
     )
     val WEATHER_SYNOP = PathItem(
         summary = "Weather Synop",
-        get = Operation(
-            operationId = "WeatherSynop",
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceOptions.O.key to WeatherServiceOptions(
-                    serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-                ).usable(),
-            ),
-            parameters = listOf(
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.DATE,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LAST_DATE,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.DWD_STATION_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.WMO_STATION_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.SOURCE_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.TZ,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.UNITS,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                )
-            )
-        )
+        get = Operation.build {
+            operationId = "WeatherSynop"
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
+                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
+            ).usable()
+            parameters {
+                query(Path.Parameters.DATE) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.LAST_DATE) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.DWD_STATION_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.WMO_STATION_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.SOURCE_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.TZ) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.UNITS) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+            }
+        }
     )
     val WEATHER = PathItem(
         summary = "Weather",
-        get = Operation(
-            operationId = "WeatherForecast",
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to APIs.Services.WEATHER_SERVICE_FORECAST.locator(
-                    ServiceMethods.GATHER
-                ).usable(),
-                AviatorExtensionSpec.ServiceOptions.O.key to WeatherServiceOptions(
-                    serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-                ).usable()
-            ),
-            parameters = listOf(
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.DATE,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LAST_DATE,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LAT,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.LON,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.DWD_STATION_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.WMO_STATION_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.SOURCE_ID,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.MAX_DIST,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.TZ,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                ),
-                ReferenceOr.value(
-                    Parameter(
-                        name = Path.Parameters.UNITS,
-                        input = Parameter.Input.Query,
-                        schema = ReferenceOr.value(Schema(type = Schema.Type.Basic.String))
-                    ),
-                )
+        get = Operation.build {
+            operationId = "WeatherForecast"
+            `x-dicentra-aviator-serviceDelegateCall` = APIs.Services.WEATHER_SERVICE_FORECAST.locator(
+                ServiceMethods.GATHER
             )
-        )
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
+                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
+            ).usable()
+            parameters {
+                query(Path.Parameters.DATE) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.LAST_DATE) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.LAT) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.LON) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.DWD_STATION_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.WMO_STATION_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.SOURCE_ID) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.MAX_DIST) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.TZ) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+                query(Path.Parameters.UNITS) {
+                    schema = JsonSchema(type = JsonType.STRING)
+                }
+            }
+        }
     )
 }

@@ -12,17 +12,15 @@ import cloud.mallne.dicentra.areaassist.model.parcel.ParcelKey
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.model.parcel.PreDefined
 import cloud.mallne.dicentra.areaassist.model.parcel.UnitFormat
-import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-pluginMaterialization`
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceDelegateCall`
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceOptions`
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
-import cloud.mallne.dicentra.aviator.koas.Operation
-import cloud.mallne.dicentra.aviator.koas.PathItem
-import cloud.mallne.dicentra.aviator.koas.extensions.ReferenceOr
-import cloud.mallne.dicentra.aviator.koas.info.License
-import cloud.mallne.dicentra.aviator.koas.io.Schema
-import cloud.mallne.dicentra.aviator.koas.parameters.Parameter
+import cloud.mallne.dicentra.aviator.koas.extensions.ReferenceExtensions.parameter
 import cloud.mallne.dicentra.aviator.model.SemVer
 import cloud.mallne.units.Area
 import cloud.mallne.units.Units
+import io.ktor.openapi.*
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 
@@ -187,12 +185,12 @@ object ParcelConstants {
     }
 
     val esriAdapterConfig =
-        Serialization().encodeToJsonElement(mapOf(EsriAdapterPlugin.identity to EsriAdapterPluginConfig(active = true)))
+        mapOf(EsriAdapterPlugin.identity to Serialization().encodeToJsonElement(EsriAdapterPluginConfig(active = true)))
 
-    fun wfsAdapterConfig(config: WfsAdapterPluginConfig.() -> Unit): JsonElement {
+    fun wfsAdapterConfig(config: WfsAdapterPluginConfig.() -> Unit): Map<String, JsonElement> {
         val c = WfsAdapterPluginConfig(true)
         c.config()
-        return Serialization().encodeToJsonElement(mapOf(WfsAdapterPlugin.IDENTITY to c))
+        return mapOf(WfsAdapterPlugin.IDENTITY to Serialization().encodeToJsonElement(c))
     }
 
     object Path {
@@ -200,10 +198,10 @@ object ParcelConstants {
             EsriAdapterPlugin.Parameters.WHERE to ReferenceOr.value(
                 Parameter(
                     EsriAdapterPlugin.Parameters.WHERE,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -211,10 +209,10 @@ object ParcelConstants {
             EsriAdapterPlugin.Parameters.OUT_FIELDS to ReferenceOr.value(
                 Parameter(
                     EsriAdapterPlugin.Parameters.OUT_FIELDS,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -222,10 +220,10 @@ object ParcelConstants {
             EsriAdapterPlugin.Parameters.GEOMETRY to ReferenceOr.value(
                 Parameter(
                     EsriAdapterPlugin.Parameters.GEOMETRY,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 ),
@@ -233,10 +231,10 @@ object ParcelConstants {
             EsriAdapterPlugin.Parameters.RETURN_GEOMETRY to ReferenceOr.value(
                 Parameter(
                     EsriAdapterPlugin.Parameters.RETURN_GEOMETRY,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 ),
@@ -244,10 +242,10 @@ object ParcelConstants {
             EsriAdapterPlugin.Parameters.OUT_SR to ReferenceOr.value(
                 Parameter(
                     EsriAdapterPlugin.Parameters.OUT_SR,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 ),
@@ -255,10 +253,10 @@ object ParcelConstants {
             EsriAdapterPlugin.Parameters.IN_SR to ReferenceOr.value(
                 Parameter(
                     EsriAdapterPlugin.Parameters.IN_SR,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 ),
@@ -266,10 +264,10 @@ object ParcelConstants {
             EsriAdapterPlugin.Parameters.GEOMETRY_TYPE to ReferenceOr.value(
                 Parameter(
                     EsriAdapterPlugin.Parameters.GEOMETRY_TYPE,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 ),
@@ -277,10 +275,10 @@ object ParcelConstants {
             EsriAdapterPlugin.Parameters.SPATIAL_REL to ReferenceOr.value(
                 Parameter(
                     EsriAdapterPlugin.Parameters.SPATIAL_REL,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 ),
@@ -288,10 +286,10 @@ object ParcelConstants {
             EsriAdapterPlugin.Parameters.FILE to ReferenceOr.value(
                 Parameter(
                     EsriAdapterPlugin.Parameters.FILE,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -301,10 +299,10 @@ object ParcelConstants {
             WfsAdapterPlugin.Parameters.COUNT to ReferenceOr.value(
                 Parameter(
                     WfsAdapterPlugin.Parameters.COUNT,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -312,10 +310,10 @@ object ParcelConstants {
             WfsAdapterPlugin.Parameters.BBOX to ReferenceOr.value(
                 Parameter(
                     WfsAdapterPlugin.Parameters.BBOX,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -323,10 +321,10 @@ object ParcelConstants {
             WfsAdapterPlugin.Parameters.SRS_NAME to ReferenceOr.value(
                 Parameter(
                     WfsAdapterPlugin.Parameters.SRS_NAME,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -334,10 +332,10 @@ object ParcelConstants {
             WfsAdapterPlugin.Parameters.TYPE_NAMES to ReferenceOr.value(
                 Parameter(
                     WfsAdapterPlugin.Parameters.TYPE_NAMES,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -345,10 +343,10 @@ object ParcelConstants {
             WfsAdapterPlugin.Parameters.REQUEST to ReferenceOr.value(
                 Parameter(
                     WfsAdapterPlugin.Parameters.REQUEST,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -356,10 +354,10 @@ object ParcelConstants {
             WfsAdapterPlugin.Parameters.VERSION to ReferenceOr.value(
                 Parameter(
                     WfsAdapterPlugin.Parameters.VERSION,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -367,10 +365,10 @@ object ParcelConstants {
             WfsAdapterPlugin.Parameters.SERVICE to ReferenceOr.value(
                 Parameter(
                     WfsAdapterPlugin.Parameters.SERVICE,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -378,10 +376,10 @@ object ParcelConstants {
             WfsAdapterPlugin.Parameters.FILTER to ReferenceOr.value(
                 Parameter(
                     WfsAdapterPlugin.Parameters.FILTER,
-                    Parameter.Input.Query,
+                    ParameterType.query,
                     schema = ReferenceOr.value(
-                        Schema(
-                            type = Schema.Type.Basic.String
+                        JsonSchema(
+                            type = JsonType.STRING
                         )
                     )
                 )
@@ -389,7 +387,7 @@ object ParcelConstants {
         )
     }
 
-    private val LC_DL_ZERO = License(
+    private val LC_DL_ZERO = OpenApiInfo.License(
         name = "Datenlizenz Deutschland – Zero",
         url = "https://www.govdata.de/dl-de/zero-2-0"
     )
@@ -398,266 +396,248 @@ object ParcelConstants {
 
     val DE_TH = PathItem(
         summary = "Flurstücke Thüringen",
-        get = Operation(
-            operationId = Bundesland.THUERINGEN.iso3166_2,
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
-                AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
-                    bounds = Bundesland.THUERINGEN.roughBoundaries,
-                    correspondsTo = Bundesland.THUERINGEN.iso3166_2,
-                    keys = DefaultKeys.fillIn(
-                        area = "flaeche",
-                        parcelId = "flstkennz",
-                        district = "gemarkung",
-                        districtId = "gemaschl",
-                        districtCompartment = "flur",
-                        districtCompartmentId = "flurschl",
-                        districtMunicipality = "gemeinde",
-                        districtMunicipalityId = "gmdschl",
-                        districtRegion = "kreis",
-                        districtRegionId = "kreisschl",
-                        usageLegalDeviation = "abwrecht",
-                        plot = "flurstnr",
-                        plotNumerator = "flstnrzae",
-                        plotDenominator = "flstnrnen",
-                        location = "lagebeztxt",
-                        usageHint = "tntext"
-                    ),
-                    parcelLinkReference = Bundesland.THUERINGEN.iso3166_2 + "_default",
-                    license = License(
-                        name = "© GDI-Th",
-                        identifier = "Flurstücke Thüringen",
-                        url = LC_DL_BY
-                    )
-                ).usable()
-            ),
-        ),
+        get = Operation.build {
+            operationId = Bundesland.THUERINGEN.iso3166_2
+            `x-dicentra-aviator-serviceDelegateCall` = locator
+            `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
+            `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
+                bounds = Bundesland.THUERINGEN.roughBoundaries,
+                correspondsTo = Bundesland.THUERINGEN.iso3166_2,
+                keys = DefaultKeys.fillIn(
+                    area = "flaeche",
+                    parcelId = "flstkennz",
+                    district = "gemarkung",
+                    districtId = "gemaschl",
+                    districtCompartment = "flur",
+                    districtCompartmentId = "flurschl",
+                    districtMunicipality = "gemeinde",
+                    districtMunicipalityId = "gmdschl",
+                    districtRegion = "kreis",
+                    districtRegionId = "kreisschl",
+                    usageLegalDeviation = "abwrecht",
+                    plot = "flurstnr",
+                    plotNumerator = "flstnrzae",
+                    plotDenominator = "flstnrnen",
+                    location = "lagebeztxt",
+                    usageHint = "tntext"
+                ),
+                parcelLinkReference = Bundesland.THUERINGEN.iso3166_2 + "_default",
+                license = OpenApiInfo.License(
+                    name = "© GDI-Th",
+                    identifier = "Flurstücke Thüringen",
+                    url = LC_DL_BY
+                )
+            ).usable()
+        },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_SN = PathItem(
         summary = "Flurstücke Sachsen",
-        get = Operation(
-            operationId = Bundesland.SACHSEN.iso3166_2,
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
-                AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
-                    bounds = Bundesland.SACHSEN.roughBoundaries,
-                    correspondsTo = Bundesland.SACHSEN.iso3166_2,
-                    keys = DefaultKeys.fillIn(
-                        area = "AREA_m2",
-                        parcelId = "NATIONALCA",
-                        district = "ADMIN_UNIT",
-                        districtId = "ZONING",
-                        plotNumerator = "LABEL",
-                    ),
-                    parcelLinkReference = Bundesland.SACHSEN.iso3166_2 + "_default",
-                    license = License(
-                        name = "© Geobasisinformation und Vermessung Sachsen (GeoSN)",
-                        identifier = "Flurstücke Sachsen",
-                        url = LC_DL_BY
-                    )
-                ).usable(),
-            )
-        ),
+        get = Operation.build {
+            operationId = Bundesland.SACHSEN.iso3166_2
+            `x-dicentra-aviator-serviceDelegateCall` = locator
+            `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
+            `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
+                bounds = Bundesland.SACHSEN.roughBoundaries,
+                correspondsTo = Bundesland.SACHSEN.iso3166_2,
+                keys = DefaultKeys.fillIn(
+                    area = "AREA_m2",
+                    parcelId = "NATIONALCA",
+                    district = "ADMIN_UNIT",
+                    districtId = "ZONING",
+                    plotNumerator = "LABEL",
+                ),
+                parcelLinkReference = Bundesland.SACHSEN.iso3166_2 + "_default",
+                license = OpenApiInfo.License(
+                    name = "© Geobasisinformation und Vermessung Sachsen (GeoSN)",
+                    identifier = "Flurstücke Sachsen",
+                    url = LC_DL_BY
+                )
+            ).usable()
+        },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_BB = PathItem(
         summary = "Flurstücke Brandenburg",
-        get = Operation(
-            operationId = Bundesland.BRANDENBURG.iso3166_2,
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
-                AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
-                    bounds = Bundesland.BRANDENBURG.roughBoundaries,
-                    correspondsTo = Bundesland.BRANDENBURG.iso3166_2,
-                    keys = DefaultKeys.fillIn(
-                        area = "flaeche",
-                        parcelId = "flstkennz",
-                        district = "gemarkung",
-                        districtCompartmentId = "flur",
-                        plotNumerator = "flurstnr",
-                        districtMunicipalityId = "gmdschl",
-                        location = "lagebeztxt"
-                    ),
-                    parcelLinkReference = Bundesland.BRANDENBURG.iso3166_2 + "_default",
-                    license = License(
-                        name = "GeoBasis-DE/LGB, 2023",
-                        identifier = "Flurstücke Brandenburg",
-                        url = LC_DL_BY
-                    )
-                ).usable(),
-            )
-        ),
+        get = Operation.build {
+            operationId = Bundesland.BRANDENBURG.iso3166_2
+            `x-dicentra-aviator-serviceDelegateCall` = locator
+            `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
+            `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
+                bounds = Bundesland.BRANDENBURG.roughBoundaries,
+                correspondsTo = Bundesland.BRANDENBURG.iso3166_2,
+                keys = DefaultKeys.fillIn(
+                    area = "flaeche",
+                    parcelId = "flstkennz",
+                    district = "gemarkung",
+                    districtCompartmentId = "flur",
+                    plotNumerator = "flurstnr",
+                    districtMunicipalityId = "gmdschl",
+                    location = "lagebeztxt"
+                ),
+                parcelLinkReference = Bundesland.BRANDENBURG.iso3166_2 + "_default",
+                license = OpenApiInfo.License(
+                    name = "GeoBasis-DE/LGB, 2023",
+                    identifier = "Flurstücke Brandenburg",
+                    url = LC_DL_BY
+                )
+            ).usable()
+        },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_HE = PathItem(
         summary = "Flurstücke Hessen",
-        get = Operation(
-            operationId = Bundesland.HESSEN.iso3166_2,
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
-                AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
-                    bounds = Bundesland.HESSEN.roughBoundaries,
-                    correspondsTo = Bundesland.HESSEN.iso3166_2,
-                    keys = DefaultKeys.fillIn(
-                        area = "amtlicheFlaeche",
-                        parcelId = "flurstueckskennzeichen",
-                        districtId = "gemarkung_AX_Gemarkung_Schluess",
-                        plotNumerator = "flurstuecksnummer_AX_Flurstueck",
-                        plotDenominator = "flurstuecksnummer_AX_Flurstue_1",
-                    ),
-                    parcelLinkReference = Bundesland.HESSEN.iso3166_2 + "_default",
-                    license = LC_DL_ZERO.copy(identifier = "Flurstücke Hessen")
-                ).usable(),
-            )
-        ),
+        get = Operation.build {
+            operationId = Bundesland.HESSEN.iso3166_2
+            `x-dicentra-aviator-serviceDelegateCall` = locator
+            `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
+            `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
+                bounds = Bundesland.HESSEN.roughBoundaries,
+                correspondsTo = Bundesland.HESSEN.iso3166_2,
+                keys = DefaultKeys.fillIn(
+                    area = "amtlicheFlaeche",
+                    parcelId = "flurstueckskennzeichen",
+                    districtId = "gemarkung_AX_Gemarkung_Schluess",
+                    plotNumerator = "flurstuecksnummer_AX_Flurstueck",
+                    plotDenominator = "flurstuecksnummer_AX_Flurstue_1",
+                ),
+                parcelLinkReference = Bundesland.HESSEN.iso3166_2 + "_default",
+                license = LC_DL_ZERO.copy(identifier = "Flurstücke Hessen")
+            ).usable()
+        },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_HH = PathItem(
         summary = "Flurstücke Hamburg",
-        get = Operation(
-            operationId = Bundesland.HAMBURG.iso3166_2,
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
-                AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
-                    bounds = Bundesland.HAMBURG.roughBoundaries,
-                    correspondsTo = Bundesland.HAMBURG.iso3166_2,
-                    keys = DefaultKeys.fillIn(
-                        area = "areaValue",
-                        parcelId = "nationalCadastralReference",
-                        plotNumerator = "label",
-                    ),
-                    parcelLinkReference = Bundesland.HAMBURG.iso3166_2 + "_default",
-                    license = License(
-                        name = "Freie und Hansestadt Hamburg, Landesbetrieb Geoinformation und Vermessung (LGV)",
-                        url = LC_DL_BY,
-                        identifier = "Flurstücke Hamburg"
-                    )
-                ).usable(),
-            )
-        ),
+        get = Operation.build {
+            operationId = Bundesland.HAMBURG.iso3166_2
+            `x-dicentra-aviator-serviceDelegateCall` = locator
+            `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
+            `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
+                bounds = Bundesland.HAMBURG.roughBoundaries,
+                correspondsTo = Bundesland.HAMBURG.iso3166_2,
+                keys = DefaultKeys.fillIn(
+                    area = "areaValue",
+                    parcelId = "nationalCadastralReference",
+                    plotNumerator = "label",
+                ),
+                parcelLinkReference = Bundesland.HAMBURG.iso3166_2 + "_default",
+                license = OpenApiInfo.License(
+                    name = "Freie und Hansestadt Hamburg, Landesbetrieb Geoinformation und Vermessung (LGV)",
+                    url = LC_DL_BY,
+                    identifier = "Flurstücke Hamburg"
+                )
+            ).usable()
+        },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_NW = PathItem(
         summary = "Flurstücke Nordrhein-Westfalen",
-        get = Operation(
-            operationId = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2,
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
-                AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
-                    bounds = Bundesland.NORDRHEIN_WESTFALEN.roughBoundaries,
-                    correspondsTo = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2,
-                    keys = DefaultKeys.fillIn(
-                        area = "amtlicheFlaeche",
-                        parcelId = "flurstueckskennzeichen",
-                        districtId = "gemarkung_AX_Gemarkung_Schluess",
-                        districtCompartmentId = "flurnummer",
-                        plotNumerator = "flurstuecksnummer_AX_Flurstueck",
-                        plotDenominator = "flurstuecksnummer_AX_Flurstue_1",
-                    ),
-                    parcelLinkReference = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2 + "_default",
-                    license = LC_DL_ZERO.copy(identifier = "Flurstücke Nordrhein-Westfalen")
-                ).usable(),
-            )
-        ),
+        get = Operation.build {
+            operationId = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2
+            `x-dicentra-aviator-serviceDelegateCall` = locator
+            `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
+            `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
+                bounds = Bundesland.NORDRHEIN_WESTFALEN.roughBoundaries,
+                correspondsTo = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2,
+                keys = DefaultKeys.fillIn(
+                    area = "amtlicheFlaeche",
+                    parcelId = "flurstueckskennzeichen",
+                    districtId = "gemarkung_AX_Gemarkung_Schluess",
+                    districtCompartmentId = "flurnummer",
+                    plotNumerator = "flurstuecksnummer_AX_Flurstueck",
+                    plotDenominator = "flurstuecksnummer_AX_Flurstue_1",
+                ),
+                parcelLinkReference = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2 + "_default",
+                license = LC_DL_ZERO.copy(identifier = "Flurstücke Nordrhein-Westfalen")
+            ).usable()
+        },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_ST = PathItem(
         summary = "Flurstücke Sachsen-Anhalt",
-        get = Operation(
-            operationId = Bundesland.SACHSEN_ANHALT.iso3166_2,
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
-                AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
-                    bounds = Bundesland.SACHSEN_ANHALT.roughBoundaries,
-                    correspondsTo = Bundesland.SACHSEN_ANHALT.iso3166_2,
-                    keys = DefaultKeys.fillIn(
-                        area = "flaeche",
-                        parcelId = "flstkennz",
-                        district = "gemarkung",
-                        districtId = "gemaschl",
-                        districtCompartmentId = "flur",
-                        plotNumerator = "flstnrzae",
-                        plotDenominator = "flstnrnen",
-                        districtMunicipalityId = "gmdschl",
-                        location = "lagebeztxt"
-                    ),
-                    parcelLinkReference = Bundesland.SACHSEN_ANHALT.iso3166_2 + "_default",
-                    license = License(
-                        name = "GeoBasis-DE / LVermGeo LSA, [2023]",
-                        identifier = "Flurstücke Sachsen-Anhalt",
-                        url = "https://www.lvermgeo.sachsen-anhalt.de/datei/anzeigen/id/3567,501/Nutzungsbedingungen.pdf"
-                    )
-                ).usable(),
-            )
-        ),
+        get = Operation.build {
+            operationId = Bundesland.SACHSEN_ANHALT.iso3166_2
+            `x-dicentra-aviator-serviceDelegateCall` = locator
+            `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
+            `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
+                bounds = Bundesland.SACHSEN_ANHALT.roughBoundaries,
+                correspondsTo = Bundesland.SACHSEN_ANHALT.iso3166_2,
+                keys = DefaultKeys.fillIn(
+                    area = "flaeche",
+                    parcelId = "flstkennz",
+                    district = "gemarkung",
+                    districtId = "gemaschl",
+                    districtCompartmentId = "flur",
+                    plotNumerator = "flstnrzae",
+                    plotDenominator = "flstnrnen",
+                    districtMunicipalityId = "gmdschl",
+                    location = "lagebeztxt"
+                ),
+                parcelLinkReference = Bundesland.SACHSEN_ANHALT.iso3166_2 + "_default",
+                license = OpenApiInfo.License(
+                    name = "GeoBasis-DE / LVermGeo LSA, [2023]",
+                    identifier = "Flurstücke Sachsen-Anhalt",
+                    url = "https://www.lvermgeo.sachsen-anhalt.de/datei/anzeigen/id/3567,501/Nutzungsbedingungen.pdf"
+                )
+            ).usable()
+        },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_BE = PathItem(
         summary = "Flurstücke Berlin",
-        get = Operation(
-            operationId = Bundesland.BERLIN.iso3166_2,
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
-                AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
-                    bounds = Bundesland.BERLIN.roughBoundaries,
-                    correspondsTo = Bundesland.BERLIN.iso3166_2,
-                    keys = DefaultKeys.fillIn(
-                        area = "afl",
-                        parcelId = "fsko",
-                        district = "namgem",
-                        districtId = "gmk",
-                        districtCompartmentId = "fln",
-                        plotNumerator = "zae",
-                        plotDenominator = "nen",
-                    ),
-                    parcelLinkReference = Bundesland.BERLIN.iso3166_2 + "_default",
-                    license = License(
-                        name = "Geoportal Berlin / ALKIS Berlin - Flurstücke",
-                        identifier = "Flurstücke Berlin",
-                        url = LC_DL_BY
-                    )
-                ).usable(),
-            )
-        ),
+        get = Operation.build {
+            operationId = Bundesland.BERLIN.iso3166_2
+            `x-dicentra-aviator-serviceDelegateCall` = locator
+            `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
+            `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
+                bounds = Bundesland.BERLIN.roughBoundaries,
+                correspondsTo = Bundesland.BERLIN.iso3166_2,
+                keys = DefaultKeys.fillIn(
+                    area = "afl",
+                    parcelId = "fsko",
+                    district = "namgem",
+                    districtId = "gmk",
+                    districtCompartmentId = "fln",
+                    plotNumerator = "zae",
+                    plotDenominator = "nen",
+                ),
+                parcelLinkReference = Bundesland.BERLIN.iso3166_2 + "_default",
+                license = OpenApiInfo.License(
+                    name = "Geoportal Berlin / ALKIS Berlin - Flurstücke",
+                    identifier = "Flurstücke Berlin",
+                    url = LC_DL_BY
+                )
+            ).usable()
+        },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
     val DE_NI = PathItem(
         summary = "Flurstücke Niedersachsen",
-        get = Operation(
-            operationId = Bundesland.NIEDERSACHSEN.iso3166_2,
-            extensions = mapOf(
-                AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                AviatorExtensionSpec.PluginMaterialization.O.key to esriAdapterConfig,
-                AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
-                    bounds = Bundesland.NIEDERSACHSEN.roughBoundaries,
-                    correspondsTo = Bundesland.NIEDERSACHSEN.iso3166_2,
-                    keys = DefaultKeys.fillIn(
-                        district = "gmk__bez",
-                        districtCompartmentId = "fln",
-                        plotNumerator = "fsn__zae",
-                        plotDenominator = "fsn__nen",
-                        parcelId = "fsk",
-                        area = "afl",
-                        location = "gem__bez"
-                    ),
-                    parcelLinkReference = Bundesland.NIEDERSACHSEN.iso3166_2 + "_default",
-                    license = License(
-                        name = "LGLN Open Geodata",
-                        identifier = "Flurstücke Niedersachsen",
-                        url = LC_CC_BY
-                    )
-                ).usable(),
-            )
-        ),
+        get = Operation.build {
+            operationId = Bundesland.NIEDERSACHSEN.iso3166_2
+            `x-dicentra-aviator-serviceDelegateCall` = locator
+            `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
+            `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
+                bounds = Bundesland.NIEDERSACHSEN.roughBoundaries,
+                correspondsTo = Bundesland.NIEDERSACHSEN.iso3166_2,
+                keys = DefaultKeys.fillIn(
+                    district = "gmk__bez",
+                    districtCompartmentId = "fln",
+                    plotNumerator = "fsn__zae",
+                    plotDenominator = "fsn__nen",
+                    parcelId = "fsk",
+                    area = "afl",
+                    location = "gem__bez"
+                ),
+                parcelLinkReference = Bundesland.NIEDERSACHSEN.iso3166_2 + "_default",
+                license = OpenApiInfo.License(
+                    name = "LGLN Open Geodata",
+                    identifier = "Flurstücke Niedersachsen",
+                    url = LC_CC_BY
+                )
+            ).usable()
+        },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
     )
 }

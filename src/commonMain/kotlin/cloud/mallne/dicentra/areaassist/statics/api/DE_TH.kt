@@ -7,63 +7,61 @@ import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.LC_DL_BY
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.Path
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.locator
-import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
-import cloud.mallne.dicentra.aviator.koas.Components
-import cloud.mallne.dicentra.aviator.koas.OpenAPI
-import cloud.mallne.dicentra.aviator.koas.Operation
-import cloud.mallne.dicentra.aviator.koas.PathItem
-import cloud.mallne.dicentra.aviator.koas.extensions.ReferenceOr
-import cloud.mallne.dicentra.aviator.koas.info.Info
-import cloud.mallne.dicentra.aviator.koas.info.License
-import cloud.mallne.dicentra.aviator.koas.io.MediaType
-import cloud.mallne.dicentra.aviator.koas.io.Schema
-import cloud.mallne.dicentra.aviator.koas.parameters.RequestBody
-import cloud.mallne.dicentra.aviator.koas.servers.Server
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator`
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-pluginMaterialization`
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceDelegateCall`
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceOptions`
+import io.ktor.http.*
+import io.ktor.openapi.*
 
 object DE_TH : ApiObject {
-    override val value: OpenAPI = OpenAPI(
-        extensions = mapOf(
-            AviatorExtensionSpec.Version.key to Serialization().parseToJsonElement(
-                AviatorExtensionSpec.SpecVersion
-            )
-        ),
-        servers = listOf(
-            Server(
+    override val value: OpenApiDoc = OpenApiDoc.build {
+        `x-dicentra-aviator` = AviatorExtensionSpec.SpecVersion
+        servers {
+            server(
                 "https://www.geoproxy.geoportal-th.de/geoproxy/services"
             )
-        ),
-        info = Info(
+        }
+        info = OpenApiInfo(
             title = "Geoproxy Thüringen",
             description = "Location based Open Data for Thüringen",
             version = ParcelConstants.endpointVersion.toString(),
-            license = License(
+            license = OpenApiInfo.License(
                 name = "© GDI-Th",
                 identifier = "Flurstücke Thüringen",
                 url = LC_DL_BY
             )
-        ),
+        )
+        components = Components(
+            parameters = Path.wfsParams
+        )
+    }.copy(
         paths = mapOf(
-            "/adv_alkis_wfs" to PathItem(
-                summary = "Geoproxy Thüringen: Flurstücke",
-                post = Operation(
-                    operationId = Bundesland.THUERINGEN.iso3166_2,
-                    requestBody = ReferenceOr.Value(
-                        RequestBody(
+            "/adv_alkis_wfs" to ReferenceOr.value(
+                PathItem(
+                    summary = "Geoproxy Thüringen: Flurstücke",
+                    post = Operation.build {
+                        operationId = Bundesland.THUERINGEN.iso3166_2
+                        requestBody = RequestBody(
                             content = mapOf(
-                                "application/xml" to ReferenceOr.value(MediaType(schema = ReferenceOr.Value(Schema(type = Schema.Type.Basic.Object))))
+                                ContentType.Application.Json to MediaType(
+                                    schema = ReferenceOr.Value(
+                                        JsonSchema(
+                                            type = JsonType.OBJECT
+                                        )
+                                    )
+                                )
                             )
                         )
-                    ),
-                    extensions = mapOf(
-                        AviatorExtensionSpec.ServiceLocator.O.key to locator.usable(),
-                        AviatorExtensionSpec.PluginMaterialization.O.key to ParcelConstants.wfsAdapterConfig {
+                        `x-dicentra-aviator-serviceDelegateCall` = locator
+                        `x-dicentra-aviator-pluginMaterialization` = ParcelConstants.wfsAdapterConfig {
                             typeNames = "ave:Flurstueck"
                             namespace = "http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/1.0"
                             nsPrefix = "ave"
                             geometryPointer = "geometrie"
-                        },
-                        AviatorExtensionSpec.ServiceOptions.O.key to ParcelServiceOptions(
+                        }
+                        `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
                             bounds = Bundesland.THUERINGEN.roughBoundaries,
                             correspondsTo = Bundesland.THUERINGEN.iso3166_2,
                             keys = DefaultKeys.fillIn(
@@ -86,12 +84,9 @@ object DE_TH : ApiObject {
                             ),
                             parcelLinkReference = Bundesland.THUERINGEN.iso3166_2 + "_default",
                         ).usable()
-                    ),
+                    }
                 ),
             ),
-        ),
-        components = Components(
-            parameters = Path.wfsParams
         )
     )
 }

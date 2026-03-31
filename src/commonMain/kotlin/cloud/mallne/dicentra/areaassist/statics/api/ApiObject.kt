@@ -1,10 +1,10 @@
 package cloud.mallne.dicentra.areaassist.statics.api
 
-import cloud.mallne.dicentra.aviator.koas.OpenAPI
+import io.ktor.openapi.*
 import kotlin.reflect.KProperty
 
 sealed interface ApiObject {
-    val value: OpenAPI
+    val value: OpenApiDoc
 
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): OpenAPI = value
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): OpenApiDoc = value
 }

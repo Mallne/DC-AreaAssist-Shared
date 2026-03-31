@@ -8,45 +8,35 @@ import cloud.mallne.dicentra.areaassist.model.map.MapStyleServiceOptions
 import cloud.mallne.dicentra.areaassist.model.parcel.Translatable
 import cloud.mallne.dicentra.areaassist.statics.APIs.Services
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
-import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator`
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceDelegateCall`
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceOptions`
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
-import cloud.mallne.dicentra.aviator.koas.OpenAPI
-import cloud.mallne.dicentra.aviator.koas.Operation
-import cloud.mallne.dicentra.aviator.koas.PathItem
-import cloud.mallne.dicentra.aviator.koas.info.Info
-import cloud.mallne.dicentra.aviator.koas.info.License
-import cloud.mallne.dicentra.aviator.koas.servers.Server
+import io.ktor.openapi.*
 
 object MapDark : ApiObject {
-    override val value: OpenAPI = OpenAPI(
-        extensions = mapOf(
-            AviatorExtensionSpec.Version.key to Serialization().parseToJsonElement(
-                AviatorExtensionSpec.SpecVersion
-            )
-        ),
-        servers = listOf(
-            Server(
-                "https://basemap.de"
-            ),
-        ),
-        info = Info(
+    override val value: OpenApiDoc = OpenApiDoc.build {
+        `x-dicentra-aviator` = AviatorExtensionSpec.SpecVersion
+        servers {
+            server("https://basemap.de")
+        }
+        info = OpenApiInfo(
             title = "Basemap Dark",
             description = "Official German Vector Map",
             version = ParcelConstants.endpointVersion.toString(),
-            license = License(
+            license = OpenApiInfo.License(
                 "basemap.de / BKG | Datenquellen: © GeoBasis-DE",
                 identifier = "Basemap Dark"
             )
-        ),
+        )
+    }.copy(
         paths = mapOf(
-            "/data/produkte/web_vektor/styles/bm_web_drk.json" to PathItem(
-                get = Operation(
-                    extensions = mapOf(
-                        AviatorExtensionSpec.ServiceLocator.O.key to Services.MAPLAYER.locator(
-                            ServiceMethods.GATHER
-                        ).usable(),
-                        AviatorExtensionSpec.ServiceOptions.O.key to MapStyleServiceOptions(
+            "/data/produkte/web_vektor/styles/bm_web_drk.json" to ReferenceOr.value(
+                PathItem(
+                    get = Operation.build {
+                        `x-dicentra-aviator-serviceDelegateCall` = Services.MAPLAYER.locator(ServiceMethods.GATHER)
+                        `x-dicentra-aviator-serviceOptions` = MapStyleServiceOptions(
                             constraints = DisplayConstraints(listOf(SystemMode.Dark)),
                             extraSources = listOf(
                                 MapSource.RasterMapSource(
@@ -116,7 +106,7 @@ object MapDark : ApiObject {
                             name = Translatable.Localization.nonTranslatable("Basemap.de Dark + TopPlusOpen"),
                             mapFont = "Roboto Regular"
                         ).usable()
-                    ),
+                    },
                 )
             )
         )

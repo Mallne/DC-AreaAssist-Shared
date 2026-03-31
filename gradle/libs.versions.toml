@@ -39,6 +39,7 @@ mlln-geokit-interop = { module = "cloud.mallne.geokit:interop", version.ref = "m
 mlln-geokit-coordinates = { module = "cloud.mallne.geokit:coordinates", version.ref = "mlln-geokit" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-openapi-schema = { module = "io.ktor:ktor-openapi-schema", version.ref = "ktor" }
 ktor-http = { module = "io.ktor:ktor-http", version.ref = "ktor" }
 xml = { module = "io.github.pdvrieze.xmlutil:serialization", version.ref = "xml" }
 maplibre-spatialk = { module = "org.maplibre.spatialk:geojson", version.ref = "mapLibre-spatialk" }
