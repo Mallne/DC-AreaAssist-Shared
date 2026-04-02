@@ -1,6 +1,6 @@
 [versions]
 # @pin
-agp = "8.12.3"
+agp = "8.13.2"
 # @keep
 android-compileSdk = "36"
 # @keep
@@ -15,7 +15,7 @@ koin-annotations = "2.3.1"
 kotlin = "2.3.20"
 kotlinx-datetime = "0.7.1"
 ksp = "2.3.4"
-ktor = "3.4.1"
+ktor = "3.4.2"
 mlln-geokit = "1.0.0-SNAPSHOT"
 mlln-units = "1.0.0-SNAPSHOT"
 serialization = "1.10.0"
