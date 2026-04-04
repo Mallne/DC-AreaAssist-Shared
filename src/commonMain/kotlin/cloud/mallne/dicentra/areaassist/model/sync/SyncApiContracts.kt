@@ -2,33 +2,37 @@ package cloud.mallne.dicentra.areaassist.model.sync
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 @Serializable
-data class SyncUploadRequest(
+data class SyncAggregatePaging(
     val scope: String,
-    val packets: List<SyncPacket>
+    val entries: Map<String, String> //maps the Fingerprint to the checksum
 )
 
 @Serializable
-data class SyncUploadResponse(
-    val accepted: List<String>,
+data class SyncAggregateRequest(
+    val scope: String,
+    val entries: List<String>? //Fingerprint if null, all entries
+)
+
+@Serializable
+data class SyncUploadRequest<Entry : SyncEntryMinimalDomain>(
+    val scope: String,
+    val packets: List<Entry>
+)
+
+@Serializable
+data class SyncUploadResponse<Entry : SyncEntryDomain>(
+    val accepted: List<Entry>,
     val rejected: List<RejectedPacket>,
-    val timestamp: Long
+    val timestamp: Instant
 )
 
 @Serializable
-data class SyncDownloadRequest(
-    val scope: String,
-    @SerialName("since_timestamp")
-    val sinceTimestamp: Long?
-)
-
-@Serializable
-data class SyncDownloadResponse(
-    val packets: List<SyncPacket>,
-    @SerialName("managed_packets")
-    val managedPackets: List<ManagedPacket>,
-    val timestamp: Long
+data class SyncDownloadResponse<Entry : SyncEntryDomain>(
+    val packets: List<Entry>,
+    val timestamp: Instant
 )
 
 @Serializable
@@ -45,8 +49,8 @@ enum class RejectionReason {
     @SerialName("type_not_allowed")
     TYPE_NOT_ALLOWED,
 
-    @SerialName("managed_read_only")
-    MANAGED_READ_ONLY,
+    @SerialName("permission_error")
+    PERMISSION_ERROR,
 
     @SerialName("server_error")
     SERVER_ERROR
@@ -54,9 +58,7 @@ enum class RejectionReason {
 
 @Serializable
 data class RejectedPacket(
-    @SerialName("packet_id")
-    val packetId: String,
-    val reason: RejectionReason,
-    @SerialName("server_version")
-    val serverVersion: Int? = null
+    @SerialName("packet_fingerprint")
+    val packetFingerprint: String,
+    val reason: RejectionReason
 )
