@@ -39,6 +39,7 @@ sealed class SyncResult {
         val scope: String,
         val uploaded: Int,
         val downloaded: Int,
+        val deleted: Int,
         val conflicts: Int,
         val timestamp: Instant = Clock.System.now()
     ) : SyncResult()
