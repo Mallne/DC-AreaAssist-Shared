@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
+import kotlin.uuid.Uuid
 
 /**
  * Orchestrates the sync process between local storage and server.
@@ -277,3 +278,123 @@ data class UploadRejection(
 
 private val RejectionReason.isPermanent: Boolean
     get() = this != RejectionReason.VERSION_CONFLICT && this != RejectionReason.SERVER_ERROR
+
+/**
+ * Interface for computing checksums from sync packets.
+ * Implementations should produce deterministic, collision-resistant hashes.
+ */
+interface SyncChecksumGenerator {
+    fun compute(packet: SyncPacket): String
+}
+
+/**
+ * Interface for generating unique fingerprints for sync entries.
+ * Fingerprints are assigned by the server.
+ */
+interface SyncFingerprintGenerator {
+    fun generate(scope: String, checksum: String): String
+}
+
+object UuidSyncFingerprintGenerator : SyncFingerprintGenerator {
+    @OptIn(kotlin.uuid.ExperimentalUuidApi::class)
+    override fun generate(scope: String, checksum: String): String = Uuid.random().toString()
+}
+
+/**
+ * Server-side endpoint interface for handling sync operations.
+ * The server uses this to process incoming sync requests from clients.
+ */
+interface SyncEndpoint {
+    suspend fun upload(scope: String, packets: List<SyncPacket>): List<AcceptedPacket>
+    suspend fun download(scope: String, fingerprints: List<String>): List<SyncEntryDomain>
+    suspend fun delete(scope: String, fingerprints: List<String>)
+}
+
+/**
+ * Metadata for an accepted packet upload, assigned by the server.
+ */
+data class AcceptedPacket(
+    val fingerprint: String,
+    val checksum: String,
+    val version: Int,
+    val created: kotlin.time.Instant,
+    val updated: kotlin.time.Instant,
+    val blame: String,
+    val isManaged: Boolean
+)
+
+/**
+ * Server-side orchestrator for processing sync requests.
+ * Combines storage operations with endpoint responses.
+ */
+class ServerSyncOrchestrator(
+    private val storage: SyncStorage,
+    private val endpoint: SyncEndpoint,
+    private val checksumGenerator: SyncChecksumGenerator,
+    private val fingerprintGenerator: SyncFingerprintGenerator,
+) {
+    private val _state = MutableStateFlow<SyncState>(SyncState.IDLE)
+    val state: StateFlow<SyncState> = _state.asStateFlow()
+
+    private val _lastResult = MutableStateFlow<SyncResult?>(null)
+    val lastResult: StateFlow<SyncResult?> = _lastResult.asStateFlow()
+
+    suspend fun processUpload(scope: String, packets: List<SyncPacket>): UploadResult {
+        _state.value = SyncState.UPLOADING
+
+        val accepted = endpoint.upload(scope, packets)
+        var uploaded = accepted.size
+        var conflicts = 0
+
+        for (entry in accepted) {
+            val existing = storage.getEntry(entry.fingerprint)
+            if (existing != null && existing.checksum != entry.checksum) {
+                conflicts++
+            }
+
+            val syncEntry = object : SyncEntryDomain {
+                override val scope: String = scope
+                override val fingerprint: String = entry.fingerprint
+                override val packet: SyncPacket
+                    get() = packets.first { checksumGenerator.compute(it) == entry.checksum }
+                override val checksum: String = entry.checksum
+                override val version: Int = entry.version
+                override val created: kotlin.time.Instant = entry.created
+                override val updated: kotlin.time.Instant = entry.updated
+                override val blame: String = entry.blame
+                override val isManaged: Boolean = entry.isManaged
+                override suspend fun isStale(): Boolean = false
+            }
+            storage.upsertEntry(syncEntry)
+        }
+
+        _state.value = SyncState.COMPLETED
+        val result = SyncResult.Success(
+            scope = scope,
+            uploaded = uploaded,
+            downloaded = 0,
+            deleted = 0,
+            conflicts = conflicts,
+            timestamp = Clock.System.now()
+        )
+        _lastResult.value = result
+        return UploadResult(accepted, emptyList())
+    }
+
+    suspend fun processDelete(scope: String, fingerprints: List<String>) {
+        _state.value = SyncState.RESOLVING
+        endpoint.delete(scope, fingerprints)
+        fingerprints.forEach { storage.deleteEntry(it, propagate = true) }
+        _state.value = SyncState.COMPLETED
+    }
+
+    fun reset() {
+        _state.value = SyncState.IDLE
+        _lastResult.value = null
+    }
+}
+
+data class UploadResult(
+    val accepted: List<AcceptedPacket>,
+    val rejected: List<RejectedPacket>
+)
