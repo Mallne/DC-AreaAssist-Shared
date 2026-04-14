@@ -45,7 +45,7 @@ object DE_TH : ApiObject {
                         operationId = Bundesland.THUERINGEN.iso3166_2
                         requestBody = RequestBody(
                             content = mapOf(
-                                ContentType.Application.Json to MediaType(
+                                ContentType.Application.Xml to MediaType(
                                     schema = ReferenceOr.Value(
                                         JsonSchema(
                                             type = JsonType.OBJECT

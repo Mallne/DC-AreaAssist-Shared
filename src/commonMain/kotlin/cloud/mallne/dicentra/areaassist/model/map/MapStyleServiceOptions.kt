@@ -3,6 +3,8 @@ package cloud.mallne.dicentra.areaassist.model.map
 import cloud.mallne.dicentra.areaassist.model.DisplayConstraints
 import cloud.mallne.dicentra.areaassist.model.parcel.Translatable
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
+import cloud.mallne.dicentra.aviator.core.ServiceOptions
+import io.ktor.openapi.*
 import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -15,4 +17,8 @@ data class MapStyleServiceOptions @OptIn(ExperimentalUuidApi::class) constructor
     val constraints: DisplayConstraints = DisplayConstraints(),
     val mapFont: String,
     val backgroundColor: String = "#212121",
-) : InflatedServiceOptions
+) : InflatedServiceOptions {
+    override fun usable(): ServiceOptions {
+        return GenericElementWrapper(this, serializer())
+    }
+}

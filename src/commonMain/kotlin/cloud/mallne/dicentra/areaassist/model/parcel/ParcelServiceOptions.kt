@@ -4,6 +4,7 @@ import cloud.mallne.dicentra.areaassist.model.DisplayConstraints
 import cloud.mallne.dicentra.areaassist.model.Point
 import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
+import cloud.mallne.dicentra.aviator.core.ServiceOptions
 import io.ktor.openapi.*
 import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
@@ -20,4 +21,8 @@ data class ParcelServiceOptions @OptIn(ExperimentalUuidApi::class) constructor(
     val keys: List<ParcelKey> = listOf(),
     val staticFeatures: List<StaticFeature> = StaticFeature.entries,
     val constraints: DisplayConstraints = DisplayConstraints(),
-) : InflatedServiceOptions
+) : InflatedServiceOptions {
+    override fun usable(): ServiceOptions {
+        return GenericElementWrapper(this, serializer())
+    }
+}
