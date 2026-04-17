@@ -9,7 +9,6 @@ interface SyncEntryIdentityDomain {
 
 interface SyncEntryDataDomain {
     val packet: SyncPacket
-    suspend fun isStale(): Boolean
 }
 
 // The metadata is constructed on the Server. The Server is the Source of Truth, for this
@@ -19,7 +18,6 @@ interface SyncEntryMetadata {
     val created: Instant
     val updated: Instant
     val blame: String
-    val isManaged: Boolean
 }
 
 interface SyncEntryBaseDomain : SyncEntryIdentityDomain, SyncEntryMetadata

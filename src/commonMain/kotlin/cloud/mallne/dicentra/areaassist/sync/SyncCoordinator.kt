@@ -3,6 +3,7 @@ package cloud.mallne.dicentra.areaassist.sync
 import cloud.mallne.dicentra.areaassist.model.sync.RejectedPacket
 import cloud.mallne.dicentra.areaassist.model.sync.RejectionReason
 import cloud.mallne.dicentra.areaassist.model.sync.SyncAggregatePaging
+import cloud.mallne.dicentra.areaassist.model.sync.SyncEntryBaseDomain
 import cloud.mallne.dicentra.areaassist.model.sync.SyncEntryDomain
 import cloud.mallne.dicentra.areaassist.model.sync.SyncPacket
 import cloud.mallne.dicentra.areaassist.model.sync.SyncResult
@@ -209,7 +210,7 @@ interface SyncStorage {
      * that have been deleted locally (stale entries). Use [SyncEntryDomain.isStale]
      * to check validity.
      */
-    suspend fun getAllEntries(scope: String): List<SyncEntryDomain>
+    suspend fun getAllEntries(scope: String): List<SyncEntryBaseDomain>
 
     /** Gets a local entry by its server-assigned fingerprint, or null if not found. */
     suspend fun getEntry(fingerprint: String): SyncEntryDomain?
@@ -362,8 +363,6 @@ class ServerSyncOrchestrator(
                 override val created: kotlin.time.Instant = entry.created
                 override val updated: kotlin.time.Instant = entry.updated
                 override val blame: String = entry.blame
-                override val isManaged: Boolean = entry.isManaged
-                override suspend fun isStale(): Boolean = false
             }
             storage.upsertEntry(syncEntry)
         }
