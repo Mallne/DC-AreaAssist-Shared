@@ -1,5 +1,6 @@
 package cloud.mallne.dicentra.areaassist.model.sync
 
+import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
 interface SyncEntryIdentityDomain {
@@ -24,3 +25,22 @@ interface SyncEntryBaseDomain : SyncEntryIdentityDomain, SyncEntryMetadata
 interface SyncEntryMinimalDomain : SyncEntryIdentityDomain, SyncEntryDataDomain
 
 interface SyncEntryDomain : SyncEntryMinimalDomain, SyncEntryBaseDomain
+
+@Serializable
+data class SyncEntryMinimal(
+    override val scope: String,
+    override val fingerprint: String,
+    override val packet: SyncPacket
+) : SyncEntryMinimalDomain
+
+@Serializable
+data class SyncEntryFull(
+    override val scope: String,
+    override val fingerprint: String,
+    override val packet: SyncPacket,
+    override val checksum: String,
+    override val version: Int,
+    override val created: Instant,
+    override val updated: Instant,
+    override val blame: String
+) : SyncEntryDomain

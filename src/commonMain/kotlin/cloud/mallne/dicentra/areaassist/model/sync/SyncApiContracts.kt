@@ -17,15 +17,16 @@ data class SyncAggregateRequest(
 )
 
 @Serializable
-data class SyncUploadRequest<Entry : SyncEntryMinimalDomain>(
-    val scope: String,
-    val packets: List<Entry>
+data class SyncUploadResponse<Entry : SyncEntryDomain>(
+    val accepted: Map<String, Entry>,
+    val rejected: Map<String, RejectionReason>,
+    val timestamp: Instant
 )
 
 @Serializable
-data class SyncUploadResponse<Entry : SyncEntryDomain>(
-    val accepted: List<Entry>,
-    val rejected: List<RejectedPacket>,
+data class SyncDeleteResponse<Entry : SyncEntryDomain>(
+    val accepted: List<String>,
+    val rejected: List<RejectedPacket<Entry>>,
     val timestamp: Instant
 )
 
@@ -57,8 +58,8 @@ enum class RejectionReason {
 }
 
 @Serializable
-data class RejectedPacket(
+data class RejectedPacket<Entry : SyncEntryDomain>(
     @SerialName("packet_fingerprint")
-    val packetFingerprint: String,
+    val entry: Entry,
     val reason: RejectionReason
 )

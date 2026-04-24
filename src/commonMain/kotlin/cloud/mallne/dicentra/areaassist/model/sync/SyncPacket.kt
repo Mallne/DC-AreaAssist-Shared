@@ -1,6 +1,5 @@
 package cloud.mallne.dicentra.areaassist.model.sync
 
-import cloud.mallne.dicentra.areaassist.model.SettingDomain
 import cloud.mallne.dicentra.areaassist.model.parcel.KeyType
 import cloud.mallne.dicentra.areaassist.model.parcel.TaskState
 import cloud.mallne.dicentra.areaassist.model.parcel.UsageOwnership
@@ -20,7 +19,7 @@ import kotlin.time.Instant
 sealed interface SyncPacket {
 
     @Serializable
-    data class ParcelLink(val forParcel: String, val serviceHint: String?)
+    data class ParcelLink(val forParcel: String, val serviceHint: String) : SyncPacket
 
     @Serializable
     sealed interface ParcelSpecificSyncPacket : SyncPacket {
@@ -72,10 +71,4 @@ sealed interface SyncPacket {
         override val dueDate: Instant?,
         override val taskState: TaskState,
     ) : TaskDomain, SyncPacket
-
-    @Serializable
-    data class SettingPacket(
-        override val key: String,
-        override val value: JsonElement
-    ) : SettingDomain, SyncPacket
 }
