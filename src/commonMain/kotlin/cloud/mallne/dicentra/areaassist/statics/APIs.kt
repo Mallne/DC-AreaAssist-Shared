@@ -113,7 +113,8 @@ object APIs {
         AUTH_TOKEN("&.warden.token"),
         AUTH_AUTHORIZATION("&.warden.auth"),
         AUTH_ACCOUNT("&.warden.account"),
-        SYNC_SERVICE("DCAACodexSync");
+        SYNC_SERVICE("DCAACodexSync"),
+        CODEX_ACCOUNT("DCAACodexUser");
 
         fun locator(flavour: ServiceMethods): ServiceLocator {
             return ServiceLocator(

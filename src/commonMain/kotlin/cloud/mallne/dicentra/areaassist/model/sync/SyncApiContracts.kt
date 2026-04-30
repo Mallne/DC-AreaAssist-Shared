@@ -5,15 +5,19 @@ import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
 @Serializable
-data class SyncAggregatePaging(
-    val scope: String,
-    val entries: Map<String, String> //maps the Fingerprint to the checksum
+data class SyncAggregateAttestation(
+    val entries: List<AttestationEntry>
 )
 
 @Serializable
-data class SyncAggregateRequest(
-    val scope: String,
-    val entries: List<String>? //Fingerprint if null, all entries
+data class AttestationEntry(val fingerprint: String, val checksum: String, val scope: String)
+
+typealias SyncAggregateRequest = List<String>? //Fingerprint if null, all entries
+
+@Serializable
+data class SyncAggregateResponse<Entry : SyncEntryDomain>(
+    val entries: List<Entry>,
+    val timestamp: Instant
 )
 
 @Serializable
