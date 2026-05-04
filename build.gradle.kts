@@ -31,7 +31,7 @@ version = "1.0.0-SNAPSHOT"
 kotlin {
     jvm()
     android {
-        namespace = project.group.toString()
+        namespace = "${project.group}.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
