@@ -29,25 +29,3 @@ enum class SyncState {
     @SerialName("failed")
     FAILED
 }
-
-@OptIn(ExperimentalTime::class)
-@Serializable
-sealed class SyncResult {
-    @OptIn(ExperimentalTime::class)
-    @Serializable
-    data class Success(
-        val scope: String,
-        val uploaded: Int,
-        val downloaded: Int,
-        val deleted: Int,
-        val conflicts: Int,
-        val timestamp: Instant = Clock.System.now()
-    ) : SyncResult()
-
-    @Serializable
-    data class Failure(
-        val scope: String,
-        val reason: String,
-        val recoverable: Boolean
-    ) : SyncResult()
-}
