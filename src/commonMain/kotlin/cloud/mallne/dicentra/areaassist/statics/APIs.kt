@@ -2,12 +2,7 @@ package cloud.mallne.dicentra.areaassist.statics
 
 import cloud.mallne.dicentra.areaassist.model.AuthServiceOptions
 import cloud.mallne.dicentra.areaassist.model.screen.DeepLinks
-import cloud.mallne.dicentra.areaassist.statics.api.Brightsky
-import cloud.mallne.dicentra.areaassist.statics.api.DE_BW
-import cloud.mallne.dicentra.areaassist.statics.api.DE_TH
-import cloud.mallne.dicentra.areaassist.statics.api.Esri
-import cloud.mallne.dicentra.areaassist.statics.api.MapDark
-import cloud.mallne.dicentra.areaassist.statics.api.MapLight
+import cloud.mallne.dicentra.areaassist.statics.api.*
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
@@ -114,6 +109,7 @@ object APIs {
         AUTH_AUTHORIZATION("&.warden.auth"),
         AUTH_ACCOUNT("&.warden.account"),
         SYNC_SERVICE("DCAACodexSync"),
+        SYNC_ATTESTATION_SERVICE("DCAACodexSyncAttestations"),
         CODEX_ACCOUNT("DCAACodexUser");
 
         fun locator(flavour: ServiceMethods): ServiceLocator {

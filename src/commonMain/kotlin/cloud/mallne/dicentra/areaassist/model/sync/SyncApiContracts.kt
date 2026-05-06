@@ -12,7 +12,7 @@ data class SyncAggregateAttestation(
 @Serializable
 data class AttestationEntry(val fingerprint: String, val checksum: String, val scope: String)
 
-typealias SyncAggregateRequest = List<String>? //Fingerprint if null, all entries
+typealias SyncAggregateRequest = List<String> //Fingerprint if null, all entries
 
 @Serializable
 data class SyncAggregateResponse<Entry : SyncEntryDomain>(

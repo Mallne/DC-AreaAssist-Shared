@@ -2,11 +2,13 @@ package cloud.mallne.dicentra.areaassist.aviator.wfs
 
 import cloud.mallne.dicentra.aviator.client.ktor.KtorLoggingIds
 import cloud.mallne.dicentra.aviator.core.plugins.AviatorPluginConfigScope
+import cloud.mallne.dicentra.aviator.core.plugins.AviatorPluginDsl
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
 import cloud.mallne.geokit.coordinates.tokens.ast.expression.Identifier
 import kotlinx.serialization.Serializable
 
 @Serializable
+@AviatorPluginDsl
 data class WfsAdapterPluginConfig(
     val active: Boolean = false,
 ) : AviatorPluginConfigScope {
