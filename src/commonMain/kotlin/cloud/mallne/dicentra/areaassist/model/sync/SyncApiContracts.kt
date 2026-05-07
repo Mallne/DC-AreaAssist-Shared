@@ -15,28 +15,28 @@ data class AttestationEntry(val fingerprint: String, val checksum: String, val s
 typealias SyncAggregateRequest = List<String> //Fingerprint if null, all entries
 
 @Serializable
-data class SyncAggregateResponse<Entry : SyncEntryDomain>(
-    val entries: List<Entry>,
+data class SyncAggregateResponse(
+    val entries: List<SyncEntryFull>,
     val timestamp: Instant
 )
 
 @Serializable
-data class SyncUploadResponse<Entry : SyncEntryDomain>(
-    val accepted: Map<String, Entry>,
+data class SyncUploadResponse(
+    val accepted: Map<String, SyncEntryFull>,
     val rejected: Map<String, RejectionReason>,
     val timestamp: Instant
 )
 
 @Serializable
-data class SyncDeleteResponse<Entry : SyncEntryDomain>(
+data class SyncDeleteResponse(
     val accepted: List<String>,
-    val rejected: List<RejectedPacket<Entry>>,
+    val rejected: List<RejectedPacket>,
     val timestamp: Instant
 )
 
 @Serializable
-data class SyncDownloadResponse<Entry : SyncEntryDomain>(
-    val packets: List<Entry>,
+data class SyncDownloadResponse(
+    val packets: List<SyncEntryFull>,
     val timestamp: Instant
 )
 
@@ -62,8 +62,8 @@ enum class RejectionReason {
 }
 
 @Serializable
-data class RejectedPacket<Entry : SyncEntryDomain>(
+data class RejectedPacket(
     @SerialName("packet_fingerprint")
-    val entry: Entry,
+    val entry: SyncEntryFull,
     val reason: RejectionReason
 )
