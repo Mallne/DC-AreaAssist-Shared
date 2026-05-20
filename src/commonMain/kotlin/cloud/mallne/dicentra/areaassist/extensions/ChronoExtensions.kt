@@ -1,5 +1,6 @@
 package cloud.mallne.dicentra.areaassist.extensions
 
+import cloud.mallne.dicentra.areaassist.extensions.ChronoExtensions.isToday
 import kotlinx.datetime.*
 import kotlinx.datetime.format.char
 import kotlin.time.Clock
@@ -26,7 +27,21 @@ object ChronoExtensions {
         char('.')
         year()
     }
+
+    val dateOnlyFormatter = LocalDate.Format {
+        day()
+        char('.')
+        monthNumber()
+        char('.')
+        year()
+    }
     val timeFormatter = LocalDateTime.Format {
+        hour()
+        char(':')
+        minute()
+    }
+
+    val timeOnlyFormatter = LocalTime.Format {
         hour()
         char(':')
         minute()
@@ -68,6 +83,11 @@ object ChronoExtensions {
 
     @OptIn(ExperimentalTime::class)
     fun LocalDateTime.isToday(): Boolean {
+        return this.date.isToday()
+    }
+
+    @OptIn(ExperimentalTime::class)
+    fun LocalDate.isToday(): Boolean {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         return this.year == now.year && this.month == now.month && day == now.day
     }
