@@ -215,7 +215,7 @@ data class WfsAdapterPluginInstance(
                 }
                 return PropertyIsEqualTo(
                     valueReference = ValueReference("${configurationBundle.nsPrefix}:${reference}"),
-                    literal = Literal(string.uppercase())
+                    literal = Literal(string)
                 )
             }
 

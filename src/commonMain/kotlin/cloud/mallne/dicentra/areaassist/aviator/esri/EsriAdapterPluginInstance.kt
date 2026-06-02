@@ -163,7 +163,7 @@ data class EsriAdapterPluginInstance(
                             if (string == null) {
                                 runInErr = true
                             } else if (string.isNotBlank()) {
-                                qs += "$reference = '${string.uppercase()}'"
+                                qs += "$reference = '$string'"
                             } else {
                                 runInErr = true
                             }
