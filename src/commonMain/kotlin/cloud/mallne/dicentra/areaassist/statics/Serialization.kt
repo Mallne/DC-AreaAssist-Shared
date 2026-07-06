@@ -12,8 +12,8 @@ object Serialization {
         serializersModule = GeoJson.jsonFormat.serializersModule
     }
 
-    val xml = XML {
-        defaultPolicy {
+    val xml = XML.recommended_1_0 {
+        policy {
             autoPolymorphic = true
             //ignoreUnknownChildren()
         }
