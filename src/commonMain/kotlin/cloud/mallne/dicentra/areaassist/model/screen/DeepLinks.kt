@@ -16,6 +16,7 @@ object DeepLinks {
         val parcel = "$base/parcel"
         val search = "$base/search"
         val compass = "$base/computist/compass"
+        val geocompass = "$base/computist/geocompass"
         val agrimensor = "$base/computist/agrimensor"
         val login = "$base/login"
         val action = "$base/action"
@@ -23,6 +24,9 @@ object DeepLinks {
 
         fun generateCompassDeeplink(positions: List<Vertex>): String =
             "$compass?r=${Serialization().encodeToString(positions).encodeURLParameter()}"
+
+        fun generateGeocompassDeeplink(): String =
+            "$geocompass"
 
         fun generateAgrimensorDeeplink(
             parcelId: String,
