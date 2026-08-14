@@ -18,5 +18,6 @@ enum class DataTypeE {
     NAV_BAR_CONFIGURATION,
     MAP_STYLE_SETTING,
     COLOR,
-    JSON
+    JSON,
+    DEFAULT_LOCATION
 }

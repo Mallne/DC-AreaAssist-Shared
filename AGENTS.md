@@ -17,3 +17,7 @@
 ./gradlew build
 ./gradlew publishToMavenLocal
 ```
+
+## Doc Log
+
+- 2026-08-13 — `DataTypeE` gained additive enum value `DEFAULT_LOCATION` (wire-shared with Codex, non-breaking; existing values unchanged) for the AreaAssist app's offline-first default location (YouTrack AA-204). Documented on Notary: "Default Location (offline fallback)" (https://docs.mallne.cloud/doc/default-location-offline-fallback-xjxl994Dbr).
