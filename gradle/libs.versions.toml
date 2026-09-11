@@ -9,7 +9,7 @@ ben-manes-versions-v = "0.61.0"
 dc-aviator = "1.0.0-SNAPSHOT"
 dc-polyfill = "1.0.0-SNAPSHOT"
 dependency-analysis-v = "3.19.1"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 kotlinx-datetime = "0.8.0"
 kotlinx-coroutines = "1.11.0"
 ktor = "3.5.2"
@@ -49,5 +49,5 @@ android-library = { id = "com.android.kotlin.multiplatform.library", version.ref
 mavenPublish = "com.vanniktech.maven.publish:0.37.0"
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update-v" }
-ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions-v" }
+ben-manes-versions = { id = "io.github.ben-manes.versions", version.ref = "ben-manes-versions-v" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis-v" }
