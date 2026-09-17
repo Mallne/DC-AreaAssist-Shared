@@ -110,6 +110,7 @@ object APIs {
         AUTH_ACCOUNT("&.warden.account"),
         SYNC_SERVICE("DCAACodexSync"),
         SYNC_ATTESTATION_SERVICE("DCAACodexSyncAttestations"),
+        DISTRIBUTED_TRACING("DCAACodexTracingCollector"),
         CODEX_ACCOUNT("DCAACodexUser");
 
         fun locator(flavour: ServiceMethods): ServiceLocator {
