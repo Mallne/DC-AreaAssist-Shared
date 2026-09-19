@@ -26,7 +26,7 @@ versionCatalogUpdate {
 }
 
 group = "cloud.mallne.dicentra.areaassist"
-version = "1.0.0-SNAPSHOT"
+version = project.findProperty("VERSION_NAME") ?: "1.0.0-SNAPSHOT"
 
 kotlin {
     jvm()
