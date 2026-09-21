@@ -18,7 +18,7 @@ mlln-units = "1.0.0-SNAPSHOT"
 serialization = "1.11.0"
 version-catalog-update-v = "1.1.1"
 xml = "1.0.2.1"
-mapLibre-spatialk = "0.7.0"
+mapLibre-spatialk = "0.8.0"
 
 [libraries]
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
