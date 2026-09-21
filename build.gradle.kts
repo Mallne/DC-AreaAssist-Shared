@@ -90,25 +90,6 @@ kotlin {
 
 mavenPublishing {
     publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                groupId = project.group.toString()
-                artifactId = project.name
-                version = project.version.toString()
-
-                pom {
-                    name = "DiCentra AreaAssist Shared"
-                    inceptionYear = "2025"
-                    developers {
-                        developer {
-                            name = "Mallne"
-                            url = "mallne.cloud"
-                        }
-                    }
-                }
-            }
-        }
-
         repositories {
             maven {
                 name = "DiCentraArtefacts"
@@ -121,6 +102,15 @@ mavenPublishing {
         }
     }
 
-
     coordinates(group.toString(), project.name)
+    pom {
+        name = "DiCentra AreaAssist Shared"
+        inceptionYear = "2025"
+        developers {
+            developer {
+                name = "Mallne"
+                url = "mallne.cloud"
+            }
+        }
+    }
 }
