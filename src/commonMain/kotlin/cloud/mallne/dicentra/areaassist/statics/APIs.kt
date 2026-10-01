@@ -8,7 +8,7 @@ import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
 import cloud.mallne.dicentra.aviator.model.SemVer
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
-import io.ktor.openapi.*
+import io.ktor.openapi.OpenApiDoc
 import kotlinx.serialization.Serializable
 
 object APIs {
@@ -18,6 +18,7 @@ object APIs {
     val thueringenWfs by DE_TH
     val badenWuerttembergWfs by DE_BW
     val brightSky by Brightsky
+    val rvrComputistLink by RVRComputistLink
 
     object OAuth2 {
         const val CLIENT_ID = "client_id"
@@ -88,6 +89,7 @@ object APIs {
         thueringenWfs,
         badenWuerttembergWfs,
         brightSky,
+        rvrComputistLink,
     )
 
     fun apiOverrideVersion(version: SemVer = ParcelConstants.endpointVersion): List<OpenApiDoc> {
@@ -99,6 +101,7 @@ object APIs {
         private val serviceLocator: String,
     ) {
         DISCOVERY_SERVICE("DCAACodexDiscoveryBundle"),
+        COMPUTIST_LINK("&.computist.link"),
         SERVERSIDE_ACTIONS("DCAACodexServerSideActions"),
         WEATHER_SERVICE_CURRENT("&.scribe.weatherService.current"),
         WEATHER_SERVICE_WARNING("&.scribe.weatherService.warning"),
@@ -110,7 +113,6 @@ object APIs {
         AUTH_ACCOUNT("&.warden.account"),
         SYNC_SERVICE("DCAACodexSync"),
         SYNC_ATTESTATION_SERVICE("DCAACodexSyncAttestations"),
-        DISTRIBUTED_TRACING("DCAACodexTracingCollector"),
         CODEX_ACCOUNT("DCAACodexUser");
 
         fun locator(flavour: ServiceMethods): ServiceLocator {
