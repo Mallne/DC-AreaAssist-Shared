@@ -419,12 +419,11 @@ object ParcelConstants {
                     plotNumerator = "flstnrzae",
                     plotDenominator = "flstnrnen",
                     location = "lagebeztxt",
-                    usageHint = "tntext"
+                    usageHint = "tntxt"
                 ),
                 parcelLinkReference = Bundesland.THUERINGEN.iso3166_2 + "_default",
                 license = OpenApiInfo.License(
                     name = "© GDI-Th",
-                    identifier = "Flurstücke Thüringen",
                     url = LC_DL_BY
                 )
             ).usable()
@@ -441,16 +440,17 @@ object ParcelConstants {
                 bounds = Bundesland.SACHSEN.roughBoundaries,
                 correspondsTo = Bundesland.SACHSEN.iso3166_2,
                 keys = DefaultKeys.fillIn(
-                    area = "AREA_m2",
-                    parcelId = "NATIONALCA",
-                    district = "ADMIN_UNIT",
-                    districtId = "ZONING",
-                    plotNumerator = "LABEL",
+                    area = "amtlicheFlaeche",
+                    parcelId = "flurstueckskennzeichen",
+                    district = "gemarkungsbezeichnung",
+                    districtId = "gem",
+                    districtCompartmentId = "flur",
+                    plotNumerator = "zaehler",
+                    plotDenominator = "nenner",
                 ),
                 parcelLinkReference = Bundesland.SACHSEN.iso3166_2 + "_default",
                 license = OpenApiInfo.License(
                     name = "© Geobasisinformation und Vermessung Sachsen (GeoSN)",
-                    identifier = "Flurstücke Sachsen",
                     url = LC_DL_BY
                 )
             ).usable()
@@ -467,18 +467,18 @@ object ParcelConstants {
                 bounds = Bundesland.BRANDENBURG.roughBoundaries,
                 correspondsTo = Bundesland.BRANDENBURG.iso3166_2,
                 keys = DefaultKeys.fillIn(
-                    area = "flaeche",
-                    parcelId = "flstkennz",
-                    district = "gemarkung",
-                    districtCompartmentId = "flur",
-                    plotNumerator = "flurstnr",
-                    districtMunicipalityId = "gmdschl",
-                    location = "lagebeztxt"
+                    area = "Amtliche_Fläche__m__",
+                    parcelId = "Flurstückskennzeichen",
+                    district = "Gemarkung",
+                    districtCompartmentId = "Flurnummer",
+                    plotNumerator = "Zähler",
+                    plotDenominator = "Nenner",
+                    districtMunicipalityId = "Gemeinde",
+                    location = "Bezeichnung"
                 ),
                 parcelLinkReference = Bundesland.BRANDENBURG.iso3166_2 + "_default",
                 license = OpenApiInfo.License(
                     name = "GeoBasis-DE/LGB, 2023",
-                    identifier = "Flurstücke Brandenburg",
                     url = LC_DL_BY
                 )
             ).usable()
@@ -495,14 +495,14 @@ object ParcelConstants {
                 bounds = Bundesland.HESSEN.roughBoundaries,
                 correspondsTo = Bundesland.HESSEN.iso3166_2,
                 keys = DefaultKeys.fillIn(
-                    area = "amtlicheFlaeche",
-                    parcelId = "flurstueckskennzeichen",
-                    districtId = "gemarkung_AX_Gemarkung_Schluess",
-                    plotNumerator = "flurstuecksnummer_AX_Flurstueck",
-                    plotDenominator = "flurstuecksnummer_AX_Flurstue_1",
+                    area = "Amtliche_Fläche",
+                    parcelId = "Flurstückskennzeichen",
+                    districtId = "Gemarkungsnummer",
+                    plotNumerator = "Flurstücksnummer_Zähler",
+                    plotDenominator = "Flurstücksnummer_Nenner",
                 ),
                 parcelLinkReference = Bundesland.HESSEN.iso3166_2 + "_default",
-                license = LC_DL_ZERO.copy(identifier = "Flurstücke Hessen")
+                license = LC_DL_ZERO
             ).usable()
         },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
@@ -517,15 +517,14 @@ object ParcelConstants {
                 bounds = Bundesland.HAMBURG.roughBoundaries,
                 correspondsTo = Bundesland.HAMBURG.iso3166_2,
                 keys = DefaultKeys.fillIn(
-                    area = "areaValue",
-                    parcelId = "nationalCadastralReference",
-                    plotNumerator = "label",
+                    area = "Amtliche_Fläche__m__",
+                    parcelId = "Flurstückskennzeichen",
+                    plotNumerator = "Zähler",
                 ),
                 parcelLinkReference = Bundesland.HAMBURG.iso3166_2 + "_default",
                 license = OpenApiInfo.License(
                     name = "Freie und Hansestadt Hamburg, Landesbetrieb Geoinformation und Vermessung (LGV)",
                     url = LC_DL_BY,
-                    identifier = "Flurstücke Hamburg"
                 )
             ).usable()
         },
@@ -541,15 +540,15 @@ object ParcelConstants {
                 bounds = Bundesland.NORDRHEIN_WESTFALEN.roughBoundaries,
                 correspondsTo = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2,
                 keys = DefaultKeys.fillIn(
-                    area = "amtlicheFlaeche",
-                    parcelId = "flurstueckskennzeichen",
-                    districtId = "gemarkung_AX_Gemarkung_Schluess",
-                    districtCompartmentId = "flurnummer",
-                    plotNumerator = "flurstuecksnummer_AX_Flurstueck",
-                    plotDenominator = "flurstuecksnummer_AX_Flurstue_1",
+                    area = "Amtliche_Fläche__m__",
+                    parcelId = "Flurstückskennzeichen",
+                    district = "Gemarkung",
+                    districtCompartmentId = "Flurnummer",
+                    plotNumerator = "Zähler",
+                    plotDenominator = "Nenner",
                 ),
                 parcelLinkReference = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2 + "_default",
-                license = LC_DL_ZERO.copy(identifier = "Flurstücke Nordrhein-Westfalen")
+                license = LC_DL_ZERO
             ).usable()
         },
         parameters = Path.esriParams.keys.map { ReferenceOr.parameter(it) }
@@ -564,20 +563,18 @@ object ParcelConstants {
                 bounds = Bundesland.SACHSEN_ANHALT.roughBoundaries,
                 correspondsTo = Bundesland.SACHSEN_ANHALT.iso3166_2,
                 keys = DefaultKeys.fillIn(
-                    area = "flaeche",
-                    parcelId = "flstkennz",
-                    district = "gemarkung",
-                    districtId = "gemaschl",
-                    districtCompartmentId = "flur",
-                    plotNumerator = "flstnrzae",
-                    plotDenominator = "flstnrnen",
-                    districtMunicipalityId = "gmdschl",
-                    location = "lagebeztxt"
+                    area = "Fläche",
+                    parcelId = "Flurstückskennzeichen",
+                    district = "Gemarkung",
+                    districtCompartmentId = "Flurnummer",
+                    plotNumerator = "Flurstücksnummer_Zähler",
+                    plotDenominator = "Flurstücksnummer_Nenner",
+                    districtMunicipalityId = "Gemeinde",
+                    location = "Lagebezeichnung"
                 ),
                 parcelLinkReference = Bundesland.SACHSEN_ANHALT.iso3166_2 + "_default",
                 license = OpenApiInfo.License(
                     name = "GeoBasis-DE / LVermGeo LSA, [2023]",
-                    identifier = "Flurstücke Sachsen-Anhalt",
                     url = "https://www.lvermgeo.sachsen-anhalt.de/datei/anzeigen/id/3567,501/Nutzungsbedingungen.pdf"
                 )
             ).usable()
@@ -594,18 +591,17 @@ object ParcelConstants {
                 bounds = Bundesland.BERLIN.roughBoundaries,
                 correspondsTo = Bundesland.BERLIN.iso3166_2,
                 keys = DefaultKeys.fillIn(
-                    area = "afl",
-                    parcelId = "fsko",
-                    district = "namgem",
-                    districtId = "gmk",
-                    districtCompartmentId = "fln",
-                    plotNumerator = "zae",
-                    plotDenominator = "nen",
+                    area = "Amtliche_Fläche",
+                    parcelId = "Flurstück",
+                    district = "Gemarkung_Name",
+                    districtId = "GMD",
+                    districtCompartmentId = "Flur",
+                    plotNumerator = "Zaehler",
+                    plotDenominator = "Nenner",
                 ),
                 parcelLinkReference = Bundesland.BERLIN.iso3166_2 + "_default",
                 license = OpenApiInfo.License(
                     name = "Geoportal Berlin / ALKIS Berlin - Flurstücke",
-                    identifier = "Flurstücke Berlin",
                     url = LC_DL_BY
                 )
             ).usable()
@@ -622,18 +618,17 @@ object ParcelConstants {
                 bounds = Bundesland.NIEDERSACHSEN.roughBoundaries,
                 correspondsTo = Bundesland.NIEDERSACHSEN.iso3166_2,
                 keys = DefaultKeys.fillIn(
-                    district = "gmk__bez",
-                    districtCompartmentId = "fln",
-                    plotNumerator = "fsn__zae",
-                    plotDenominator = "fsn__nen",
-                    parcelId = "fsk",
-                    area = "afl",
-                    location = "gem__bez"
+                    district = "Gemarkung",
+                    districtCompartmentId = "Flurnummer",
+                    plotNumerator = "Zähler",
+                    plotDenominator = "Nenner",
+                    parcelId = "Flurstückskennzeichen",
+                    area = "Amtliche_Fläche__m__",
+                    location = "Bezeichnung"
                 ),
                 parcelLinkReference = Bundesland.NIEDERSACHSEN.iso3166_2 + "_default",
                 license = OpenApiInfo.License(
                     name = "LGLN Open Geodata",
-                    identifier = "Flurstücke Niedersachsen",
                     url = LC_CC_BY
                 )
             ).usable()

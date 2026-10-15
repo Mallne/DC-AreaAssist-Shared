@@ -25,14 +25,14 @@ object Esri : ApiObject {
     }.copy(
         paths = mapOf(
             //"/thueringen_flstck/FeatureServer/0/query" to ReferenceOr.value(ParcelConstants.DE_TH),
-            "/Flurstuecke_Sachsen/FeatureServer/0/query" to ReferenceOr.value(ParcelConstants.DE_SN),
-            "/Flurstücke_Brandenburg/FeatureServer/0/query" to ReferenceOr.value(ParcelConstants.DE_BB),
-            "/flstk_hessen/FeatureServer/0/query" to ReferenceOr.value(ParcelConstants.DE_HE),
-            "/Flurstuecke_Hamburg/FeatureServer/0/query" to ReferenceOr.value(ParcelConstants.DE_HH),
-            "/flstk_nrw/FeatureServer/0/query" to ReferenceOr.value(ParcelConstants.DE_NW),
-            "/Flurstuecke_Sachsen_Anhalt/FeatureServer/0/query" to ReferenceOr.value(ParcelConstants.DE_ST),
-            "/Flurst_Berlin/FeatureServer/0/query" to ReferenceOr.value(ParcelConstants.DE_BE),
-            "/NDS_Flurstuecke/FeatureServer/0/query" to ReferenceOr.value(ParcelConstants.DE_NI),
+            "/Flurstuecke_Sachsen/FeatureServer/1/query" to ReferenceOr.value(ParcelConstants.DE_SN),
+            "/Flurstücke_Brandenburg/FeatureServer/1/query" to ReferenceOr.value(ParcelConstants.DE_BB),
+            "/flstk_hessen/FeatureServer/1/query" to ReferenceOr.value(ParcelConstants.DE_HE),
+            "/Flurstuecke_Hamburg/FeatureServer/1/query" to ReferenceOr.value(ParcelConstants.DE_HH),
+            "/flstk_nrw/FeatureServer/1/query" to ReferenceOr.value(ParcelConstants.DE_NW),
+            "/Flurstuecke_Sachsen_Anhalt/FeatureServer/1/query" to ReferenceOr.value(ParcelConstants.DE_ST),
+            "/Flurst_Berlin/FeatureServer/1/query" to ReferenceOr.value(ParcelConstants.DE_BE),
+            "/NDS_Flurstuecke/FeatureServer/1/query" to ReferenceOr.value(ParcelConstants.DE_NI),
         ),
     )
 }

@@ -17,7 +17,6 @@ object Brightsky : ApiObject {
             description = "Open Source API for German Weather Service",
             version = ParcelConstants.endpointVersion.toString(),
             license = OpenApiInfo.License(
-                identifier = "Brightsky",
                 name = "MIT License",
                 url = "https://github.com/jdemaeyer/brightsky/?tab=MIT-1-ov-file#readme"
             )

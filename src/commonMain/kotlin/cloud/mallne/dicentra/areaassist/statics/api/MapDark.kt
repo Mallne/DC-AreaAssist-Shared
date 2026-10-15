@@ -26,8 +26,8 @@ object MapDark : ApiObject {
             description = "Official German Vector Map",
             version = ParcelConstants.endpointVersion.toString(),
             license = OpenApiInfo.License(
-                "basemap.de / BKG | Datenquellen: © GeoBasis-DE",
-                identifier = "Basemap Dark"
+                name = "basemap.de / BKG | Datenquellen: © GeoBasis-DE",
+                url = "https://sgx.geodatenzentrum.de/web_public/gdz/lizenz/deu/nutzungsbedingungen_basemapde.pdf"
             )
         )
     }.copy(

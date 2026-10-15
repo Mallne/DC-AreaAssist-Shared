@@ -29,7 +29,6 @@ object DE_TH : ApiObject {
             version = ParcelConstants.endpointVersion.toString(),
             license = OpenApiInfo.License(
                 name = "© GDI-Th",
-                identifier = "Flurstücke Thüringen",
                 url = LC_DL_BY
             )
         )
@@ -80,7 +79,7 @@ object DE_TH : ApiObject {
                                 //plotNumerator = "flstnrzae",
                                 //plotDenominator = "flstnrnen",
                                 location = "lagebeztxt",
-                                usageHint = "tntext"
+                                usageHint = "tntxt"
                             ),
                             parcelLinkReference = Bundesland.THUERINGEN.iso3166_2 + "_default",
                         ).usable()

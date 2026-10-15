@@ -9,5 +9,11 @@ captures
 local.properties
 xcuserdata
 .kotlin
+node_modules/
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
 #So we don't accidentally commit our private keys
 *.gpg

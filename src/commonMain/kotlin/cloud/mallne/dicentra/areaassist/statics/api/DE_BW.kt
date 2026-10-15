@@ -27,7 +27,6 @@ object DE_BW : ApiObject {
             version = ParcelConstants.endpointVersion.toString(),
             license = OpenApiInfo.License(
                 name = "LGL-BW: Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
-                identifier = "Flurstücke Baden Württemberg",
                 url = LC_DL_BY
             )
         )
