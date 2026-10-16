@@ -13,8 +13,6 @@ import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
 import cloud.mallne.dicentra.areaassist.statics.Serialization
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
-import cloud.mallne.dicentra.aviator.core.execution.serializedMulti
-import cloud.mallne.dicentra.aviator.core.execution.serializedSingle
 import cloud.mallne.geokit.Boundary
 import cloud.mallne.geokit.geojson.JsonFeature
 import kotlinx.serialization.Serializable
@@ -24,17 +22,17 @@ import kotlin.time.ExperimentalTime
 object AreaAssistParameters {
     const val BOUNDARY = "DCAA_BOUNDARY"
     fun boundary(boundary: Boundary): Pair<String, RequestParameter> =
-        BOUNDARY to serializedSingle(boundary, Boundary.serializer())
+        BOUNDARY to RequestParameter.Single(boundary, valueSerializer = Boundary.serializer())
     const val QUERIES = "DCAA_QUERIES"
     fun queries(queries: List<Query> = listOf()): Pair<String, RequestParameter> =
-        QUERIES to serializedMulti(queries, Query.serializer())
+        QUERIES to RequestParameter.Multi(queries, valueSerializer = Query.serializer())
 
     fun parcelId(parcelId: String): Pair<String, RequestParameter> =
-        QUERIES to serializedMulti(
+        QUERIES to RequestParameter.Multi(
             listOf(
                 parcelIdQuery(parcelId),
             ),
-            Query.serializer(),
+            valueSerializer = Query.serializer(),
         )
 
     fun parcelIdQuery(parcelId: String): Query =

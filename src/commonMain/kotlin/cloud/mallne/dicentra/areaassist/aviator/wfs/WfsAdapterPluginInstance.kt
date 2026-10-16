@@ -33,7 +33,6 @@ import cloud.mallne.geokit.ogc.model.fes.*
 import cloud.mallne.geokit.ogc.model.gml.DirectPositionType
 import cloud.mallne.geokit.ogc.model.gml.Envelope
 import cloud.mallne.geokit.ogc.model.wfs.FeatureCollection
-import kotlinx.serialization.builtins.ListSerializer
 import cloud.mallne.geokit.ogc.model.wfs.GetFeature
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
@@ -87,24 +86,24 @@ data class WfsAdapterPluginInstance(
                                         upperCorner = DirectPositionType(ne.wfsCoord()),
                                         srsName = configurationBundle.inputCRS
                                     )
-                                )
-                            ) { bBOX ->
+                                ),
+                                stringify = { bBOX ->
                                 "${bBOX.envelope.lowerCorner.value.joinToString(separator = ",") { it.toString() }},${
                                     bBOX.envelope.upperCorner.value.joinToString(
                                         separator = ","
                                     ) { it.toString() }
                                 },${bBOX.envelope.srsName}".encodeURLParameter()
-                            }
+                            })
                     }
 
                     //Build Query
                     val filter = buildFesFilter(queries, options)
                     filter?.let {
                         context.requestParams[WfsAdapterPlugin.Parameters.FILTER] =
-                            RequestParameter.Single(it) { abstractOperatorType ->
+                            RequestParameter.Single(it, stringify = { abstractOperatorType ->
                                 val filter = Filter.fromList(listOf(abstractOperatorType))
                                 context.dataHolder.xml.encodeToString(filter).encodeURLParameter()
-                            }
+                            })
                     }
                 }
                 after(AviatorExecutionStages.FormingRequest) { context ->
@@ -182,7 +181,6 @@ data class WfsAdapterPluginInstance(
                         }
                         emptyList<ParcelCrateEntity>()
                     }
-                    context.resultSerializer = ListSerializer(ParcelCrateEntity.serializer())
                 }
             }
         }

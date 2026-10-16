@@ -1,5 +1,6 @@
 package cloud.mallne.dicentra.areaassist.aviator
 
+import cloud.mallne.dicentra.aviator.plugin.synapse.toCatalystParameters
 import cloud.mallne.geokit.Boundary
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive

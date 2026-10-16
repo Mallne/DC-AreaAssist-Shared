@@ -92,6 +92,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.dc.aviator.plugin.synapse)
             }
         }
     }

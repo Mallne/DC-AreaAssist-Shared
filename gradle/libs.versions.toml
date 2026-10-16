@@ -30,6 +30,7 @@ dc-aviator-client-ktor = { module = "cloud.mallne.dicentra.aviator.client:ktor",
 dc-aviator-koas = { module = "cloud.mallne.dicentra.aviator:koas", version.ref = "dc-aviator" }
 dc-aviator-adapter-xml = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-xml", version.ref = "dc-aviator" }
 dc-aviator-adapter-json = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-json", version.ref = "dc-aviator" }
+dc-aviator-plugin-synapse = { module = "cloud.mallne.dicentra.aviator.plugin:synapse", version.ref = "dc-aviator" }
 mlln-units = { module = "cloud.mallne:units", version.ref = "mlln-units" }
 mlln-geokit-calculation = { module = "cloud.mallne.geokit:calculation", version.ref = "mlln-geokit" }
 mlln-geokit-geojson = { module = "cloud.mallne.geokit:geojson", version.ref = "mlln-geokit" }

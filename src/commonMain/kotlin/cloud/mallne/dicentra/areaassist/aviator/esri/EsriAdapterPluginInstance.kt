@@ -19,7 +19,6 @@ import cloud.mallne.geokit.Boundary
 import cloud.mallne.geokit.geojson.JsonFeatureCollection
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -111,7 +110,6 @@ data class EsriAdapterPluginInstance(
                         }
                         emptyList<ParcelCrateEntity>()
                     }
-                    context.resultSerializer = ListSerializer(ParcelCrateEntity.serializer())
                 }
             }
         }
