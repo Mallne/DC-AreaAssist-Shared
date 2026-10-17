@@ -20,6 +20,9 @@ importers:
       dotenv:
         specifier: ^18.0.7
         version: 18.0.8
+      toml:
+        specifier: ^5.0.1
+        version: 5.0.1
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -228,6 +231,10 @@ packages:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
 
+  toml@5.0.1:
+    resolution: {integrity: sha512-EqYNA/YvUNndrA2B3O2ojzLQoTQrBxeZ9UIjQwk8t10oe6n7dwclBwd9IdZQTOKwe6vWX+AXtl6IntXRbepdxQ==}
+    engines: {node: '>=20'}
+
   typescript@7.0.2:
     resolution: {integrity: sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA==}
     engines: {node: '>=16.20.0'}
@@ -364,6 +371,8 @@ snapshots:
       playwright-core: 1.64.1
 
   require-from-string@2.0.2: {}
+
+  toml@5.0.1: {}
 
   typescript@7.0.2:
     optionalDependencies:

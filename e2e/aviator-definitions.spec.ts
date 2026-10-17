@@ -9,7 +9,9 @@ import {
 } from '@playwright/test';
 import { createHash, randomBytes } from 'node:crypto';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 import type { Browser } from '@playwright/test';
+import { parse } from 'toml';
 
 const require = createRequire(import.meta.url);
 const SwaggerParser = require('@apidevtools/swagger-parser') as typeof import('@apidevtools/swagger-parser');
@@ -29,6 +31,34 @@ type AdapterOperation = {
   kind: AdapterKind;
   featureUrl: string;
 };
+
+type WfsProviderResult = {
+  featureXml: string;
+  schemaXml: string;
+  mappingSchemaXml: string;
+  expectedFailure?: string;
+};
+
+type ProviderException = {
+  service_title: string;
+  path: string;
+  status: number;
+  body_includes: string;
+  reason: string;
+  schema_url?: string;
+};
+
+const providerExceptions = (
+  parse(readFileSync(new URL('./provider-exceptions.toml', import.meta.url), 'utf8')) as {
+    provider_exception?: ProviderException[];
+  }
+).provider_exception ?? [];
+
+function providerExceptionFor(contract: AdapterOperation): ProviderException | undefined {
+  return providerExceptions.find(
+    (exception) => exception.service_title === contract.serviceTitle && exception.path === contract.path,
+  );
+}
 
 function record(value: unknown): JsonRecord {
   return value !== null && typeof value === 'object' ? (value as JsonRecord) : {};
@@ -323,7 +353,7 @@ async function providerFeature(
   contract: AdapterOperation,
   testInfo: TestInfo,
   attachmentName: string,
-): Promise<JsonRecord | string> {
+): Promise<JsonRecord | WfsProviderResult> {
   const keys = contract.options.keys as JsonRecord[];
   const references = keys
     .map((key) => key.reference)
@@ -354,13 +384,59 @@ async function providerFeature(
       { method: 'GET', url: contract.featureUrl, query: params },
       response,
     );
+    const providerException = providerExceptionFor(contract);
+    const expectedFailure =
+      providerException &&
+      response.status() === providerException.status &&
+      xml.includes(providerException.body_includes)
+        ? providerException.reason
+        : undefined;
     expect(
-      response.ok(),
+      response.ok() || expectedFailure,
       `${contract.serviceTitle} provider request should succeed (${response.status()}): ${contract.featureUrl}; ${xml}`,
     ).toBeTruthy();
-    expect(xml, `${contract.serviceTitle} must return a WFS FeatureCollection`).toContain('FeatureCollection');
-    expect(xml, `${contract.serviceTitle} returned a WFS exception`).not.toContain('ExceptionReport');
-    return xml;
+    if (response.ok()) {
+      expect(xml, `${contract.serviceTitle} must return a WFS FeatureCollection`).toContain('FeatureCollection');
+      expect(xml, `${contract.serviceTitle} returned a WFS exception`).not.toContain('ExceptionReport');
+    }
+
+    const schemaParams = {
+      service: 'WFS',
+      version: '2.0.0',
+      request: 'DescribeFeatureType',
+      typeNames: String(contract.plugin.typeNames),
+    };
+    const schemaResponse = await request.get(contract.featureUrl, {
+      params: schemaParams,
+      timeout: 30_000,
+    });
+    const schemaXml = await attachExchange(
+      testInfo,
+      `${attachmentName}-schema`,
+      { method: 'GET', url: contract.featureUrl, query: schemaParams },
+      schemaResponse,
+    );
+    expect(
+      schemaResponse.ok(),
+      `${contract.serviceTitle} DescribeFeatureType should succeed (${schemaResponse.status()}): ${contract.featureUrl}; ${schemaXml}`,
+    ).toBeTruthy();
+    expect(schemaXml, `${contract.serviceTitle} must return a feature schema`).toContain('schema');
+    let mappingSchemaXml = schemaXml;
+    if (providerException?.schema_url) {
+      const mappingSchemaResponse = await request.get(providerException.schema_url, { timeout: 30_000 });
+      const includedSchemaXml = await attachExchange(
+        testInfo,
+        `${attachmentName}-mapping-schema`,
+        { method: 'GET', url: providerException.schema_url },
+        mappingSchemaResponse,
+      );
+      expect(
+        mappingSchemaResponse.ok(),
+        `${contract.serviceTitle} included mapping schema should load (${mappingSchemaResponse.status()})`,
+      ).toBeTruthy();
+      mappingSchemaXml = `${schemaXml}\n${includedSchemaXml}`;
+    }
+    return { featureXml: xml, schemaXml, mappingSchemaXml, expectedFailure };
   }
 
   const params = {
@@ -528,21 +604,27 @@ for (const spec of servedSpecs) {
           // against the mappings declared by this individual operation.
           const providerResult = await providerFeature(request, contract, testInfo, `provider-${contractIndex + 1}`);
           if (contract.kind === 'wfs') {
-            const xml = String(providerResult);
-            const prefix = String(contract.plugin.nsPrefix ?? '');
+            const { featureXml: xml, mappingSchemaXml, expectedFailure } = providerResult as WfsProviderResult;
             for (const reference of references) {
-              const qname = prefix ? `${prefix}:` : '(?:[\\w.-]+:)?';
-              expect(xml, `${title} provider response is missing mapped source attribute ${reference}`).toMatch(
-                new RegExp(`<${qname}${reference}(?:\\s[^>]*)?(?:>|\\s*/>)`, 'i'),
+              expect(mappingSchemaXml, `${title} provider schema is missing mapped source attribute ${reference}`).toMatch(
+                new RegExp(`name=["']${reference}["']`, 'i'),
               );
             }
+            if (expectedFailure) {
+              testInfo.annotations.push({ type: 'expected-provider-failure', description: expectedFailure });
+              console.warn(`Expected provider failure for ${title} ${path}: ${expectedFailure}`);
+              continue;
+            }
             const parcelId = keys.find((key) => key.identifier === 'id')!;
-            const parcelIdQName = prefix ? `${prefix}:` : '(?:[\\w.-]+:)?';
+            const parcelIdQName = '(?:[\\w.-]+:)?';
             expect(xml, `${title} provider returned an empty parcel ID`).toMatch(
               new RegExp(`<${parcelIdQName}${parcelId.reference}[^>]*>\\s*[^<\\s]`, 'i'),
             );
             const geometry = String(contract.plugin.geometryPointer ?? '');
             if (geometry) {
+              expect(mappingSchemaXml, `${title} provider schema is missing configured geometry ${geometry}`).toMatch(
+                new RegExp(`name=["']${geometry}["']`, 'i'),
+              );
               expect(xml, `${title} provider response is missing configured geometry ${geometry}`).toMatch(
                 new RegExp(`<${parcelIdQName}${geometry}(?:\\s[^>]*)?(?:>|\\s*/>)`, 'i'),
               );

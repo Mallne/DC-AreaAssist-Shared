@@ -17,6 +17,18 @@ object APIs {
     val esri by Esri
     val thueringenWfs by DE_TH
     val badenWuerttembergWfs by DE_BW
+    val bremenWfs by DE_HB
+    val rheinlandPfalzWfs by DE_RP
+    val saarlandWfs by DE_SL
+    val mecklenburgVorpommernWfs by DE_MV
+    val nordrheinWestfalenWfs by DE_NW
+    val niedersachsenWfs by DE_NI
+    val brandenburgWfs by DE_BB
+    val hamburgWfs by DE_HH
+    val hessenWfs by DE_HE
+    val sachsenWfs by DE_SN
+    val berlinWfs by DE_BE
+    val sachsenAnhaltWfs by DE_ST
     val brightSky by Brightsky
     val rvrComputistLink by RVRComputistLink
 
@@ -88,6 +100,18 @@ object APIs {
         esri,
         thueringenWfs,
         badenWuerttembergWfs,
+        bremenWfs,
+        rheinlandPfalzWfs,
+        saarlandWfs,
+        mecklenburgVorpommernWfs,
+        nordrheinWestfalenWfs,
+        niedersachsenWfs,
+        brandenburgWfs,
+        hamburgWfs,
+        hessenWfs,
+        sachsenWfs,
+        berlinWfs,
+        sachsenAnhaltWfs,
         brightSky,
         rvrComputistLink,
     )

@@ -12,6 +12,7 @@
     "@playwright/test": "^1.61.0",
     "@types/node": "^26.6.5",
     "dotenv": "^18.0.7",
+    "toml": "^5.0.1",
     "typescript": "^7.0.2"
   }
 }
