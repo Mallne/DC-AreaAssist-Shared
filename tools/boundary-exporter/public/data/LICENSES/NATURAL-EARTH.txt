@@ -1,0 +1,3 @@
+Natural Earth vector data is public domain.
+Source: https://www.naturalearthdata.com/about/terms-of-use/
+Data release used for the bundled country outlines: 1:110m Admin 0 Countries, Natural Earth 5.1.2.

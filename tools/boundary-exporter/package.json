@@ -1,0 +1,21 @@
+{
+  "name": "@dicentra/boundary-exporter",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "pnpm check:types && vite build",
+    "test": "node --test",
+    "check:types": "tsc --noEmit",
+    "prepare:data": "node scripts/prepare-data.ts"
+  },
+  "dependencies": {
+    "maplibre-gl": "^6.14.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vite": "^6.4.1"
+  }
+}

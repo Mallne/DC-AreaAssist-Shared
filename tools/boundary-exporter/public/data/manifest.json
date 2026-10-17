@@ -1,0 +1,17 @@
+{
+  "notice": "Natural Earth data is public domain. deutschlandGeoJSON is Unlicense.",
+  "data": [
+    {
+      "path": "public/data/countries.geojson",
+      "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_110m_admin_0_countries.geojson",
+      "sha256": "49c6d7bc45ea58e8d2dc7f1e8419462a2307e67d53ce46a80ec612dd977c4e71",
+      "features": 177
+    },
+    {
+      "path": "public/data/germany-states.geojson",
+      "source": "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/4090d4e1f89c1184b436b3d9ccaf332b4c5b43d2/2_bundeslaender/4_niedrig.geo.json",
+      "sha256": "f11c76002e32c0b8ed5d86305d51a4c86e50d13ed8d718ba07b28066d8d93244",
+      "features": 16
+    }
+  ]
+}

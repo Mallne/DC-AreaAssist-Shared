@@ -1,9 +1,8 @@
 package cloud.mallne.dicentra.areaassist.statics.api
 
-import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
+import cloud.mallne.dicentra.areaassist.model.areas.Bundesland
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
-import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.Path
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.locator
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
@@ -43,25 +42,10 @@ object DE_HB : ApiObject {
                             geometryPointer = "geom"
                         }
                         `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                            bounds = Bundesland.BREMEN.roughBoundaries,
+                            boundary = Bundesland.BREMEN.boundary,
                             correspondsTo = Bundesland.BREMEN.iso3166_2,
-                            keys = DefaultKeys.fillIn(
-                                area = "flaeche",
-                                parcelId = "flstkennz",
-                                district = "gemarkung",
-                                districtId = "gemaschl",
-                                districtCompartment = "flur",
-                                districtCompartmentId = "flurschl",
-                                districtMunicipality = "gemeinde",
-                                districtMunicipalityId = "gmdschl",
-                                districtRegion = "kreis",
-                                districtRegionId = "kreisschl",
-                                plotNumerator = "flstnrzae",
-                                plotDenominator = "flstnrnen",
-                                location = "lagebeztxt",
-                                usageHint = "tntxt",
-                                usageLegalDeviation = "abwrecht"
-                            ),
+                            parcelIdPrefix = "04",
+                            keys = DE.simplifiedAlkisKeys(),
                             parcelLinkReference = "${Bundesland.BREMEN.iso3166_2}_default",
                             license = OpenApiInfo.License(
                                 name = "Landesamt GeoInformation Bremen, CC BY 4.0",

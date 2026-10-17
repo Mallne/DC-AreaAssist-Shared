@@ -1,6 +1,6 @@
 package cloud.mallne.dicentra.areaassist.statics.api
 
-import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
+import cloud.mallne.dicentra.areaassist.model.areas.Bundesland
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
@@ -43,8 +43,9 @@ object DE_SL : ApiObject {
                             geometryPointer = "geometry"
                         }
                         `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                            bounds = Bundesland.SAARLAND.roughBoundaries,
+                            boundary = Bundesland.SAARLAND.boundary,
                             correspondsTo = Bundesland.SAARLAND.iso3166_2,
+                            parcelIdPrefix = "10",
                             keys = DefaultKeys.fillIn(parcelId = "nationalCadastralReference"),
                             parcelLinkReference = "${Bundesland.SAARLAND.iso3166_2}_default",
                             license = OpenApiInfo.License(

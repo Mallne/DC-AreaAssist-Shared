@@ -1,0 +1,6 @@
+packages:
+  - '.'
+  - 'tools/boundary-exporter'
+
+allowBuilds:
+  esbuild: true

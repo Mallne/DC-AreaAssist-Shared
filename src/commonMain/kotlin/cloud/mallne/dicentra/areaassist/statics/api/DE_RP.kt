@@ -1,9 +1,8 @@
 package cloud.mallne.dicentra.areaassist.statics.api
 
-import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
+import cloud.mallne.dicentra.areaassist.model.areas.Bundesland
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
-import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.Path
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.locator
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
@@ -37,31 +36,16 @@ object DE_RP : ApiObject {
                         operationId = Bundesland.RHEINLAND_PFALZ.iso3166_2
                         `x-dicentra-aviator-serviceDelegateCall` = locator
                         `x-dicentra-aviator-pluginMaterialization` = ParcelConstants.wfsAdapterConfig {
-                            typeNames = "ave:Flurstueck"
-                            namespace = "http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0"
-                            nsPrefix = "ave"
-                            geometryPointer = "geometrie"
+                            typeNames = DE.SIMPLIFIED_ALKIS_TYPE_NAME
+                            namespace = DE.SIMPLIFIED_ALKIS_NAMESPACE
+                            nsPrefix = DE.SIMPLIFIED_ALKIS_PREFIX
+                            geometryPointer = DE.SIMPLIFIED_ALKIS_GEOMETRY
                         }
                         `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                            bounds = Bundesland.RHEINLAND_PFALZ.roughBoundaries,
+                            boundary = Bundesland.RHEINLAND_PFALZ.boundary,
                             correspondsTo = Bundesland.RHEINLAND_PFALZ.iso3166_2,
-                            keys = DefaultKeys.fillIn(
-                                area = "flaeche",
-                                parcelId = "flstkennz",
-                                district = "gemarkung",
-                                districtId = "gemaschl",
-                                districtCompartment = "flur",
-                                districtCompartmentId = "flurschl",
-                                districtMunicipality = "gemeinde",
-                                districtMunicipalityId = "gmdschl",
-                                districtRegion = "kreis",
-                                districtRegionId = "kreisschl",
-                                plotNumerator = "flstnrzae",
-                                plotDenominator = "flstnrnen",
-                                location = "lagebeztxt",
-                                usageHint = "tntxt",
-                                usageLegalDeviation = "abwrecht"
-                            ),
+                            parcelIdPrefix = "07",
+                            keys = DE.simplifiedAlkisKeys(),
                             parcelLinkReference = "${Bundesland.RHEINLAND_PFALZ.iso3166_2}_default",
                             license = OpenApiInfo.License(
                                 name = "©GeoBasis-DE / LVermGeoRP, dl-de/by-2-0",

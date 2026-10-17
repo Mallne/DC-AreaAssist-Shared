@@ -1,0 +1,3 @@
+The deutschlandGeoJSON project is released under The Unlicense.
+Source: https://github.com/isellsoap/deutschlandGeoJSON
+Bundled data: 2_bundeslaender/4_niedrig.geo.json at commit 4090d4e1f89c1184b436b3d9ccaf332b4c5b43d2

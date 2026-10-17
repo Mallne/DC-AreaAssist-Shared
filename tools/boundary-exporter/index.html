@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Boundary Coverage Tool</title>
+  </head>
+  <body>
+    <main class="tool">
+      <header><h1>Boundary coverage tool</h1><p>Internal point-in-area model builder</p></header>
+      <section class="workspace" aria-label="Boundary model">
+        <aside class="controls">
+          <fieldset class="types">
+            <legend>Area type</legend>
+            <label><input type="radio" name="areaType" value="country" checked> Country</label>
+            <label><input type="radio" name="areaType" value="state"> German state</label>
+          </fieldset>
+          <label for="areaSearch">Find an area</label>
+          <input id="areaSearch" type="search" placeholder="Search countries…" autocomplete="off">
+          <label class="visually-hidden" for="areaSelect">Select area</label>
+          <select id="areaSelect" size="7" aria-describedby="dataNote"></select>
+          <small id="dataNote">Bundled generalized boundaries</small>
+
+          <hr>
+          <div class="range-heading"><label for="fidelity">Coverage fidelity</label><output id="fidelityOutput" for="fidelity">40%</output></div>
+          <label class="overlay"><input id="autoFidelity" type="checkbox" checked> Auto-select Codex bundle tradeoff</label>
+          <input id="fidelity" type="range" min="1" max="100" value="40" aria-describedby="fidelityHelp">
+          <div class="range-ends"><span>COARSE</span><span>EXACT SOURCE</span></div>
+          <small id="fidelityHelp">Lower fidelity uses fewer points and may include more outside area; higher fidelity follows the source more closely. 100% uses the exact source boundary.</small>
+          <label class="overlay"><input id="showOriginal" type="checkbox"> Show source outline</label>
+
+          <hr>
+          <div class="stats"><span>MODEL POINTS</span><strong id="modelPoints">—</strong></div>
+          <div class="stats"><span>CODEX BOUNDARY GEOMETRIES</span><strong id="wireSize">—</strong></div>
+          <div class="stats"><span>KOTLIN MODEL SIZE</span><strong id="byteCount">—</strong></div>
+          <button id="download" type="button" disabled>Download Kotlin model (.kt)</button>
+          <button id="downloadGeoJson" class="reset" type="button" disabled>Download GeoJSON reference</button>
+          <button id="reset" class="reset" type="button">Reset</button>
+          <p id="raycastResult" role="status" aria-live="polite">Select an area, then click the map to raycast a test point.</p>
+          <small class="disclaimer">Generalized source outlines are not legal or cadastral boundaries.</small>
+        </aside>
+        <div class="map-panel">
+          <div id="map" role="application" aria-label="Map preview. Click to test point containment."></div>
+          <div class="map-legend"><span></span><span id="mapLabel">Choose an area</span></div>
+          <div id="status" role="status" aria-live="polite">Select an area.</div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

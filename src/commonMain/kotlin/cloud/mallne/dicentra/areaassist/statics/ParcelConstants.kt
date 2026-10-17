@@ -4,14 +4,8 @@ import cloud.mallne.dicentra.areaassist.aviator.esri.EsriAdapterPlugin
 import cloud.mallne.dicentra.areaassist.aviator.esri.EsriAdapterPluginConfig
 import cloud.mallne.dicentra.areaassist.aviator.wfs.WfsAdapterPlugin
 import cloud.mallne.dicentra.areaassist.aviator.wfs.WfsAdapterPluginConfig
-import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
-import cloud.mallne.dicentra.areaassist.model.parcel.KeyFormat
-import cloud.mallne.dicentra.areaassist.model.parcel.KeyIcon
-import cloud.mallne.dicentra.areaassist.model.parcel.KeyType
-import cloud.mallne.dicentra.areaassist.model.parcel.ParcelKey
-import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
-import cloud.mallne.dicentra.areaassist.model.parcel.PreDefined
-import cloud.mallne.dicentra.areaassist.model.parcel.UnitFormat
+import cloud.mallne.dicentra.areaassist.model.areas.Bundesland
+import cloud.mallne.dicentra.areaassist.model.parcel.*
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-pluginMaterialization`
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceDelegateCall`
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceOptions`
@@ -401,8 +395,9 @@ object ParcelConstants {
             `x-dicentra-aviator-serviceDelegateCall` = locator
             `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
             `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                bounds = Bundesland.THUERINGEN.roughBoundaries,
+                boundary = Bundesland.THUERINGEN.boundary,
                 correspondsTo = Bundesland.THUERINGEN.iso3166_2,
+                parcelIdPrefix = "16",
                 keys = DefaultKeys.fillIn(
                     area = "flaeche",
                     parcelId = "flstkennz",
@@ -437,8 +432,9 @@ object ParcelConstants {
             `x-dicentra-aviator-serviceDelegateCall` = locator
             `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
             `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                bounds = Bundesland.SACHSEN.roughBoundaries,
+                boundary = Bundesland.SACHSEN.boundary,
                 correspondsTo = Bundesland.SACHSEN.iso3166_2,
+                parcelIdPrefix = "14",
                 keys = DefaultKeys.fillIn(
                     area = "amtlicheFlaeche",
                     parcelId = "flurstueckskennzeichen",
@@ -464,8 +460,9 @@ object ParcelConstants {
             `x-dicentra-aviator-serviceDelegateCall` = locator
             `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
             `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                bounds = Bundesland.BRANDENBURG.roughBoundaries,
+                boundary = Bundesland.BRANDENBURG.boundary,
                 correspondsTo = Bundesland.BRANDENBURG.iso3166_2,
+                parcelIdPrefix = "12",
                 keys = DefaultKeys.fillIn(
                     area = "Amtliche_Fläche__m__",
                     parcelId = "Flurstückskennzeichen",
@@ -492,8 +489,9 @@ object ParcelConstants {
             `x-dicentra-aviator-serviceDelegateCall` = locator
             `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
             `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                bounds = Bundesland.HESSEN.roughBoundaries,
+                boundary = Bundesland.HESSEN.boundary,
                 correspondsTo = Bundesland.HESSEN.iso3166_2,
+                parcelIdPrefix = "06",
                 keys = DefaultKeys.fillIn(
                     area = "Amtliche_Fläche",
                     parcelId = "Flurstückskennzeichen",
@@ -514,8 +512,9 @@ object ParcelConstants {
             `x-dicentra-aviator-serviceDelegateCall` = locator
             `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
             `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                bounds = Bundesland.HAMBURG.roughBoundaries,
+                boundary = Bundesland.HAMBURG.boundary,
                 correspondsTo = Bundesland.HAMBURG.iso3166_2,
+                parcelIdPrefix = "02",
                 keys = DefaultKeys.fillIn(
                     area = "Amtliche_Fläche__m__",
                     parcelId = "Flurstückskennzeichen",
@@ -537,8 +536,9 @@ object ParcelConstants {
             `x-dicentra-aviator-serviceDelegateCall` = locator
             `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
             `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                bounds = Bundesland.NORDRHEIN_WESTFALEN.roughBoundaries,
+                boundary = Bundesland.NORDRHEIN_WESTFALEN.boundary,
                 correspondsTo = Bundesland.NORDRHEIN_WESTFALEN.iso3166_2,
+                parcelIdPrefix = "05",
                 keys = DefaultKeys.fillIn(
                     area = "Amtliche_Fläche__m__",
                     parcelId = "Flurstückskennzeichen",
@@ -560,8 +560,9 @@ object ParcelConstants {
             `x-dicentra-aviator-serviceDelegateCall` = locator
             `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
             `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                bounds = Bundesland.SACHSEN_ANHALT.roughBoundaries,
+                boundary = Bundesland.SACHSEN_ANHALT.boundary,
                 correspondsTo = Bundesland.SACHSEN_ANHALT.iso3166_2,
+                parcelIdPrefix = "15",
                 keys = DefaultKeys.fillIn(
                     area = "Fläche",
                     parcelId = "Flurstückskennzeichen",
@@ -588,8 +589,9 @@ object ParcelConstants {
             `x-dicentra-aviator-serviceDelegateCall` = locator
             `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
             `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                bounds = Bundesland.BERLIN.roughBoundaries,
+                boundary = Bundesland.BERLIN.boundary,
                 correspondsTo = Bundesland.BERLIN.iso3166_2,
+                parcelIdPrefix = "11",
                 keys = DefaultKeys.fillIn(
                     area = "Amtliche_Fläche",
                     parcelId = "Flurstück",
@@ -615,8 +617,9 @@ object ParcelConstants {
             `x-dicentra-aviator-serviceDelegateCall` = locator
             `x-dicentra-aviator-pluginMaterialization` = esriAdapterConfig
             `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                bounds = Bundesland.NIEDERSACHSEN.roughBoundaries,
+                boundary = Bundesland.NIEDERSACHSEN.boundary,
                 correspondsTo = Bundesland.NIEDERSACHSEN.iso3166_2,
+                parcelIdPrefix = "03",
                 keys = DefaultKeys.fillIn(
                     district = "Gemarkung",
                     districtCompartmentId = "Flurnummer",

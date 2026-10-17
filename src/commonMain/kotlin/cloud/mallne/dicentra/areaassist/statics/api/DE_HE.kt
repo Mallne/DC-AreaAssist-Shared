@@ -1,9 +1,8 @@
 package cloud.mallne.dicentra.areaassist.statics.api
 
-import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
+import cloud.mallne.dicentra.areaassist.model.areas.Bundesland
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
-import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.Path
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.locator
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
@@ -17,7 +16,6 @@ import io.ktor.openapi.*
 
 object DE_HE : ApiObject {
     private const val crs = "urn:ogc:def:crs:EPSG::25832"
-    private const val namespace = "http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0"
 
     override val value: OpenApiDoc = OpenApiDoc.build {
         `x-dicentra-aviator` = AviatorExtensionSpec.SpecVersion
@@ -38,35 +36,20 @@ object DE_HE : ApiObject {
                         operationId = Bundesland.HESSEN.iso3166_2
                         `x-dicentra-aviator-serviceDelegateCall` = locator
                         `x-dicentra-aviator-pluginMaterialization` = ParcelConstants.wfsAdapterConfig {
-                            typeNames = "ave:Flurstueck"
-                            this.namespace = DE_HE.namespace
-                            nsPrefix = "ave"
-                            geometryPointer = "geometrie"
-                            inputCRS = DE_HE.crs
+                            typeNames = DE.SIMPLIFIED_ALKIS_TYPE_NAME
+                            this.namespace = DE.SIMPLIFIED_ALKIS_NAMESPACE
+                            nsPrefix = DE.SIMPLIFIED_ALKIS_PREFIX
+                            geometryPointer = DE.SIMPLIFIED_ALKIS_GEOMETRY
+                            inputCRS = crs
                             outputCRS = Identifier.constructUrn("EPSG", "25832")
                             importCRS = "EPSG:25832"
-                            exportCRS = DE_HE.crs
+                            exportCRS = crs
                         }
                         `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                            bounds = Bundesland.HESSEN.roughBoundaries,
+                            boundary = Bundesland.HESSEN.boundary,
                             correspondsTo = Bundesland.HESSEN.iso3166_2,
-                            keys = DefaultKeys.fillIn(
-                                area = "flaeche",
-                                parcelId = "flstkennz",
-                                district = "gemarkung",
-                                districtId = "gemaschl",
-                                districtCompartment = "flur",
-                                districtCompartmentId = "flurschl",
-                                districtMunicipality = "gemeinde",
-                                districtMunicipalityId = "gmdschl",
-                                districtRegion = "kreis",
-                                districtRegionId = "kreisschl",
-                                plotNumerator = "flstnrzae",
-                                plotDenominator = "flstnrnen",
-                                location = "lagebeztxt",
-                                usageHint = "tntxt",
-                                usageLegalDeviation = "abwrecht"
-                            ),
+                            parcelIdPrefix = "06",
+                            keys = DE.simplifiedAlkisKeys(),
                             parcelLinkReference = "${Bundesland.HESSEN.iso3166_2}_default",
                             license = OpenApiInfo.License(
                                 name = "HVBG Hessen, Geobasisdaten © HVBG",

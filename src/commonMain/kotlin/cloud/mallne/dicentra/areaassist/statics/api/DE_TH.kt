@@ -1,6 +1,6 @@
 package cloud.mallne.dicentra.areaassist.statics.api
 
-import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
+import cloud.mallne.dicentra.areaassist.model.areas.Bundesland
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
@@ -55,14 +55,15 @@ object DE_TH : ApiObject {
                         )
                         `x-dicentra-aviator-serviceDelegateCall` = locator
                         `x-dicentra-aviator-pluginMaterialization` = ParcelConstants.wfsAdapterConfig {
-                            typeNames = "ave:Flurstueck"
+                            typeNames = DE.SIMPLIFIED_ALKIS_TYPE_NAME
                             namespace = "http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/1.0"
-                            nsPrefix = "ave"
-                            geometryPointer = "geometrie"
+                            nsPrefix = DE.SIMPLIFIED_ALKIS_PREFIX
+                            geometryPointer = DE.SIMPLIFIED_ALKIS_GEOMETRY
                         }
                         `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                            bounds = Bundesland.THUERINGEN.roughBoundaries,
+                            boundary = Bundesland.THUERINGEN.boundary,
                             correspondsTo = Bundesland.THUERINGEN.iso3166_2,
+                            parcelIdPrefix = "16",
                             keys = DefaultKeys.fillIn(
                                 area = "flaeche",
                                 parcelId = "flstkennz",

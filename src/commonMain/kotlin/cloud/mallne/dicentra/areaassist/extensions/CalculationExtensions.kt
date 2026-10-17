@@ -1,6 +1,8 @@
 package cloud.mallne.dicentra.areaassist.extensions
 
 import cloud.mallne.dicentra.areaassist.model.Point
+import org.maplibre.spatialk.geojson.MultiPolygon
+import org.maplibre.spatialk.geojson.Position
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -21,27 +23,41 @@ object CalculationExtensions {
         return sqrt(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)))
     }
 
-    fun rayCast(point: Point<Double>, points: List<Point<Double>>): Boolean {
-        val n = points.size
-        var isInside = false
+    fun rayCast(point: Point<Double>, boundary: MultiPolygon): Boolean = boundary.coordinates.any { polygon ->
+        val outerRing = polygon.firstOrNull() ?: return@any false
+        rayCastRing(point, outerRing) && polygon.drop(1).none { rayCastRing(point, it) }
+    }
 
-        for (i in 0 until n) {
-            val currentVertex = points[i]
-            val nextVertex = points[(i + 1) % n]
-
-            val x1 = currentVertex.x
-            val y1 = currentVertex.y
-            val x2 = nextVertex.x
-            val y2 = nextVertex.y
-
-            if ((y1 > point.y) != (y2 > point.y) &&
-                point.x < (x2 - x1) * (point.y - y1) / (y2 - y1) + x1
-            ) {
-                isInside = !isInside
+    private fun rayCastRing(point: Point<Double>, ring: List<Position>): Boolean {
+        if (ring.size < 3) return false
+        val unwrapped = mutableListOf<Point<Double>>()
+        for (position in ring) {
+            var longitude = position.longitude
+            val previous = unwrapped.lastOrNull()?.x
+            if (previous != null) {
+                while (longitude - previous > 180) longitude -= 360
+                while (longitude - previous < -180) longitude += 360
             }
+            unwrapped += Point(longitude, position.latitude)
         }
-
-        return isInside
+        val center = (unwrapped.minOf { it.x } + unwrapped.maxOf { it.x }) / 2
+        var pointLongitude = point.x
+        while (pointLongitude - center > 180) pointLongitude -= 360
+        while (pointLongitude - center < -180) pointLongitude += 360
+        val rayPoint = Point(pointLongitude, point.y)
+        var inside = false
+        for (index in unwrapped.indices) {
+            val a = unwrapped[index]
+            val b = unwrapped[(index + 1) % unwrapped.size]
+            val cross = (rayPoint.y - a.y) * (b.x - a.x) - (rayPoint.x - a.x) * (b.y - a.y)
+            if (kotlin.math.abs(cross) <= 1e-10 && rayPoint.x >= minOf(a.x, b.x) - 1e-10 && rayPoint.x <= maxOf(a.x, b.x) + 1e-10
+                && rayPoint.y >= minOf(a.y, b.y) - 1e-10 && rayPoint.y <= maxOf(a.y, b.y) + 1e-10
+            ) return true
+            if ((a.y > rayPoint.y) != (b.y > rayPoint.y) &&
+                rayPoint.x < (b.x - a.x) * (rayPoint.y - a.y) / (b.y - a.y) + a.x
+            ) inside = !inside
+        }
+        return inside
     }
 
     fun vectorLength(rotationDeg: Double, width: Double, height: Double): Double {

@@ -29,6 +29,7 @@ object APIs {
     val sachsenWfs by DE_SN
     val berlinWfs by DE_BE
     val sachsenAnhaltWfs by DE_ST
+    val franceWfs by FR
     val brightSky by Brightsky
     val rvrComputistLink by RVRComputistLink
 
@@ -112,6 +113,7 @@ object APIs {
         sachsenWfs,
         berlinWfs,
         sachsenAnhaltWfs,
+        franceWfs,
         brightSky,
         rvrComputistLink,
     )

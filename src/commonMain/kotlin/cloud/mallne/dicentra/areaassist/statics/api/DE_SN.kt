@@ -1,6 +1,6 @@
 package cloud.mallne.dicentra.areaassist.statics.api
 
-import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
+import cloud.mallne.dicentra.areaassist.model.areas.Bundesland
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
@@ -42,14 +42,15 @@ object DE_SN : ApiObject {
                             namespace = "http://inspire.ec.europa.eu/schemas/cp/4.0"
                             nsPrefix = "cp"
                             geometryPointer = "geometry"
-                            inputCRS = DE_SN.crs
+                            inputCRS = crs
                             outputCRS = Identifier.constructUrn("EPSG", "25833")
                             importCRS = "EPSG:25833"
-                            exportCRS = DE_SN.crs
+                            exportCRS = crs
                         }
                         `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                            bounds = Bundesland.SACHSEN.roughBoundaries,
+                            boundary = Bundesland.SACHSEN.boundary,
                             correspondsTo = Bundesland.SACHSEN.iso3166_2,
+                            parcelIdPrefix = "14",
                             keys = DefaultKeys.fillIn(
                                 area = "areaValue",
                                 parcelId = "nationalCadastralReference"

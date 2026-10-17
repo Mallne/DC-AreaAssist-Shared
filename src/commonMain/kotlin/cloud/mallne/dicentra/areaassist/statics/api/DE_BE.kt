@@ -1,6 +1,6 @@
 package cloud.mallne.dicentra.areaassist.statics.api
 
-import cloud.mallne.dicentra.areaassist.model.bundeslaender.Bundesland
+import cloud.mallne.dicentra.areaassist.model.areas.Bundesland
 import cloud.mallne.dicentra.areaassist.model.parcel.ParcelServiceOptions
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants
 import cloud.mallne.dicentra.areaassist.statics.ParcelConstants.DefaultKeys
@@ -42,17 +42,18 @@ object DE_BE : ApiObject {
                         `x-dicentra-aviator-serviceDelegateCall` = locator
                         `x-dicentra-aviator-pluginMaterialization` = ParcelConstants.wfsAdapterConfig {
                             typeNames = "alkis_flurstuecke:flurstuecke"
-                            this.namespace = DE_BE.namespace
+                            this.namespace = DE.SIMPLIFIED_ALKIS_NAMESPACE
                             nsPrefix = "alkis_flurstuecke"
                             geometryPointer = "geom"
-                            inputCRS = DE_BE.crs
+                            inputCRS = crs
                             outputCRS = Identifier.constructUrn("EPSG", "25833")
                             importCRS = "EPSG:25833"
-                            exportCRS = DE_BE.crs
+                            exportCRS = crs
                         }
                         `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(
-                            bounds = Bundesland.BERLIN.roughBoundaries,
+                            boundary = Bundesland.BERLIN.boundary,
                             correspondsTo = Bundesland.BERLIN.iso3166_2,
+                            parcelIdPrefix = "11",
                             keys = DefaultKeys.fillIn(
                                 area = "afl",
                                 parcelId = "fsko",
