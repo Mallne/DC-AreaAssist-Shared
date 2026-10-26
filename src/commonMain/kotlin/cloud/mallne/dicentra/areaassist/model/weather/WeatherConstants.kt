@@ -33,9 +33,7 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceDelegateCall` = APIs.Services.WEATHER_SERVICE_WARNING.locator(
                 ServiceMethods.GATHER
             )
-            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
-                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-            ).usable()
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSky.usable()
             parameters {
                 query(Path.Parameters.LAT) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -59,9 +57,7 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceDelegateCall` = APIs.Services.WEATHER_SERVICE_CURRENT.locator(
                 ServiceMethods.GATHER
             )
-            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
-                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-            ).usable()
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSkyCurrent.usable()
             parameters {
                 query(Path.Parameters.LAT) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -94,9 +90,7 @@ object WeatherConstants {
         summary = "Weather Radar",
         get = Operation.build {
             operationId = "WeatherRadar"
-            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
-                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-            ).usable()
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSkyForecast.usable()
             parameters {
                 query(Path.Parameters.LAT) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -129,9 +123,7 @@ object WeatherConstants {
         summary = "Weather Sources",
         get = Operation.build {
             operationId = "WeatherSources"
-            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
-                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-            ).usable()
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSky.usable()
             parameters {
                 query(Path.Parameters.LAT) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -158,9 +150,7 @@ object WeatherConstants {
         summary = "Weather Synop",
         get = Operation.build {
             operationId = "WeatherSynop"
-            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
-                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-            ).usable()
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSky.usable()
             parameters {
                 query(Path.Parameters.DATE) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -193,9 +183,7 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceDelegateCall` = APIs.Services.WEATHER_SERVICE_FORECAST.locator(
                 ServiceMethods.GATHER
             )
-            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions(
-                serviceType = WeatherServiceOptions.Companion.ServiceType.BRIGHTSKY
-            ).usable()
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSkyForecast.usable()
             parameters {
                 query(Path.Parameters.DATE) {
                     schema = JsonSchema(type = JsonType.STRING)

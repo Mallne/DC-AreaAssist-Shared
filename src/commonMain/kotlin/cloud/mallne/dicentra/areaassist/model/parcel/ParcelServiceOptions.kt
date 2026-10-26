@@ -1,7 +1,7 @@
 package cloud.mallne.dicentra.areaassist.model.parcel
 
 import cloud.mallne.dicentra.areaassist.model.DisplayConstraints
-import cloud.mallne.dicentra.areaassist.model.areas.Bundesland
+import cloud.mallne.dicentra.areaassist.model.areas.Custom
 import cloud.mallne.dicentra.aviator.core.InflatedServiceOptions
 import cloud.mallne.dicentra.aviator.core.ServiceOptions
 import io.ktor.openapi.*
@@ -20,7 +20,7 @@ data class ParcelServiceOptions(
     val minimalDefinition: Boolean = true,
     /** Optional literal prefix used to route parcel IDs to this service. Null disables inference. */
     val parcelIdPrefix: String? = null,
-    val correspondsTo: String = Bundesland.CUSTOM.iso3166_2,
+    val correspondsTo: String = Custom.id,
     val parcelLinkReference: String = Uuid.random().toString(),
     val license: OpenApiInfo.License? = null,
     val keys: List<ParcelKey> = listOf(),

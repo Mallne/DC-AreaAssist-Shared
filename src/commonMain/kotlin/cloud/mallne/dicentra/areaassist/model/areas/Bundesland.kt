@@ -21,15 +21,14 @@ enum class Bundesland(
     MECKLENBURG_VORPOMMERN(definition = MecklenburgVorpommern),
     SACHSEN(definition = Sachsen),
     SACHSEN_ANHALT(definition = SachsenAnhalt),
-    THUERINGEN(definition = Thueringen),
-    CUSTOM(definition = Custom);
+    THUERINGEN(definition = Thueringen);
 
     val iso3166_2_DE: String
         get() = iso3166_2.substringAfter("DE-")
 
     companion object {
-        fun getByIso(iso: String): Bundesland = entries.find { it.iso3166_2 == iso } ?: CUSTOM
-        fun getByShortIso(countryIso: String, iso: String): Bundesland =
-            entries.find { it.iso3166_2.substringAfter("$countryIso-") == iso } ?: CUSTOM
+        fun getByIso(iso: String): Bundesland? = entries.find { it.iso3166_2 == iso }
+        fun getByShortIso(countryIso: String, iso: String): Bundesland? =
+            entries.find { it.iso3166_2.substringAfter("$countryIso-") == iso }
     }
 }

@@ -45,8 +45,8 @@ object DE_BB : ApiObject {
                             nsPrefix = DE.SIMPLIFIED_ALKIS_PREFIX
                             geometryPointer = DE.SIMPLIFIED_ALKIS_GEOMETRY
                             inputCRS = crs
-                            outputCRS = Identifier.constructUrn("EPSG", "25833")
-                            importCRS = "EPSG:25833"
+                            outputCRS = Identifier.constructUrn("EPSG", "25832")
+                            importCRS = "EPSG:25832"
                             exportCRS = crs
                         }
                         `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(

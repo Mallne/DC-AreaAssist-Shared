@@ -43,8 +43,8 @@ object DE_SN : ApiObject {
                             nsPrefix = "cp"
                             geometryPointer = "geometry"
                             inputCRS = crs
-                            outputCRS = Identifier.constructUrn("EPSG", "25833")
-                            importCRS = "EPSG:25833"
+                            outputCRS = Identifier.constructUrn("EPSG", "25832")
+                            importCRS = "EPSG:25832"
                             exportCRS = crs
                         }
                         `x-dicentra-aviator-serviceOptions` = ParcelServiceOptions(

@@ -37,6 +37,17 @@ if (aviatorDir.exists()) {
     println("[AREAASSIST_SHARED:aviator] This Project seems to be running without the Monorepo Context, please consider using the Monorepo")
 }
 
+val weaverDir = file("../../weaver")
+if (weaverDir.exists()) {
+    includeBuild(weaverDir.absolutePath) {
+        dependencySubstitution {
+            substitute(module("cloud.mallne.dicentra.weaver:core")).using(project(":core"))
+        }
+    }
+} else {
+    println("[AREAASSIST_SHARED:weaver] This Project seems to be running without the Monorepo Context, please consider using the Monorepo")
+}
+
 val unitsDir = file("../units")
 if (unitsDir.exists()) {
     includeBuild(unitsDir.absolutePath) {

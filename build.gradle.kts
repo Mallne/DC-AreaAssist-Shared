@@ -74,6 +74,7 @@ kotlin {
                 api(libs.dc.aviator.koas)
                 api(libs.dc.aviator.adapter.xml)
                 api(libs.dc.aviator.adapter.json)
+                api(libs.dc.weaver.core)
                 api(libs.mlln.units)
                 api(libs.mlln.geokit.calculation)
                 api(libs.mlln.geokit.geojson)
@@ -95,8 +96,34 @@ kotlin {
                 implementation(libs.dc.aviator.plugin.synapse)
             }
         }
+        jvmTest.dependencies {
+            implementation(libs.junit.jupiter.api)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.mock)
+            implementation(libs.dc.aviator.plugin.weaver)
+            implementation(libs.dc.aviator.plugin.interception)
+            runtimeOnly(libs.junit.jupiter.engine)
+            runtimeOnly(libs.junit.vintage.engine)
+            runtimeOnly(libs.junit.platform.launcher)
+        }
     }
     jvmToolchain(25)
+}
+
+tasks.named<Test>("jvmTest") {
+    useJUnitPlatform { excludeTags("live-provider") }
+}
+
+val jvmTestCompilation = kotlin.targets.getByName("jvm").compilations.getByName("test")
+tasks.register<Test>("liveApiContractTest") {
+    description = "Opt-in live response-mapping checks for services from all built-in API documents."
+    group = "verification"
+    testClassesDirs = jvmTestCompilation.output.classesDirs
+    classpath = jvmTestCompilation.output.allOutputs + jvmTestCompilation.runtimeDependencyFiles!!
+    useJUnitPlatform { includeTags("live-provider") }
+    outputs.upToDateWhen { false }
+    maxParallelForks = 1
 }
 
 

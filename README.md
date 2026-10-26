@@ -107,6 +107,10 @@ dependencies {
 
 ---
 
+## API contract testing
+
+See [Opt-in API response tests](README-api-contract-tests.md) for Kotlin/JUnit 5 checks using the normal App/Codex mapping pipeline. External tests run only on explicit invocation, not ordinary verification; they replace Shared's Playwright API suite without atomic-schema validation. Unrelated npm tools remain available.
+
 ## ⚖️ License
 
 Licensed under the [Apache License, Version 2.0](LICENSE).

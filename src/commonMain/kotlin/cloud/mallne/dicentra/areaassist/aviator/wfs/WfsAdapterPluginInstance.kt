@@ -23,8 +23,13 @@ import cloud.mallne.geokit.Boundary
 import cloud.mallne.geokit.Vertex
 import cloud.mallne.geokit.coordinates.CrsRegistry
 import cloud.mallne.geokit.coordinates.model.AbstractCoordinate
+import cloud.mallne.geokit.coordinates.model.LocalCoordinate
 import cloud.mallne.geokit.coordinates.model.AbstractCoordinate.Companion.toCoordinate
 import cloud.mallne.geokit.coordinates.tokens.ast.expression.Identifier
+import cloud.mallne.geokit.coordinates.tokens.ast.expression.ProjectedCrs
+import cloud.mallne.geokit.coordinates.tokens.ast.expression.AxisDirection
+import cloud.mallne.geokit.coordinates.tokens.ast.expression.GeodeticCoordinateReferenceSystem
+import cloud.mallne.geokit.coordinates.tokens.ast.expression.SpatialCS
 import cloud.mallne.geokit.geojson.CalculationInterop.toPosition
 import cloud.mallne.geokit.geojson.CalculationInterop.toVertex
 import cloud.mallne.geokit.geojson.JsonFeature
@@ -82,8 +87,8 @@ data class WfsAdapterPluginInstance(
                             RequestParameter.Single(
                                 BBOX(
                                     envelope = Envelope(
-                                        lowerCorner = DirectPositionType(sw.wfsCoord()),
-                                        upperCorner = DirectPositionType(ne.wfsCoord()),
+                                        lowerCorner = DirectPositionType(sw.wfsCoord(configurationBundle.inputCRS)),
+                                        upperCorner = DirectPositionType(ne.wfsCoord(configurationBundle.inputCRS)),
                                         srsName = configurationBundle.inputCRS
                                     )
                                 ),
@@ -118,7 +123,7 @@ data class WfsAdapterPluginInstance(
 
                     context.networkChain.forEach { net ->
                         val filters = listOfNotNull(query, bbox)
-                        val filter = Filter.fromList(filters)
+                        val filter = if (filters.isEmpty()) null else Filter.fromList(filters)
                         net.request?.outgoingContent = XmlBody(
                             context.dataHolder.xml.encodeToElement(
                                 GetFeature(
@@ -153,10 +158,13 @@ data class WfsAdapterPluginInstance(
                                 configurationBundle.geometryPointer,
                                 context.dataHolder.xml
                             )
+                            val sourceCRS = configurationBundle.importCRS.let {
+                                if (it.startsWith("urn:", ignoreCase = true)) Identifier.deconstructUrnId(it) else it
+                            }
                             for (feature in geojson) {
                                 val translatedFeature = JsonFeature(
                                     geometry = feature.geometry?.translate(
-                                        Identifier.deconstructUrnId(configurationBundle.importCRS), "EPSG:4326"
+                                        sourceCRS, "EPSG:4326"
                                     ),
                                     properties = JsonObject(feature.properties),
                                     id = feature.id,
@@ -329,21 +337,20 @@ data class WfsAdapterPluginInstance(
     }
 
     private fun BoundingBox.t(from: String, to: String): BoundingBox =
-        BoundingBox(northeast = this.northeast.t(from, to), southwest = this.southwest.t(to))
+        BoundingBox(northeast = this.northeast.t(from, to), southwest = this.southwest.t(from, to))
 
     private fun Position.t(
         source: String = "EPSG:4326",
         target: String = "EPSG:4326",
-    ) = this.toVertex().t(source, target).toPosition()
-
-    private fun Vertex.t(
-        source: String = "EPSG:4326",
-        target: String = "EPSG:4326",
-    ): Vertex = registry.compose(
-        toCoordinate(),
-        source,
-        target
-    ).execute().toVertex()
+    ): Position {
+        val projected = registry.crs.any { crs ->
+            crs is ProjectedCrs && crs.identifiers.any { it.epsgId.equals(source, ignoreCase = true) }
+        }
+        // GML's projected axes are easting/northing; the CRS pipeline takes northing/easting.
+        val coordinate = if (projected) LocalCoordinate(longitude, latitude) else toVertex().toCoordinate()
+        val transformed = registry.compose(coordinate, source, target).execute()
+        return (if (projected) transformed.toDeg() else transformed).toVertex().toPosition()
+    }
 
     private fun Vertex.translate(
         sourceUrn: String = Identifier.constructUrn("EPSG", "4326"),
@@ -354,8 +361,35 @@ data class WfsAdapterPluginInstance(
         Identifier.deconstructUrnId(targetUrn)
     ).execute()
 
-    private fun AbstractCoordinate.wfsCoord() = listOf(latitude, longitude)
-    private fun Vertex.wfsCoord() = listOf(latitude, longitude)
+    private fun AbstractCoordinate.wfsCoord(crsIdentifier: String): List<Double> {
+        val epsgId = if (crsIdentifier.startsWith("urn:", ignoreCase = true)) {
+            Identifier.deconstructUrnId(crsIdentifier)
+        } else {
+            crsIdentifier
+        }
+        val crs = registry.crs.firstOrNull { coordinateReferenceSystem ->
+            coordinateReferenceSystem.identifiers.any { it.epsgId.equals(epsgId, ignoreCase = true) }
+        }
+            ?: error("CRS $crsIdentifier is not registered with an axis definition")
+        val coordinateSystem = when (crs) {
+            is ProjectedCrs -> crs.coordinateSystem
+            is GeodeticCoordinateReferenceSystem -> crs.coordinateSystem
+            else -> null
+        } as? SpatialCS
+            ?: error("CRS $crsIdentifier does not define spatial axes")
+        return coordinateSystem.spatialAxis
+            .withIndex()
+            .sortedBy { (index, axis) -> axis.order ?: index + 1 }
+            .map { (_, axis) ->
+                when (axis.direction) {
+                    is AxisDirection.NORTH -> latitude
+                    AxisDirection.EAST -> longitude
+                    is AxisDirection.SOUTH -> -latitude
+                    AxisDirection.WEST -> -longitude
+                    else -> error("Unsupported WFS axis direction ${axis.direction} in $crsIdentifier")
+                }
+            }
+    }
 
     override fun requestReconfigure(oasConfig: JsonElement): AviatorPluginInstance {
         try {

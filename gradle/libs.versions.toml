@@ -7,12 +7,15 @@ android-compileSdk = "36"
 android-minSdk = "24"
 ben-manes-versions-v = "0.66.0"
 dc-aviator = "1.0.4"
+dc-weaver = "1.0.0"
 dc-polyfill = "1.0.2"
 dependency-analysis-v = "3.19.2"
 kotlin = "2.4.21"
 kotlinx-datetime = "0.8.0"
 kotlinx-coroutines = "1.11.0"
 ktor = "3.6.0"
+junit = "6.1.3"
+junit-platform = "6.1.3"
 mlln-geokit = "1.0.2"
 mlln-units = "1.0.2"
 serialization = "1.12.0"
@@ -24,6 +27,11 @@ mapLibre-spatialk = "0.8.0"
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
 dc-polyfill = { module = "cloud.mallne.dicentra:polyfill", version.ref = "dc-polyfill" }
 dc-aviator-core = { module = "cloud.mallne.dicentra.aviator:core", version.ref = "dc-aviator" }
 dc-aviator-client-ktor = { module = "cloud.mallne.dicentra.aviator.client:ktor", version.ref = "dc-aviator" }
@@ -31,6 +39,9 @@ dc-aviator-koas = { module = "cloud.mallne.dicentra.aviator:koas", version.ref =
 dc-aviator-adapter-xml = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-xml", version.ref = "dc-aviator" }
 dc-aviator-adapter-json = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-json", version.ref = "dc-aviator" }
 dc-aviator-plugin-synapse = { module = "cloud.mallne.dicentra.aviator.plugin:synapse", version.ref = "dc-aviator" }
+dc-aviator-plugin-weaver = { module = "cloud.mallne.dicentra.aviator.plugin:weaver", version.ref = "dc-aviator" }
+dc-aviator-plugin-interception = { module = "cloud.mallne.dicentra.aviator.plugin:interception", version.ref = "dc-aviator" }
+dc-weaver-core = { module = "cloud.mallne.dicentra.weaver:core", version.ref = "dc-weaver" }
 mlln-units = { module = "cloud.mallne:units", version.ref = "mlln-units" }
 mlln-geokit-calculation = { module = "cloud.mallne.geokit:calculation", version.ref = "mlln-geokit" }
 mlln-geokit-geojson = { module = "cloud.mallne.geokit:geojson", version.ref = "mlln-geokit" }
@@ -39,6 +50,8 @@ mlln-geokit-interop = { module = "cloud.mallne.geokit:interop", version.ref = "m
 mlln-geokit-coordinates = { module = "cloud.mallne.geokit:coordinates", version.ref = "mlln-geokit" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-openapi-schema = { module = "io.ktor:ktor-openapi-schema", version.ref = "ktor" }
 ktor-http = { module = "io.ktor:ktor-http", version.ref = "ktor" }
 xml = { module = "io.github.pdvrieze.xmlutil:serialization", version.ref = "xml" }

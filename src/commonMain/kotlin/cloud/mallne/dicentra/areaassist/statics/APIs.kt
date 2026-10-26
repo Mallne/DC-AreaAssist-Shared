@@ -8,7 +8,7 @@ import cloud.mallne.dicentra.aviator.core.execution.RequestParameter
 import cloud.mallne.dicentra.aviator.core.execution.RequestParameters
 import cloud.mallne.dicentra.aviator.model.SemVer
 import cloud.mallne.dicentra.aviator.model.ServiceLocator
-import io.ktor.openapi.OpenApiDoc
+import io.ktor.openapi.*
 import kotlinx.serialization.Serializable
 
 object APIs {
@@ -31,6 +31,7 @@ object APIs {
     val sachsenAnhaltWfs by DE_ST
     val franceWfs by FR
     val brightSky by Brightsky
+    val openMeteo by OpenMeteo
     val rvrComputistLink by RVRComputistLink
 
     object OAuth2 {
@@ -115,6 +116,7 @@ object APIs {
         sachsenAnhaltWfs,
         franceWfs,
         brightSky,
+        openMeteo,
         rvrComputistLink,
     )
 
