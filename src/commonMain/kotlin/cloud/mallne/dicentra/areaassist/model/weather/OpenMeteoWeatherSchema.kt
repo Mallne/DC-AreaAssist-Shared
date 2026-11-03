@@ -13,7 +13,6 @@ object OpenMeteoWeatherSchema {
 
     val schema = weaverSchema("areaassist-weather-report-v1") {
         root("weatherReport", Wol.reference("report"))
-
         transform("availableTag", root.asExpression()) { value(Wol.stringLiteral("available"), ObjectType.String) }
         transform("unsupportedTag", root.asExpression()) { value(Wol.stringLiteral("unsupported"), ObjectType.String) }
         transform("aggregationInstant", root.asExpression()) { value(Wol.stringLiteral("Instant"), ObjectType.String) }
@@ -177,6 +176,38 @@ object OpenMeteoWeatherSchema {
                 use("hourly", "hourlySection")
                 use("daily", "dailySection")
                 use("alerts", "unsupportedSection")
+            }
+        }
+    }
+
+    /** Provider query projection; absent properties are intentionally not forwarded. */
+    val requestParameters = weaverSchema("open-meteo-request-parameters-v1") {
+        root("requestParameters", Wol.reference("parameters"))
+        transform("parameters", root.asExpression()) {
+            objectValue {
+                source("latitude", Wol.path("lat"), ObjectType.String)
+                source("longitude", Wol.path("lon"), ObjectType.String)
+                source("current", Wol.path("current"), ObjectType.String)
+                source("hourly", Wol.path("hourly"), ObjectType.String)
+                source("daily", Wol.path("daily"), ObjectType.String)
+                source("timezone", Wol.path("timezone"), ObjectType.String)
+                source("wind_speed_unit", Wol.path("wind_speed_unit"), ObjectType.String)
+                source("minutely_15", Wol.path("minutely_15"), ObjectType.String)
+                source("temperature_unit", Wol.path("temperature_unit"), ObjectType.String)
+                source("precipitation_unit", Wol.path("precipitation_unit"), ObjectType.String)
+                source("timeformat", Wol.path("timeformat"), ObjectType.String)
+                source("elevation", Wol.path("elevation"), ObjectType.Number)
+                source("forecast_days", Wol.path("forecast_days"), ObjectType.Number)
+                source("past_days", Wol.path("past_days"), ObjectType.Number)
+                source("past_hours", Wol.path("past_hours"), ObjectType.Number)
+                source("forecast_hours", Wol.path("forecast_hours"), ObjectType.Number)
+                source("start_date", Wol.path("start_date"), ObjectType.String)
+                source("end_date", Wol.path("end_date"), ObjectType.String)
+                source("start_hour", Wol.path("start_hour"), ObjectType.String)
+                source("end_hour", Wol.path("end_hour"), ObjectType.String)
+                source("models", Wol.path("models"), ObjectType.String)
+                source("cell_selection", Wol.path("cell_selection"), ObjectType.String)
+                source("apikey", Wol.path("apikey"), ObjectType.String)
             }
         }
     }

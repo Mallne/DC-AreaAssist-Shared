@@ -1,10 +1,17 @@
 package cloud.mallne.dicentra.areaassist.model.weather
 
 import cloud.mallne.dicentra.weaver.core.Weaver
+import cloud.mallne.dicentra.aviator.plugin.weaver.toOpenApiSchema
+import cloud.mallne.dicentra.areaassist.statics.api.openMeteoProviderResponseSchema
+import io.ktor.openapi.JsonType
+import io.ktor.openapi.JsonSchema
+import io.ktor.openapi.ReferenceOr
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -13,6 +20,49 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 class OpenMeteoWeatherSchemaTest {
+    @Test
+    fun requestParameterRecipeProjectsLogicalInputsToProviderInputs() {
+        val input = buildJsonObject {
+            listOf(
+                "latitude", "current", "hourly", "daily", "wind_speed_unit", "minutely_15",
+                "temperature_unit", "precipitation_unit", "timeformat", "start_date", "end_date",
+                "start_hour", "end_hour", "models", "cell_selection", "apikey",
+            ).forEach {
+                put(it, "")
+            }
+            listOf("elevation", "forecast_days", "past_days", "past_hours", "forecast_hours").forEach {
+                put(it, 3)
+            }
+            put("lat", "52.52")
+            put("lon", "13.41")
+            put("timezone", "Europe/Berlin")
+            put("temperature_unit", "fahrenheit")
+            put("past_hours", 10)
+            put("cell_selection", "nearest")
+            put("date", "2026-10-19")
+        }
+
+        val transformed = Weaver().engine(OpenMeteoWeatherSchema.requestParameters).executeElement(input)
+
+        assertEquals("52.52", transformed.jsonObject["latitude"]?.jsonPrimitive?.content)
+        assertEquals("13.41", transformed.jsonObject["longitude"]?.jsonPrimitive?.content)
+        assertEquals("Europe/Berlin", transformed.jsonObject["timezone"]?.jsonPrimitive?.content)
+        assertEquals("fahrenheit", transformed.jsonObject["temperature_unit"]?.jsonPrimitive?.content)
+        assertEquals("10.0", transformed.jsonObject["past_hours"]?.jsonPrimitive?.content)
+        assertEquals("nearest", transformed.jsonObject["cell_selection"]?.jsonPrimitive?.content)
+        assertEquals(null, transformed.jsonObject["date"])
+    }
+
+    @Test
+    fun openApiResponseSchemaIsGeneratedFromTheWeaverTransformationRecipe() {
+        val schema = OpenMeteoWeatherSchema.schema.toOpenApiSchema(openMeteoProviderResponseSchema)
+
+        assertEquals(JsonType.OBJECT, schema.type)
+        assertEquals(setOf("context", "current", "hourly", "daily", "alerts"), schema.properties?.keys)
+        val current = schema.properties?.get("current") as? ReferenceOr.Value<JsonSchema>
+        assertEquals(JsonType.OBJECT, current?.value?.type)
+    }
+
     @Test
     fun transformsOpenMeteoResponseIntoTheCommonWeatherReport() {
         val input = buildJsonObject {
