@@ -36,10 +36,12 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSky.usable()
             parameters {
                 query(Path.Parameters.LAT) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                 }
                 query(Path.Parameters.LON) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.WARN_CELL_ID) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -60,10 +62,12 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSkyCurrent.usable()
             parameters {
                 query(Path.Parameters.LAT) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                 }
                 query(Path.Parameters.LON) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.DWD_STATION_ID) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -93,10 +97,12 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSkyForecast.usable()
             parameters {
                 query(Path.Parameters.LAT) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                 }
                 query(Path.Parameters.LON) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.DATE) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -126,10 +132,10 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSky.usable()
             parameters {
                 query(Path.Parameters.LAT) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                 }
                 query(Path.Parameters.LON) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.DWD_STATION_ID) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -192,10 +198,12 @@ object WeatherConstants {
                     schema = JsonSchema(type = JsonType.STRING)
                 }
                 query(Path.Parameters.LAT) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                 }
                 query(Path.Parameters.LON) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.DWD_STATION_ID) {
                     schema = JsonSchema(type = JsonType.STRING)

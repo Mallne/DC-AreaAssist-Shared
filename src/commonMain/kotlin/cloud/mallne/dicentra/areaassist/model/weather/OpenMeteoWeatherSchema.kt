@@ -185,8 +185,8 @@ object OpenMeteoWeatherSchema {
         root("requestParameters", Wol.reference("parameters"))
         transform("parameters", root.asExpression()) {
             objectValue {
-                source("latitude", Wol.path("lat"), ObjectType.String)
-                source("longitude", Wol.path("lon"), ObjectType.String)
+                source("latitude", Wol.path("lat"), ObjectType.Number)
+                source("longitude", Wol.path("lon"), ObjectType.Number)
                 source("current", Wol.path("current"), ObjectType.String)
                 source("hourly", Wol.path("hourly"), ObjectType.String)
                 source("daily", Wol.path("daily"), ObjectType.String)

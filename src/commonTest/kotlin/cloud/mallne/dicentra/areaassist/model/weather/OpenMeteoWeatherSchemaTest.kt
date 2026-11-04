@@ -33,8 +33,8 @@ class OpenMeteoWeatherSchemaTest {
             listOf("elevation", "forecast_days", "past_days", "past_hours", "forecast_hours").forEach {
                 put(it, 3)
             }
-            put("lat", "52.52")
-            put("lon", "13.41")
+            put("lat", 52.52)
+            put("lon", 13.41)
             put("timezone", "Europe/Berlin")
             put("temperature_unit", "fahrenheit")
             put("past_hours", 10)

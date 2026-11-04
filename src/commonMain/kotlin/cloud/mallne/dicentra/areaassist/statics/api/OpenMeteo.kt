@@ -65,10 +65,10 @@ object OpenMeteo : ApiObject {
                             query("latitude") {
                                 required = false
                                 description = "WGS84 latitude."
-                                schema = JsonSchema(type = JsonType.NUMBER)
+                                schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                             }
-                            query("lat") { required = true; description = "Provider-neutral latitude; Weaver maps this to latitude."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("lon") { required = true; description = "Provider-neutral longitude; Weaver maps this to longitude."; schema = JsonSchema(type = JsonType.STRING) }
+                            query("lat") { required = true; description = "Provider-neutral latitude; Weaver maps this to latitude."; schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0) }
+                            query("lon") { required = true; description = "Provider-neutral longitude; Weaver maps this to longitude."; schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0) }
                             query("date") { description = "Provider-neutral start date; ignored by this provider."; schema = JsonSchema(type = JsonType.STRING) }
                             query("last_date") { description = "Provider-neutral end date; ignored by this provider."; schema = JsonSchema(type = JsonType.STRING) }
                             query("max_dist") { description = "Provider-neutral maximum distance; ignored by this provider."; schema = JsonSchema(type = JsonType.STRING) }
@@ -77,7 +77,7 @@ object OpenMeteo : ApiObject {
                             query("longitude") {
                                 required = false
                                 description = "WGS84 longitude."
-                                schema = JsonSchema(type = JsonType.NUMBER)
+                                schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                             }
                             query("elevation") { description = "Elevation in meters; nan disables statistical downscaling."; schema = JsonSchema(type = JsonType.NUMBER) }
                             query("current") { description = "Comma-separated current variables."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper("temperature_2m,weather_code,apparent_temperature,relative_humidity_2m,cloud_cover,precipitation,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m", String.serializer())) }
