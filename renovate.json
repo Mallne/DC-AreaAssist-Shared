@@ -115,5 +115,6 @@
       "automerge": false
     }
   ],
-  "minimumReleaseAge": "1 day"
+  "minimumReleaseAge": "1 day",
+  "platformAutomerge": true
 }
