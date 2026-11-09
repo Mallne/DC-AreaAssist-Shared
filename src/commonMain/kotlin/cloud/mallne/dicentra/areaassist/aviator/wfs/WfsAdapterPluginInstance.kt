@@ -124,21 +124,29 @@ data class WfsAdapterPluginInstance(
                     context.networkChain.forEach { net ->
                         val filters = listOfNotNull(query, bbox)
                         val filter = if (filters.isEmpty()) null else Filter.fromList(filters)
-                        net.request?.outgoingContent = XmlBody(
-                            context.dataHolder.xml.encodeToElement(
-                                GetFeature(
-                                    service = service,
-                                    version = version,
-                                    count = count,
-                                    queries = listOf(
-                                        WfsQuery(
-                                            typeNames = listOf(typeName),
-                                            srsName = srs,
-                                            filter = filter
-                                        )
+                        val getFeature = context.dataHolder.xml.encodeToElement(
+                            GetFeature(
+                                service = service,
+                                version = version,
+                                count = count,
+                                queries = listOf(
+                                    WfsQuery(
+                                        typeNames = listOf(typeName),
+                                        srsName = srs,
+                                        filter = filter
                                     )
                                 )
                             )
+                        )
+                        if (configurationBundle.nsPrefix.isNotBlank() && configurationBundle.namespace.isNotBlank()) {
+                            getFeature.setAttributeNS(
+                                "http://www.w3.org/2000/xmlns/",
+                                "xmlns:${configurationBundle.nsPrefix}",
+                                configurationBundle.namespace,
+                            )
+                        }
+                        net.request?.outgoingContent = XmlBody(
+                            getFeature
                         )
                     }
                 }
@@ -379,7 +387,7 @@ data class WfsAdapterPluginInstance(
             ?: error("CRS $crsIdentifier does not define spatial axes")
         return coordinateSystem.spatialAxis
             .withIndex()
-            .sortedBy { (index, axis) -> axis.order ?: index + 1 }
+            .sortedBy { (index, axis) -> axis.order ?: (index + 1) }
             .map { (_, axis) ->
                 when (axis.direction) {
                     is AxisDirection.NORTH -> latitude
