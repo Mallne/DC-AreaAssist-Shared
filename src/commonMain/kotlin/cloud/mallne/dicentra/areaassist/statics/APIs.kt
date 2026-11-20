@@ -34,6 +34,10 @@ object APIs {
     val openMeteo by OpenMeteo
     val rvrComputistLink by RVRComputistLink
 
+    /** Arazzo definitions are separate from the OpenAPI document inventory. */
+    val weatherWorkflows get() = WeatherWorkflows.documents
+    val weatherWorkflowDefinitions get() = WeatherWorkflows.definitions
+
     object OAuth2 {
         const val CLIENT_ID = "client_id"
         const val REDIRECT_URI = "redirect_uri"

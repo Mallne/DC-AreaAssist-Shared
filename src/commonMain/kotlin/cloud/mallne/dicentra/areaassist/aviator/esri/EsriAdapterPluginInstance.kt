@@ -19,6 +19,7 @@ import cloud.mallne.geokit.Boundary
 import cloud.mallne.geokit.geojson.JsonFeatureCollection
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -47,7 +48,8 @@ data class EsriAdapterPluginInstance(
                     context.requestParams[EsriAdapterPlugin.Parameters.WHERE] =
                         RequestParameter.Single(queryString.encodeURLParameter(false))
                     boundary?.let { boundingBox ->
-                        val geo = "${boundingBox.west},${boundingBox.north},${boundingBox.east},${boundingBox.south}"
+                        // ArcGIS envelope syntax is xmin,ymin,xmax,ymax.
+                        val geo = "${boundingBox.west},${boundingBox.south},${boundingBox.east},${boundingBox.north}"
                         context.requestParams[EsriAdapterPlugin.Parameters.GEOMETRY] =
                             RequestParameter.Single(geo.encodeURLParameter(false))
                         context.requestParams[EsriAdapterPlugin.Parameters.IN_SR] = RequestParameter.Single("4326")
@@ -59,10 +61,8 @@ data class EsriAdapterPluginInstance(
                     context.requestParams[EsriAdapterPlugin.Parameters.OUT_FIELDS] =
                         RequestParameter.Single(getOutFields(options))
                     context.requestParams[EsriAdapterPlugin.Parameters.OUT_SR] = RequestParameter.Single("4326")
-                    if (returnGeometry) {
-                        context.requestParams[EsriAdapterPlugin.Parameters.RETURN_GEOMETRY] =
-                            RequestParameter.Single("true")
-                    }
+                    context.requestParams[EsriAdapterPlugin.Parameters.RETURN_GEOMETRY] =
+                        RequestParameter.Single(returnGeometry.toString())
                     context.requestParams[EsriAdapterPlugin.Parameters.FILE] = RequestParameter.Single("geojson")
                 }
                 after(AviatorExecutionStages.PaintingResponse) { context ->
@@ -101,6 +101,8 @@ data class EsriAdapterPluginInstance(
                             }
                         }
                         parcels
+                    } catch (e: CancellationException) {
+                        throw e
                     } catch (e: Exception) {
                         context.log {
                             error(
@@ -119,7 +121,7 @@ data class EsriAdapterPluginInstance(
             val outFields = mutableListOf<String>()
             for (key in options.keys) {
                 if (key.reference != null) {
-                    outFields.add(key.reference)
+                    outFields.add(validatedFieldReference(key.reference))
                 }
             }
             return outFields.joinToString(",")
@@ -131,14 +133,15 @@ data class EsriAdapterPluginInstance(
     private fun buildQueryString(query: List<Query>, options: ParcelServiceOptions): String {
         var queryString = ""
         val qsa = mutableListOf<String>()
-        query.forEachIndexed { i, q ->
+        query.forEach { q ->
             var qs = ""
             var runInErr = false
             val field = options.keys.find { it.identifier == q.field?.identifier }
             val content = q.content
             val reference = field?.reference
             if (field != null && content != null && reference != null) {
-                qs += if (i != 0) {
+                validatedFieldReference(reference)
+                qs += if (qsa.isNotEmpty()) {
                     " ${q.method.urlParam} "
                 } else {
                     " "
@@ -151,10 +154,12 @@ data class EsriAdapterPluginInstance(
                             val range = content.range
                             if (range == null) {
                                 runInErr = true
-                            } else if (range.first > range.second || range.first < 0.0 || (range.first == 0.0 && range.second == 0.0)) {
+                            } else if (!range.first.isFinite() || !range.second.isFinite()) {
+                                throw IllegalArgumentException("Query range bounds must be finite")
+                            } else if (range.first > range.second || range.first < 0.0) {
                                 runInErr = true
                             } else {
-                                qs += "($reference = ${range.first} OR $reference = ${range.second})"
+                                qs += "$reference BETWEEN ${range.first} AND ${range.second}"
                             }
                         }
 
@@ -163,7 +168,7 @@ data class EsriAdapterPluginInstance(
                             if (string == null) {
                                 runInErr = true
                             } else if (string.isNotBlank()) {
-                                qs += "$reference = '$string'"
+                                qs += "$reference = '${string.replace("'", "''")}'"
                             } else {
                                 runInErr = true
                             }
@@ -194,6 +199,16 @@ data class EsriAdapterPluginInstance(
             queryString = qsa.joinToString(separator = " ")
         }
         return queryString
+    }
+
+    /** Only unquoted field identifiers are supported; metadata is not trusted as SQL syntax. */
+    private fun validatedFieldReference(reference: String): String {
+        val parts = reference.split('.')
+        require(parts.all { part ->
+            part.isNotEmpty() && (part.first().isLetter() || part.first() == '_') &&
+                part.all { it.isLetterOrDigit() || it == '_' }
+        }) { "Invalid Esri field reference" }
+        return reference
     }
 
     override fun requestReconfigure(oasConfig: JsonElement): AviatorPluginInstance {

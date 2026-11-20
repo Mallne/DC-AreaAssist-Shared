@@ -4,6 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalTime::class)
 class WeatherContractTest {
@@ -40,5 +41,36 @@ class WeatherContractTest {
 
         assertEquals(60, precipitation.periodMinutes)
         assertEquals(WeatherAggregation.Sum, precipitation.aggregation)
+    }
+
+    @Test
+    fun normalizedAlertSummaryRoundTrips() {
+        val alert = WeatherAlert(
+            id = "dwd-123",
+            headline = "Heavy rain warning",
+            description = "Heavy rain expected.",
+            severity = WeatherAlertSeverity.Severe,
+            onset = Instant.parse("2026-11-18T10:00:00Z"),
+            expires = Instant.parse("2026-11-18T12:00:00Z"),
+        )
+
+        assertEquals(alert, Json.decodeFromString<WeatherAlert>(Json.encodeToString(alert)))
+    }
+
+    @Test
+    fun weatherContextKeepsRequestedAndReturnedCoordinatesDistinct() {
+        val context = WeatherContext(
+            latitude = 52.53,
+            longitude = 13.41,
+            requestedLatitude = 52.52,
+            requestedLongitude = 13.40,
+        )
+
+        val decoded = Json.decodeFromString<WeatherContext>(Json.encodeToString(context))
+
+        assertEquals(52.52, decoded.requestedLatitude)
+        assertEquals(13.40, decoded.requestedLongitude)
+        assertEquals(52.53, decoded.latitude)
+        assertEquals(13.41, decoded.longitude)
     }
 }

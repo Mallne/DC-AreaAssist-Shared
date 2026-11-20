@@ -25,6 +25,44 @@ from various public and private GIS services.
 AreaAssist Shared uses the Aviator plugin system to handle the complexities of different GIS protocols. These plugins
 act as "interceptors" and "transformers" in the data fetching pipeline.
 
+The WFS and Esri plugins are client plugins requested through operation materialization. The bundled
+Esri document currently has no operations; reusable Esri parcel definitions in `ParcelConstants`
+are not automatically published by that document.
+
+### Weather workflows
+
+`APIs.weatherWorkflowDefinitions` exposes portable Arazzo JSON plus locator and coverage metadata.
+The source URNs in `WeatherWorkflows.sources` identify bundled OpenAPI documents and must be
+resolved by the host; they are not network URLs. The host supplies provider selection, engine
+registration and step input/result mapping. These are not yet wired into Codex or the app.
+The Open-Meteo workflow maps neutral `lat`/`lon` inputs to the provider's `latitude`/`longitude`
+and explicitly requests weather variables, timezone and wind units; those are not implicit
+OpenAPI defaults. Direct consumers of the Open-Meteo operation must provide its provider-specific
+parameters themselves.
+
+The `providerResponse` workflow output is the source HTTP JSON, not a `WeatherReport`. Weaver
+produces the normalized report separately as the client result. Aviator's current Weaver plugin
+mutates response content during transformation. A host needing a source `ResponseSnapshot` can
+install a new `SourceResponseCapture` in the invocation's coroutine context; Aviator populates it
+before client response plugins execute. Captures are per invocation and must not be shared across
+parallel calls. `toArazzoSnapshot()` maps the captured status, headers and body to an orchestration
+snapshot, decoding valid UTF-8 JSON for Arazzo expressions while preserving invalid or non-JSON
+bodies as bytes and distinguishing absent from empty bodies. Aviator's
+`MaterializedOperationBinding` preserves source bytes, but the current Arazzo expression evaluator
+does not directly interpret byte-valued snapshots as JSON. The JVM workflow tests exercise the
+capture and conversion with mock transport; host wiring and live-provider behavior remain unverified.
+
+The bundled weather documents are authored with Aviator's Arazzo document DSL and serialized as
+portable JSON for distribution.
+
+Shared targets Aviator `1.0.6-SNAPSHOT`, including its Arazzo and orchestration artifacts. Composite
+builds use the checked-out Aviator sources. Standalone builds require those matching artifacts to
+be published to the configured authenticated registry; composite substitution does not verify
+that publication. A local isolated-Maven check has compiled Shared and passed its JVM tests without
+any composite builds using staged Aviator `1.0.6-SNAPSHOT` artifacts. Other DiCentra dependencies
+were staged from their local sources under the versions declared by Shared for that check; it does
+not prove the registry contains those artifacts or verify standalone non-JVM variants.
+
 ### 📍 EsriAdapterPlugin
 
 The `EsriAdapterPlugin` is designed to interact with ESRI ArcGIS Feature Servers.

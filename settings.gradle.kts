@@ -31,6 +31,8 @@ if (aviatorDir.exists()) {
             substitute(module("cloud.mallne.dicentra.aviator.client:ktor")).using(project(":clients:ktor"))
             substitute(module("cloud.mallne.dicentra.aviator:koas")).using(project(":koas"))
             substitute(module("cloud.mallne.dicentra.aviator:core")).using(project(":core"))
+            substitute(module("cloud.mallne.dicentra.aviator.orchestration:arazzo")).using(project(":orchestration:arazzo"))
+            substitute(module("cloud.mallne.dicentra.aviator.orchestration:core")).using(project(":orchestration:core"))
         }
     }
 } else {

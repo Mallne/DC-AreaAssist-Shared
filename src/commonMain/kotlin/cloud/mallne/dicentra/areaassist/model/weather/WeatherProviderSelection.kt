@@ -29,7 +29,9 @@ object WeatherProviderSelection {
             compareBy<WeatherProviderCandidate<T>> {
                 it.options.coverage?.coordinates?.isNotEmpty() != true
             }
+                .thenBy { it.options.isGlobalDefault }
                 .thenBy { it.options.priority }
+                .thenBy { it.options.providerId.orEmpty() }
         )
     }
 }

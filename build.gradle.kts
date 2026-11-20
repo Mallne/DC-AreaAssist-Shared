@@ -65,11 +65,24 @@ kotlin {
     linuxX64()
 
     sourceSets {
+        getByName("jsMain") {
+            dependencies {
+                implementation(npm("@js-joda/timezone", "3.2.1"))
+            }
+        }
+        getByName("wasmJsMain") {
+            dependencies {
+                implementation(npm("@js-joda/timezone", "3.2.1"))
+            }
+        }
         val commonMain = getByName("commonMain") {
             dependencies {
                 api(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.coroutines.core)
                 api(libs.dc.polyfill)
                 api(libs.dc.aviator.core)
+                api(libs.dc.aviator.arazzo)
+                api(libs.dc.aviator.orchestration.core)
                 api(libs.dc.aviator.client.ktor)
                 api(libs.dc.aviator.koas)
                 api(libs.dc.aviator.plugin.weaver)

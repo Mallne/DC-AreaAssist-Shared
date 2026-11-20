@@ -17,7 +17,7 @@ import io.ktor.openapi.*
 
 object DE_BE : ApiObject {
     private const val crs = "urn:ogc:def:crs:EPSG::25833"
-    private const val namespace = "alkis_flurstuecke"
+    private const val namespaceUri = "alkis_flurstuecke"
 
     override val value: OpenApiDoc = OpenApiDoc.build {
         `x-dicentra-aviator` = AviatorExtensionSpec.SpecVersion
@@ -42,7 +42,7 @@ object DE_BE : ApiObject {
                         `x-dicentra-aviator-serviceDelegateCall` = locator
                         `x-dicentra-aviator-pluginMaterialization` = ParcelConstants.wfsAdapterConfig {
                             typeNames = "alkis_flurstuecke:flurstuecke"
-                            this.namespace = DE.SIMPLIFIED_ALKIS_NAMESPACE
+                            this.namespace = namespaceUri
                             nsPrefix = "alkis_flurstuecke"
                             geometryPointer = "geom"
                             inputCRS = crs

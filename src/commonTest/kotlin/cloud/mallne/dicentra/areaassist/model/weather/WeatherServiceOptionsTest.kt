@@ -1,6 +1,9 @@
 package cloud.mallne.dicentra.areaassist.model.weather
 
 import cloud.mallne.dicentra.areaassist.statics.APIs
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceOptions`
+import cloud.mallne.dicentra.aviator.model.AviatorServiceUtils.optionBundle
+import cloud.mallne.dicentra.aviator.koas.typed.routes
 import io.ktor.openapi.OpenApiDoc
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
@@ -29,7 +32,33 @@ class WeatherServiceOptionsTest {
         assertEquals(geometry, decoded.coverage)
         assertEquals(options, decoded)
         assertTrue(WeatherServiceOptions.OpenMeteo.coverage == null)
+        assertTrue(WeatherServiceOptions.OpenMeteo.isGlobalDefault)
+        assertEquals(false, WeatherServiceOptions.BrightSky.isGlobalDefault)
         assertEquals("areaassist-weather-report-v1", WeatherServiceOptions.OpenMeteo.weaverSchema?.key)
+        assertEquals("open-meteo", WeatherServiceOptions.OpenMeteo.providerId)
+        assertEquals("areaassist-weather-report-v1", WeatherServiceOptions.OpenMeteo.contractVersion)
+        assertEquals("brightsky", WeatherServiceOptions.BrightSky.providerId)
+        assertEquals(
+            "open-meteo-request-parameters-v1",
+            WeatherServiceOptions.OpenMeteo.requestParametersSchema?.key,
+        )
+        assertEquals(WeatherSourceProvenance.Model, WeatherServiceOptions.OpenMeteo.sourceProvenance)
+        assertEquals(WeatherSourceProvenance.Observation, WeatherServiceOptions.BrightSkyCurrent.sourceProvenance)
+        assertEquals(WeatherSourceProvenance.Forecast, WeatherServiceOptions.BrightSkyForecast.sourceProvenance)
+        assertEquals("areaassist-brightsky-alerts-v1", WeatherServiceOptions.BrightSkyAlerts.weaverSchema?.key)
+    }
+
+    @Test
+    fun legacyProviderOptionsDecodeWithAdditiveMetadataDefaults() {
+        val legacy = Json.decodeFromString<WeatherServiceOptions>(
+            """{"coverage":null,"priority":0}""",
+        )
+
+        assertEquals(null, legacy.providerId)
+        assertEquals(null, legacy.contractVersion)
+        assertEquals(null, legacy.sourceProvenance)
+        assertEquals(null, legacy.requestParametersSchema)
+        assertEquals(false, legacy.isGlobalDefault)
     }
 
     @Test
@@ -40,5 +69,23 @@ class WeatherServiceOptionsTest {
 
         assertTrue(encoded.contains("x-dicentra-weaver-schema"))
         assertTrue(encoded.isNotBlank())
+    }
+
+    @Test
+    fun openMeteoDefinitionCarriesModelProvenanceInItsServiceConfiguration() {
+        val operation = APIs.openMeteo.routes().single { it.operationId == "OpenMeteoForecast" }
+        val configuredOptions = optionBundle<WeatherServiceOptions>(
+            checkNotNull(operation.`x-dicentra-aviator-serviceOptions`),
+            Json,
+        )
+
+        assertEquals(WeatherSourceProvenance.Model, configuredOptions.sourceProvenance)
+        assertEquals("open-meteo", configuredOptions.providerId)
+        assertEquals("areaassist-weather-report-v1", configuredOptions.contractVersion)
+        assertTrue(configuredOptions.isGlobalDefault)
+        assertEquals(
+            "open-meteo-request-parameters-v1",
+            configuredOptions.requestParametersSchema?.key,
+        )
     }
 }

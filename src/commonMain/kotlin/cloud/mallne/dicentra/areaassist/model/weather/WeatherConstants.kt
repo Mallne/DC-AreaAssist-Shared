@@ -3,10 +3,74 @@ package cloud.mallne.dicentra.areaassist.model.weather
 import cloud.mallne.dicentra.areaassist.statics.APIs
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceDelegateCall`
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceOptions`
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-pluginMaterialization`
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
+import cloud.mallne.dicentra.aviator.plugin.weaver.WeaverPlugin
 import io.ktor.openapi.*
+import kotlinx.serialization.json.JsonObject
 
 object WeatherConstants {
+    private fun stringSchema(format: String? = null) =
+        JsonSchema(type = JsonType.STRING, format = format)
+
+    private val brightSkyAlertResponseSchema = JsonSchema(
+        type = JsonType.OBJECT,
+        properties = mapOf(
+            "alerts" to ReferenceOr.value(
+                JsonSchema(
+                    type = JsonType.ARRAY,
+                    items = ReferenceOr.value(
+                        JsonSchema(
+                            type = JsonType.OBJECT,
+                            properties = mapOf(
+                                "id" to ReferenceOr.value(JsonSchema(type = JsonType.INTEGER)),
+                                "alert_id" to ReferenceOr.value(stringSchema()),
+                                "status" to ReferenceOr.value(stringSchema()),
+                                "effective" to ReferenceOr.value(stringSchema("date-time")),
+                                "onset" to ReferenceOr.value(stringSchema("date-time")),
+                                "expires" to ReferenceOr.value(stringSchema("date-time")),
+                                "category" to ReferenceOr.value(stringSchema()),
+                                "response_type" to ReferenceOr.value(stringSchema()),
+                                "urgency" to ReferenceOr.value(stringSchema()),
+                                "severity" to ReferenceOr.value(stringSchema()),
+                                "certainty" to ReferenceOr.value(stringSchema()),
+                                "event_code" to ReferenceOr.value(JsonSchema(type = JsonType.INTEGER)),
+                                "event_en" to ReferenceOr.value(stringSchema()),
+                                "event_de" to ReferenceOr.value(stringSchema()),
+                                "headline_en" to ReferenceOr.value(stringSchema()),
+                                "headline_de" to ReferenceOr.value(stringSchema()),
+                                "description_en" to ReferenceOr.value(stringSchema()),
+                                "description_de" to ReferenceOr.value(stringSchema()),
+                                "instruction_en" to ReferenceOr.value(stringSchema()),
+                                "instruction_de" to ReferenceOr.value(stringSchema()),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            "location" to ReferenceOr.value(
+                JsonSchema(
+                    type = JsonType.OBJECT,
+                    properties = mapOf(
+                        "warn_cell_id" to ReferenceOr.value(JsonSchema(type = JsonType.INTEGER)),
+                        "name" to ReferenceOr.value(stringSchema()),
+                        "name_short" to ReferenceOr.value(stringSchema()),
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    private fun stringArraySchema() = JsonSchema(
+        type = JsonType.ARRAY,
+        items = ReferenceOr.value(JsonSchema(type = JsonType.STRING)),
+    )
+
+    private fun integerArraySchema() = JsonSchema(
+        type = JsonType.ARRAY,
+        items = ReferenceOr.value(JsonSchema(type = JsonType.INTEGER)),
+    )
+
     object Path {
         object Parameters {
             const val LAT = "lat"
@@ -33,18 +97,24 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceDelegateCall` = APIs.Services.WEATHER_SERVICE_WARNING.locator(
                 ServiceMethods.GATHER
             )
-            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSky.usable()
+            `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSkyAlerts.usable()
+            responses {
+                response(200) {
+                    description = "BrightSky weather alerts and warning-cell location."
+                    schema = brightSkyAlertResponseSchema
+                }
+            }
             parameters {
                 query(Path.Parameters.LAT) {
-                    required = true
+                    description = "Latitude; provide together with lon or a station/source ID."
                     schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                 }
                 query(Path.Parameters.LON) {
-                    required = true
+                    description = "Longitude; provide together with lat or a station/source ID."
                     schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.WARN_CELL_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = JsonSchema(type = JsonType.INTEGER)
                 }
                 query(Path.Parameters.TZ) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -60,26 +130,28 @@ object WeatherConstants {
                 ServiceMethods.GATHER
             )
             `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSkyCurrent.usable()
+            `x-dicentra-aviator-pluginMaterialization` = mapOf(WeaverPlugin.identity to JsonObject(emptyMap()))
             parameters {
                 query(Path.Parameters.LAT) {
-                    required = true
+                    description = "Latitude; provide together with lon or a station/source ID."
                     schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                 }
                 query(Path.Parameters.LON) {
-                    required = true
+                    description = "Longitude; provide together with lat or a station/source ID."
                     schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.DWD_STATION_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = stringArraySchema()
                 }
                 query(Path.Parameters.WMO_STATION_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = stringArraySchema()
                 }
                 query(Path.Parameters.SOURCE_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = integerArraySchema()
                 }
                 query(Path.Parameters.MAX_DIST) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    description = "Maximum distance from the requested coordinates in meters (0–500,000)."
+                    schema = JsonSchema(type = JsonType.INTEGER, minimum = 0.0, maximum = 500_000.0)
                 }
                 query(Path.Parameters.UNITS) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -97,24 +169,24 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSkyForecast.usable()
             parameters {
                 query(Path.Parameters.LAT) {
-                    required = true
+                    description = "Latitude; provide together with lon or bbox."
                     schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                 }
                 query(Path.Parameters.LON) {
-                    required = true
+                    description = "Longitude; provide together with lat or bbox."
                     schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.DATE) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = JsonSchema(type = JsonType.STRING, format = "date-time")
                 }
                 query(Path.Parameters.LAST_DATE) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = JsonSchema(type = JsonType.STRING, format = "date-time")
                 }
                 query(Path.Parameters.BBOX) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = integerArraySchema()
                 }
                 query(Path.Parameters.DISTANCE) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = JsonSchema(type = JsonType.INTEGER)
                 }
                 query(Path.Parameters.FORMAT) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -138,16 +210,17 @@ object WeatherConstants {
                     schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.DWD_STATION_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = stringArraySchema()
                 }
                 query(Path.Parameters.WMO_STATION_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = stringArraySchema()
                 }
                 query(Path.Parameters.SOURCE_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = integerArraySchema()
                 }
                 query(Path.Parameters.MAX_DIST) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    description = "Maximum distance from the requested coordinates in meters (0–500,000)."
+                    schema = JsonSchema(type = JsonType.INTEGER, minimum = 0.0, maximum = 500_000.0)
                 }
             }
         }
@@ -159,19 +232,21 @@ object WeatherConstants {
             `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSky.usable()
             parameters {
                 query(Path.Parameters.DATE) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    description = "Timestamp of the first weather record to retrieve (ISO 8601)."
+                    schema = JsonSchema(type = JsonType.STRING, format = "date-time")
                 }
                 query(Path.Parameters.LAST_DATE) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = JsonSchema(type = JsonType.STRING, format = "date-time")
                 }
                 query(Path.Parameters.DWD_STATION_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = stringArraySchema()
                 }
                 query(Path.Parameters.WMO_STATION_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = stringArraySchema()
                 }
                 query(Path.Parameters.SOURCE_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = integerArraySchema()
                 }
                 query(Path.Parameters.TZ) {
                     schema = JsonSchema(type = JsonType.STRING)
@@ -190,32 +265,36 @@ object WeatherConstants {
                 ServiceMethods.GATHER
             )
             `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.BrightSkyForecast.usable()
+            `x-dicentra-aviator-pluginMaterialization` = mapOf(WeaverPlugin.identity to JsonObject(emptyMap()))
             parameters {
                 query(Path.Parameters.DATE) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    required = true
+                    description = "Timestamp of the first weather record to retrieve (ISO 8601)."
+                    schema = JsonSchema(type = JsonType.STRING, format = "date-time")
                 }
                 query(Path.Parameters.LAST_DATE) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = JsonSchema(type = JsonType.STRING, format = "date-time")
                 }
                 query(Path.Parameters.LAT) {
-                    required = true
+                    description = "Latitude; provide together with lon or a station/source ID."
                     schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                 }
                 query(Path.Parameters.LON) {
-                    required = true
+                    description = "Longitude; provide together with lat or a station/source ID."
                     schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                 }
                 query(Path.Parameters.DWD_STATION_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = stringArraySchema()
                 }
                 query(Path.Parameters.WMO_STATION_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = stringArraySchema()
                 }
                 query(Path.Parameters.SOURCE_ID) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    schema = integerArraySchema()
                 }
                 query(Path.Parameters.MAX_DIST) {
-                    schema = JsonSchema(type = JsonType.STRING)
+                    description = "Maximum distance from the requested coordinates in meters (0–500,000)."
+                    schema = JsonSchema(type = JsonType.INTEGER, minimum = 0.0, maximum = 500_000.0)
                 }
                 query(Path.Parameters.TZ) {
                     schema = JsonSchema(type = JsonType.STRING)

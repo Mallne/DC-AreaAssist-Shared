@@ -41,6 +41,7 @@ import cloud.mallne.geokit.ogc.model.wfs.FeatureCollection
 import cloud.mallne.geokit.ogc.model.wfs.GetFeature
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -97,7 +98,7 @@ data class WfsAdapterPluginInstance(
                                     bBOX.envelope.upperCorner.value.joinToString(
                                         separator = ","
                                     ) { it.toString() }
-                                },${bBOX.envelope.srsName}".encodeURLParameter()
+                                },${bBOX.envelope.srsName}"
                             })
                     }
 
@@ -107,47 +108,51 @@ data class WfsAdapterPluginInstance(
                         context.requestParams[WfsAdapterPlugin.Parameters.FILTER] =
                             RequestParameter.Single(it, stringify = { abstractOperatorType ->
                                 val filter = Filter.fromList(listOf(abstractOperatorType))
-                                context.dataHolder.xml.encodeToString(filter).encodeURLParameter()
+                                context.dataHolder.xml.encodeToString(filter)
                             })
                     }
                 }
                 after(AviatorExecutionStages.FormingRequest) { context ->
-                    val service = (context.requestParams[WfsAdapterPlugin.Parameters.SERVICE].toString())
-                    val version = (context.requestParams[WfsAdapterPlugin.Parameters.VERSION].toString())
-                    val count = (context.requestParams[WfsAdapterPlugin.Parameters.COUNT]?.asType<Int>())
-                    val typeName = (context.requestParams[WfsAdapterPlugin.Parameters.TYPE_NAMES].toString())
-                    val srs = (context.requestParams[WfsAdapterPlugin.Parameters.SRS_NAME].toString())
-                    val bbox = (context.requestParams[WfsAdapterPlugin.Parameters.BBOX]?.asType<BBOX>())
-                    val query =
-                        (context.requestParams[WfsAdapterPlugin.Parameters.FILTER]?.asType<AbstractOperatorType>())
-
                     context.networkChain.forEach { net ->
-                        val filters = listOfNotNull(query, bbox)
-                        val filter = if (filters.isEmpty()) null else Filter.fromList(filters)
-                        val getFeature = context.dataHolder.xml.encodeToElement(
-                            GetFeature(
-                                service = service,
-                                version = version,
-                                count = count,
-                                queries = listOf(
-                                    WfsQuery(
-                                        typeNames = listOf(typeName),
-                                        srsName = srs,
-                                        filter = filter
+                        val request = net.request ?: return@forEach
+                        // Aviator selects the operation and materializes its method and KVP parameters.
+                        // WFS POST GetFeature uses the XML body; leave GET (and other methods) untouched.
+                        if (request.method == HttpMethod.Post) {
+                            val service = context.requestParams[WfsAdapterPlugin.Parameters.SERVICE].toString()
+                            val version = context.requestParams[WfsAdapterPlugin.Parameters.VERSION].toString()
+                            val count = context.requestParams[WfsAdapterPlugin.Parameters.COUNT]?.asType<Int>()
+                            val typeName = context.requestParams[WfsAdapterPlugin.Parameters.TYPE_NAMES].toString()
+                            val srs = context.requestParams[WfsAdapterPlugin.Parameters.SRS_NAME].toString()
+                            val bbox = context.requestParams[WfsAdapterPlugin.Parameters.BBOX]?.asType<BBOX>()
+                            val query =
+                                context.requestParams[WfsAdapterPlugin.Parameters.FILTER]?.asType<AbstractOperatorType>()
+                            val filters = listOfNotNull(query, bbox)
+                            val filter = if (filters.isEmpty()) null else Filter.fromList(filters)
+                            val getFeature = context.dataHolder.xml.encodeToElement(
+                                GetFeature(
+                                    service = service,
+                                    version = version,
+                                    count = count,
+                                    queries = listOf(
+                                        WfsQuery(
+                                            typeNames = listOf(typeName),
+                                            srsName = srs,
+                                            filter = filter
+                                        )
                                     )
                                 )
                             )
-                        )
-                        if (configurationBundle.nsPrefix.isNotBlank() && configurationBundle.namespace.isNotBlank()) {
-                            getFeature.setAttributeNS(
-                                "http://www.w3.org/2000/xmlns/",
-                                "xmlns:${configurationBundle.nsPrefix}",
-                                configurationBundle.namespace,
-                            )
+                            if (configurationBundle.nsPrefix.isNotBlank() &&
+                                configurationBundle.namespace.isNotBlank()
+                            ) {
+                                getFeature.setAttributeNS(
+                                    "http://www.w3.org/2000/xmlns/",
+                                    "xmlns:${configurationBundle.nsPrefix}",
+                                    configurationBundle.namespace,
+                                )
+                            }
+                            request.outgoingContent = XmlBody(getFeature)
                         }
-                        net.request?.outgoingContent = XmlBody(
-                            getFeature
-                        )
                     }
                 }
                 after(AviatorExecutionStages.PaintingResponse) { context ->
@@ -188,6 +193,8 @@ data class WfsAdapterPluginInstance(
                             }
                         }
                         parcels
+                    } catch (e: CancellationException) {
+                        throw e
                     } catch (e: Exception) {
                         context.log {
                             error(
@@ -214,8 +221,9 @@ data class WfsAdapterPluginInstance(
         when (content) {
             is QueryContentHolder.RANGE -> {
                 val range = content.range
-                require(range != null && !(range.first > range.second || range.first < 0.0 || (range.first == 0.0 && range.second == 0.0))) {
-                    "Invalid range: $range; it must not be null and must satisfy 0 <= first <= second"
+                require(range != null && range.first.isFinite() && range.second.isFinite() &&
+                    !(range.first > range.second || range.first < 0.0)) {
+                    "Invalid range: $range; bounds must be finite and satisfy 0 <= first <= second"
                 }
                 return PropertyIsBetween(
                     valueReference = ValueReference("${configurationBundle.nsPrefix}:${reference}"),

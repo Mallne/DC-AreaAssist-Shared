@@ -12,6 +12,8 @@ data class WeatherContext(
     val timezone: String? = null,
     val retrievedAt: Instant? = null,
     val license: String? = null,
+    val requestedLatitude: Double? = null,
+    val requestedLongitude: Double? = null,
 )
 
 @Serializable
@@ -23,14 +25,19 @@ data class WeatherMeasurements(
     val relativeHumidityPercent: Double? = null,
     val cloudCoverPercent: Double? = null,
     val precipitationMillimeters: WeatherAmount? = null,
+    val precipitationByInterval: WeatherIntervalAmounts? = null,
     val precipitationProbabilityPercent: Double? = null,
     val pressureHectopascals: Double? = null,
     val visibilityMeters: Double? = null,
     val windSpeedMetersPerSecond: WeatherAmount? = null,
+    val windSpeedByInterval: WeatherIntervalAmounts? = null,
     val windDirectionDegrees: Double? = null,
     val windGustMetersPerSecond: WeatherAmount? = null,
+    val windGustByInterval: WeatherIntervalAmounts? = null,
     val shortwaveRadiationWattsPerSquareMeter: WeatherAmount? = null,
+    val shortwaveRadiationByInterval: WeatherIntervalAmounts? = null,
     val sunshineSeconds: WeatherAmount? = null,
+    val sunshineByInterval: WeatherIntervalAmounts? = null,
 )
 
 /** A value whose period and aggregation meaning must not be discarded during provider translation. */
@@ -39,6 +46,14 @@ data class WeatherAmount(
     val value: Double?,
     val periodMinutes: Int? = null,
     val aggregation: WeatherAggregation,
+)
+
+/** Preserves BrightSky's supported 10/30/60-minute values without replacing the primary value. */
+@Serializable
+data class WeatherIntervalAmounts(
+    val minute10: WeatherAmount? = null,
+    val minute30: WeatherAmount? = null,
+    val minute60: WeatherAmount? = null,
 )
 
 @Serializable
@@ -116,6 +131,10 @@ data class WeatherReport(
     val alerts: WeatherSection<List<WeatherAlert>> = WeatherSection.Unsupported,
 )
 
+/**
+ * Normalized alert fields plus optional source details needed to preserve the BrightSky alert
+ * contract, including its bilingual text and CAP metadata.
+ */
 @Serializable
 data class WeatherAlert(
     val id: String? = null,
@@ -124,14 +143,50 @@ data class WeatherAlert(
     val severity: WeatherAlertSeverity? = null,
     val onset: Instant? = null,
     val expires: Instant? = null,
+    /** BrightSky's numeric response id, distinct from its string alert_id. */
+    val sourceId: Int? = null,
+    val status: String? = null,
+    val effective: Instant? = null,
+    val category: String? = null,
+    val responseType: String? = null,
+    val urgency: String? = null,
+    val certainty: String? = null,
+    val eventCode: Int? = null,
+    val eventEn: String? = null,
+    val eventDe: String? = null,
+    val headlineEn: String? = null,
+    val headlineDe: String? = null,
+    val descriptionEn: String? = null,
+    val descriptionDe: String? = null,
+    val instructionEn: String? = null,
+    val instructionDe: String? = null,
+)
+
+@Serializable
+data class WeatherAlertLocation(
+    val warnCellId: Int,
+    val name: String,
+    val nameShort: String,
+)
+
+/** Shared equivalent of the legacy BrightSky alerts-and-location response envelope. */
+@Serializable
+data class WeatherAlertReport(
+    val alerts: List<WeatherAlert>,
+    val location: WeatherAlertLocation,
 )
 
 @Serializable
 enum class WeatherAlertSeverity {
+    @SerialName("minor")
     Minor,
+    @SerialName("moderate")
     Moderate,
+    @SerialName("severe")
     Severe,
+    @SerialName("extreme")
     Extreme,
+    @SerialName("unknown")
     Unknown,
 }
 

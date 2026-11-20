@@ -48,7 +48,7 @@ class OpenMeteoWeatherSchemaTest {
         assertEquals("13.41", transformed.jsonObject["longitude"]?.jsonPrimitive?.content)
         assertEquals("Europe/Berlin", transformed.jsonObject["timezone"]?.jsonPrimitive?.content)
         assertEquals("fahrenheit", transformed.jsonObject["temperature_unit"]?.jsonPrimitive?.content)
-        assertEquals("10.0", transformed.jsonObject["past_hours"]?.jsonPrimitive?.content)
+        assertEquals(10.0, transformed.jsonObject["past_hours"]?.jsonPrimitive?.content?.toDouble())
         assertEquals("nearest", transformed.jsonObject["cell_selection"]?.jsonPrimitive?.content)
         assertEquals(null, transformed.jsonObject["date"])
     }

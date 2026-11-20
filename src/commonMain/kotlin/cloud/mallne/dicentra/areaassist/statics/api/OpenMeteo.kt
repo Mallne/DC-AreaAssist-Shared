@@ -7,9 +7,9 @@ import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator`
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceDelegateCall`
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-serviceOptions`
-import cloud.mallne.dicentra.aviator.plugin.weaver.toOpenApiSchema
-import cloud.mallne.dicentra.areaassist.model.weather.OpenMeteoWeatherSchema
-import kotlinx.serialization.builtins.serializer
+import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-pluginMaterialization`
+import cloud.mallne.dicentra.aviator.plugin.weaver.WeaverPlugin
+import kotlinx.serialization.json.JsonObject
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import io.ktor.openapi.*
 
@@ -35,6 +35,9 @@ internal val openMeteoProviderResponseSchema = JsonSchema(
 /** Open-Meteo Forecast API v1, documented from its public `/v1/forecast` endpoint. */
 object OpenMeteo : ApiObject {
     private const val FORECAST = "/v1/forecast"
+    internal const val CURRENT_VARIABLES = "temperature_2m,weather_code,apparent_temperature,relative_humidity_2m,cloud_cover,precipitation,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m"
+    internal const val HOURLY_VARIABLES = "temperature_2m,weather_code,apparent_temperature,dew_point_2m,relative_humidity_2m,cloud_cover,precipitation_probability,precipitation,pressure_msl,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,shortwave_radiation,sunshine_duration"
+    internal const val DAILY_VARIABLES = "temperature_2m_min,temperature_2m_max,precipitation_sum,precipitation_probability_max"
 
     override val value: OpenApiDoc = OpenApiDoc.build {
         `x-dicentra-aviator` = AviatorExtensionSpec.SpecVersion
@@ -61,34 +64,28 @@ object OpenMeteo : ApiObject {
                         description = "Returns current, hourly, and daily weather variables for one WGS84 coordinate. Variable lists are comma-separated. Daily variables require a timezone."
                         `x-dicentra-aviator-serviceDelegateCall` = APIs.Services.WEATHER_SERVICE_FORECAST.locator(ServiceMethods.GATHER)
                         `x-dicentra-aviator-serviceOptions` = WeatherServiceOptions.OpenMeteo.usable()
+                        `x-dicentra-aviator-pluginMaterialization` = mapOf(WeaverPlugin.identity to JsonObject(emptyMap()))
                         parameters {
                             query("latitude") {
-                                required = false
+                                required = true
                                 description = "WGS84 latitude."
                                 schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0)
                             }
-                            query("lat") { required = true; description = "Provider-neutral latitude; Weaver maps this to latitude."; schema = JsonSchema(type = JsonType.NUMBER, minimum = -90.0, maximum = 90.0) }
-                            query("lon") { required = true; description = "Provider-neutral longitude; Weaver maps this to longitude."; schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0) }
-                            query("date") { description = "Provider-neutral start date; ignored by this provider."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("last_date") { description = "Provider-neutral end date; ignored by this provider."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("max_dist") { description = "Provider-neutral maximum distance; ignored by this provider."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("tz") { description = "Provider-neutral timezone; ignored by this provider."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("units") { description = "Provider-neutral units; ignored by this provider."; schema = JsonSchema(type = JsonType.STRING) }
                             query("longitude") {
-                                required = false
+                                required = true
                                 description = "WGS84 longitude."
                                 schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                             }
                             query("elevation") { description = "Elevation in meters; nan disables statistical downscaling."; schema = JsonSchema(type = JsonType.NUMBER) }
-                            query("current") { description = "Comma-separated current variables."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper("temperature_2m,weather_code,apparent_temperature,relative_humidity_2m,cloud_cover,precipitation,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m", String.serializer())) }
-                            query("hourly") { description = "Comma-separated hourly variables."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper("temperature_2m,weather_code,apparent_temperature,dew_point_2m,relative_humidity_2m,cloud_cover,precipitation_probability,precipitation,pressure_msl,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,shortwave_radiation,sunshine_duration", String.serializer())) }
-                            query("daily") { description = "Comma-separated daily variables."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper("temperature_2m_min,temperature_2m_max,precipitation_sum,precipitation_probability_max", String.serializer())) }
+                            query("current") { description = "Comma-separated current variables."; schema = JsonSchema(type = JsonType.STRING) }
+                            query("hourly") { description = "Comma-separated hourly variables."; schema = JsonSchema(type = JsonType.STRING) }
+                            query("daily") { description = "Comma-separated daily variables."; schema = JsonSchema(type = JsonType.STRING) }
                             query("minutely_15") { description = "Comma-separated 15-minute variables."; schema = JsonSchema(type = JsonType.STRING) }
                             query("temperature_unit") { description = "celsius (default) or fahrenheit."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("wind_speed_unit") { description = "kmh (default), ms, mph, or kn."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper("ms", String.serializer())) }
+                            query("wind_speed_unit") { description = "kmh (default), ms, mph, or kn."; schema = JsonSchema(type = JsonType.STRING) }
                             query("precipitation_unit") { description = "mm (default) or inch."; schema = JsonSchema(type = JsonType.STRING) }
                             query("timeformat") { description = "iso8601 (default), unixtime, or utc_offset_seconds."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("timezone") { description = "IANA timezone or auto. Required when requesting daily variables."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper("auto", String.serializer())) }
+                            query("timezone") { description = "IANA timezone or auto. Required when requesting daily variables."; schema = JsonSchema(type = JsonType.STRING) }
                             query("past_days") { description = "Number of past days to include."; schema = JsonSchema(type = JsonType.INTEGER) }
                             query("forecast_days") { description = "Forecast range in days (1–16, model dependent)."; schema = JsonSchema(type = JsonType.INTEGER) }
                             query("past_hours") { description = "Number of past hourly steps to include."; schema = JsonSchema(type = JsonType.INTEGER) }
@@ -103,8 +100,8 @@ object OpenMeteo : ApiObject {
                         }
                         responses {
                             response(200) {
-                                description = "Normalized AreaAssist WeatherReport produced by the attached Weaver transformation."
-                                schema = OpenMeteoWeatherSchema.schema.toOpenApiSchema(openMeteoProviderResponseSchema)
+                                description = "Open-Meteo provider response."
+                                schema = openMeteoProviderResponseSchema
                             }
                             response(400) {
                                 description = "Invalid query or weather variable. Error body contains `error` and `reason`."

@@ -12,6 +12,7 @@ import cloud.mallne.dicentra.areaassist.model.weather.WeatherReport
 import cloud.mallne.dicentra.areaassist.model.weather.WeatherSection
 import cloud.mallne.dicentra.areaassist.statics.APIs
 import cloud.mallne.dicentra.areaassist.statics.Serialization
+import cloud.mallne.dicentra.areaassist.statics.api.OpenMeteo
 import cloud.mallne.dicentra.aviator.client.ktor.KtorAviatorService
 import cloud.mallne.dicentra.aviator.client.ktor.KtorAviatorServiceConverter
 import cloud.mallne.dicentra.aviator.client.ktor.io.AvKtorRequest
@@ -131,9 +132,17 @@ class LiveApiContractTest {
         assertTrue(service.route.method in listOf(HttpMethod.Get, HttpMethod.Head) || (isParcel && service.route.method == HttpMethod.Post),
             "No safe read-only probe for ${service.route.method.value} ${service.route.path}")
         val now = Instant.now()
-        val parameters = RequestParameters(mapOf("lat" to "50.0", "lon" to "10.0",
-            "date" to now.toString(), "last_date" to now.plusSeconds(86_400).toString())
-            .mapValuesTo(mutableMapOf()) { RequestParameter.Single(it.value) })
+        val input = if (service.route.operationId == "OpenMeteoForecast") {
+            mapOf(
+                "latitude" to "50.0", "longitude" to "10.0",
+                "current" to OpenMeteo.CURRENT_VARIABLES, "hourly" to OpenMeteo.HOURLY_VARIABLES,
+                "daily" to OpenMeteo.DAILY_VARIABLES, "timezone" to "auto", "wind_speed_unit" to "ms",
+            )
+        } else {
+            mapOf("lat" to "50.0", "lon" to "10.0",
+                "date" to now.toString(), "last_date" to now.plusSeconds(86_400).toString())
+        }
+        val parameters = RequestParameters(input.mapValuesTo(mutableMapOf()) { RequestParameter.Single(it.value) })
 
         when {
             isParcel -> {

@@ -54,6 +54,40 @@ class WeatherProviderSelectionTest {
     }
 
     @Test
+    fun explicitGlobalDefaultIsOrderedAfterOtherEligibleGlobalProviders() {
+        val nonDefault = global.copy(
+            options = global.options.copy(providerId = "configured", isGlobalDefault = false),
+            service = "configured",
+        )
+        val selected = WeatherProviderSelection.select(
+            candidates = listOf(global, nonDefault),
+            latitude = 52.0,
+            longitude = 10.0,
+        )
+
+        assertEquals(listOf("configured", "global"), selected.map { it.service })
+    }
+
+    @Test
+    fun providerIdBreaksEqualPriorityTiesDeterministically() {
+        val alpha = global.copy(
+            options = global.options.copy(providerId = "alpha", isGlobalDefault = false),
+            service = "alpha",
+        )
+        val beta = global.copy(
+            options = global.options.copy(providerId = "beta", isGlobalDefault = false),
+            service = "beta",
+        )
+        val selected = WeatherProviderSelection.select(
+            candidates = listOf(beta, alpha),
+            latitude = 52.0,
+            longitude = 10.0,
+        )
+
+        assertEquals(listOf("alpha", "beta"), selected.map { it.service })
+    }
+
+    @Test
     fun onlyGlobalProviderIsEligibleOutsideRegionalCoverage() {
         val selected = WeatherProviderSelection.select(
             candidates = listOf(regional, global),

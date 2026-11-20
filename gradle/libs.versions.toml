@@ -6,7 +6,7 @@ android-compileSdk = "37"
 # @keep
 android-minSdk = "24"
 ben-manes-versions-v = "0.67.0"
-dc-aviator = "1.0.5"
+dc-aviator = "2.0.0"
 dc-weaver = "1.1.0"
 dc-polyfill = "1.0.2"
 dependency-analysis-v = "3.20.4"
@@ -36,6 +36,8 @@ dc-polyfill = { module = "cloud.mallne.dicentra:polyfill", version.ref = "dc-pol
 dc-aviator-core = { module = "cloud.mallne.dicentra.aviator:core", version.ref = "dc-aviator" }
 dc-aviator-client-ktor = { module = "cloud.mallne.dicentra.aviator.client:ktor", version.ref = "dc-aviator" }
 dc-aviator-koas = { module = "cloud.mallne.dicentra.aviator:koas", version.ref = "dc-aviator" }
+dc-aviator-arazzo = { module = "cloud.mallne.dicentra.aviator.orchestration:arazzo", version.ref = "dc-aviator" }
+dc-aviator-orchestration-core = { module = "cloud.mallne.dicentra.aviator.orchestration:core", version.ref = "dc-aviator" }
 dc-aviator-adapter-xml = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-xml", version.ref = "dc-aviator" }
 dc-aviator-adapter-json = { module = "cloud.mallne.dicentra.aviator.plugin.adapter:adapter-json", version.ref = "dc-aviator" }
 dc-aviator-plugin-synapse = { module = "cloud.mallne.dicentra.aviator.plugin:synapse", version.ref = "dc-aviator" }

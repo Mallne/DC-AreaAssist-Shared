@@ -3,6 +3,7 @@ package cloud.mallne.dicentra.areaassist.model.weather
 import cloud.mallne.dicentra.weaver.core.specification.ObjectType
 import cloud.mallne.dicentra.weaver.core.specification.Wol
 import cloud.mallne.dicentra.weaver.core.specification.WolAccessorPath
+import cloud.mallne.dicentra.weaver.core.specification.WeaverSchemaBuilder
 import cloud.mallne.dicentra.weaver.core.specification.weaverSchema
 
 /** BrightSky provider projections into the same [WeatherReport] contract as Open-Meteo. */
@@ -13,6 +14,72 @@ object BrightSkyWeatherSchemas {
 
     val current = build("areaassist-brightsky-current-v1", currentWeather = weather, hourlyWeather = null)
     val forecast = build("areaassist-brightsky-forecast-v1", currentWeather = null, hourlyWeather = weather)
+
+    private val alerts = Wol.path("alerts")
+    private val alert = alerts.index("index")
+    private val alertLocation = Wol.path("location")
+
+    /** Projects BrightSky's full legacy alert envelope without dropping localized/CAP fields. */
+    val alertReport = weaverSchema("areaassist-brightsky-alerts-v1") {
+        root("weatherAlertReport", Wol.reference("report"))
+
+        transform("alertSeverity", alert.field("severity").asExpression(), parameters = mapOf("index" to ObjectType.Number)) {
+            value(
+                Wol.mapCurrentString(
+                    mapOf(
+                        "minor" to "minor",
+                        "moderate" to "moderate",
+                        "severe" to "severe",
+                        "extreme" to "extreme",
+                    ),
+                    "unknown",
+                ),
+                ObjectType.String,
+            )
+        }
+        transform("alertItem", alert.asExpression(), parameters = mapOf("index" to ObjectType.Number)) {
+            objectValue {
+                source("id", alert.field("alert_id"), ObjectType.String)
+                source("sourceId", alert.field("id"), coercion = "i")
+                source("status", alert.field("status"), ObjectType.String)
+                source("effective", alert.field("effective"), ObjectType.String)
+                source("onset", alert.field("onset"), ObjectType.String)
+                source("expires", alert.field("expires"), ObjectType.String)
+                source("category", alert.field("category"), ObjectType.String)
+                source("responseType", alert.field("response_type"), ObjectType.String)
+                source("urgency", alert.field("urgency"), ObjectType.String)
+                use("severity", "alertSeverity", mapOf("index" to "##index##"))
+                source("certainty", alert.field("certainty"), ObjectType.String)
+                source("eventCode", alert.field("event_code"), coercion = "i")
+                source("eventEn", alert.field("event_en"), ObjectType.String)
+                source("eventDe", alert.field("event_de"), ObjectType.String)
+                source("headline", alert.field("headline_en"), ObjectType.String)
+                source("headlineEn", alert.field("headline_en"), ObjectType.String)
+                source("headlineDe", alert.field("headline_de"), ObjectType.String)
+                source("description", alert.field("description_en"), ObjectType.String)
+                source("descriptionEn", alert.field("description_en"), ObjectType.String)
+                source("descriptionDe", alert.field("description_de"), ObjectType.String)
+                source("instructionEn", alert.field("instruction_en"), ObjectType.String)
+                source("instructionDe", alert.field("instruction_de"), ObjectType.String)
+            }
+        }
+        transform("alertList", alerts.asExpression(), parameters = mapOf("index" to ObjectType.Number)) {
+            array("{#alertItem#(index=##index##)}")
+        }
+        transform("location", alertLocation.asExpression()) {
+            objectValue {
+                source("warnCellId", alertLocation.field("warn_cell_id"), coercion = "i")
+                source("name", alertLocation.field("name"), ObjectType.String)
+                source("nameShort", alertLocation.field("name_short"), ObjectType.String)
+            }
+        }
+        transform("report", alerts.asExpression()) {
+            objectValue {
+                use("alerts", "alertList")
+                use("location", "location")
+            }
+        }
+    }
 
     private fun build(
         key: String,
@@ -30,6 +97,7 @@ object BrightSkyWeatherSchemas {
         transform("aggregationMaximum", "lat") { value(Wol.stringLiteral("Maximum"), ObjectType.String) }
         transform("period60", "lat") { value("|60|i|", ObjectType.Number) }
         transform("period10", "lat") { value("|10|i|", ObjectType.Number) }
+        transform("period30", "lat") { value("|30|i|", ObjectType.Number) }
 
         transform("context", firstSource.asExpression()) {
             objectValue {
@@ -49,6 +117,31 @@ object BrightSkyWeatherSchemas {
                 objectValue { use("type", "unavailable") }
             }
         } else {
+            val intervalFields = listOf(
+                IntervalField("precipitation", "precipitation", "aggregationSum"),
+                IntervalField("windSpeed", "wind_speed", "aggregationInstant", IntervalConversion.KilometersPerHourToMetersPerSecond),
+                IntervalField("windGust", "wind_gust_speed", "aggregationMaximum", IntervalConversion.KilometersPerHourToMetersPerSecond),
+                IntervalField("shortwaveRadiation", "solar", "aggregationMean", IntervalConversion.KilowattsToWatts),
+                IntervalField("sunshine", "sunshine", "aggregationSum", IntervalConversion.MinutesToSeconds),
+            )
+            intervalFields.forEach { field ->
+                (listOf(10, 30, 60)).forEach { minutes ->
+                    intervalAmount(
+                        name = "current${field.name.replaceFirstChar { it.uppercase() }}$minutes",
+                        accessor = currentWeather.field("${field.providerName}_$minutes"),
+                        periodMinutes = minutes,
+                        aggregationTransform = field.aggregationTransform,
+                        conversion = field.conversion,
+                    )
+                }
+                transform("current${field.name.replaceFirstChar { it.uppercase() }}ByInterval", currentWeather.asExpression()) {
+                    objectValue {
+                        use("minute10", "current${field.name.replaceFirstChar { it.uppercase() }}10")
+                        use("minute30", "current${field.name.replaceFirstChar { it.uppercase() }}30")
+                        use("minute60", "current${field.name.replaceFirstChar { it.uppercase() }}60")
+                    }
+                }
+            }
             transform(
                 "currentCondition",
                 currentWeather.field("condition").asExpression(),
@@ -124,10 +217,15 @@ object BrightSkyWeatherSchemas {
                     source("visibilityMeters", currentWeather.field("visibility"))
                     source("windDirectionDegrees", currentWeather.field("wind_direction_10"))
                     use("precipitationMillimeters", "currentPrecipitation")
+                    use("precipitationByInterval", "currentPrecipitationByInterval")
                     use("windSpeedMetersPerSecond", "currentWind")
+                    use("windSpeedByInterval", "currentWindSpeedByInterval")
                     use("windGustMetersPerSecond", "currentGust")
+                    use("windGustByInterval", "currentWindGustByInterval")
                     use("shortwaveRadiationWattsPerSquareMeter", "currentRadiation")
+                    use("shortwaveRadiationByInterval", "currentShortwaveRadiationByInterval")
                     use("sunshineSeconds", "currentSunshine")
+                    use("sunshineByInterval", "currentSunshineByInterval")
                 }
             }
             transform("currentConditions", currentWeather.asExpression()) {
@@ -256,6 +354,57 @@ object BrightSkyWeatherSchemas {
                 use("hourly", if (hourlyWeather == null) "hourlyUnavailable" else "hourlySection")
                 use("daily", "dailyUnsupported")
                 use("alerts", "alertsUnsupported")
+            }
+        }
+    }
+
+    private data class IntervalField(
+        val name: String,
+        val providerName: String,
+        val aggregationTransform: String,
+        val conversion: IntervalConversion = IntervalConversion.None,
+    )
+
+    private enum class IntervalConversion {
+        None,
+        KilometersPerHourToMetersPerSecond,
+        KilowattsToWatts,
+        MinutesToSeconds,
+    }
+
+    private fun WeaverSchemaBuilder.intervalAmount(
+        name: String,
+        accessor: WolAccessorPath,
+        periodMinutes: Int,
+        aggregationTransform: String,
+        conversion: IntervalConversion,
+    ) {
+        if (conversion == IntervalConversion.None) {
+            transform(name, accessor.asExpression()) {
+                objectValue {
+                    source(WeatherAmount::value, accessor)
+                    use(WeatherAmount::periodMinutes, "period$periodMinutes")
+                    use(WeatherAmount::aggregation, aggregationTransform)
+                }
+            }
+        } else {
+            transform("${name}Value", accessor.asExpression()) {
+                when (conversion) {
+                    IntervalConversion.KilometersPerHourToMetersPerSecond ->
+                        value(Wol.divideCurrent(3.6), ObjectType.Number)
+                    IntervalConversion.KilowattsToWatts ->
+                        value(Wol.multiplyCurrent(1000.0), ObjectType.Number)
+                    IntervalConversion.MinutesToSeconds ->
+                        value(Wol.multiplyCurrent(60.0), ObjectType.Number)
+                    IntervalConversion.None -> error("Handled above")
+                }
+            }
+            transform(name, accessor.asExpression()) {
+                objectValue {
+                    use(WeatherAmount::value, "${name}Value")
+                    use(WeatherAmount::periodMinutes, "period$periodMinutes")
+                    use(WeatherAmount::aggregation, aggregationTransform)
+                }
             }
         }
     }
