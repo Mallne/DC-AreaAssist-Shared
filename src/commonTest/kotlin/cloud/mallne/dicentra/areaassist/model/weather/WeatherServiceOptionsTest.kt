@@ -83,6 +83,9 @@ class WeatherServiceOptionsTest {
         assertEquals("open-meteo", configuredOptions.providerId)
         assertEquals("areaassist-weather-report-v1", configuredOptions.contractVersion)
         assertTrue(configuredOptions.isGlobalDefault)
+        val encoded = Json.encodeToString(OpenApiDoc.serializer(), APIs.openMeteo)
+        assertTrue(encoded.contains("\"default\":\"auto\""))
+        assertTrue(encoded.contains("\"default\":\"ms\""))
         assertEquals(
             "open-meteo-request-parameters-v1",
             configuredOptions.requestParametersSchema?.key,

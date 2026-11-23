@@ -35,13 +35,18 @@ class WeatherWorkflowsTest {
                 val operation = assertNotNull(operations.singleOrNull { it.operationId == operationId }, operationId)
                 assertNotNull(operation.`x-dicentra-aviator-pluginMaterialization`?.get(WeaverPlugin.identity))
                 val expectedParameters = if (sourceName == "openMeteo") {
-                    setOf("latitude", "longitude", "current", "hourly", "daily", "wind_speed_unit", "timezone")
+                    setOf("lat", "lon", "current", "hourly", "daily", "wind_speed_unit", "timezone")
                 } else if (operationId == "WeatherForecast") setOf("lat", "lon", "date")
                 else setOf("lat", "lon")
                 assertEquals(expectedParameters, step.parameters.map { it.name }.toSet())
                 val declaredQuery = api.routes().single { it.operationId == operationId }.parameter
                     .filter { it.`in` == ParameterType.query }.map { it.name }.toSet()
-                assertEquals(emptySet(), expectedParameters - declaredQuery, "$operationId has undeclared workflow parameters")
+                val workflowAliases = if (sourceName == "openMeteo") setOf("lat", "lon") else emptySet()
+                assertEquals(
+                    emptySet(),
+                    expectedParameters - declaredQuery - workflowAliases,
+                    "$operationId has undeclared workflow parameters",
+                )
                 assertEquals("\$steps.weather.outputs.providerResponse", workflow.outputs?.get("providerResponse"))
                 seen += operationId
             }

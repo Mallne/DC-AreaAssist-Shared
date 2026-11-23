@@ -220,7 +220,7 @@ class WeatherWorkflowExecutionTest {
                 }
                 return
             }
-            val output = assertIs<ExecutionOutcome.Succeeded>(result.outcome, result.outcome.toString()).outputs
+            val output = assertIs<ExecutionOutcome.Succeeded>(result.outcome).outputs
             val sourceResponse = Json.parseToJsonElement(output).jsonObject.getValue("providerResponse").jsonObject
             assertEquals(Json.parseToJsonElement(fixture), sourceResponse)
             val report = assertNotNull(transformedReport)

@@ -79,14 +79,11 @@ object WeatherWorkflows {
                 workflow(id) {
                     step("weather", "\$sourceDescriptions.$sourceName.$operation") {
                         val parameters = if (sourceName == "openMeteo") {
-                            listOf("latitude" to "lat", "longitude" to "lon")
+                            listOf("lat" to "lat", "lon" to "lon")
                         } else {
                             listOf("lat" to "lat", "lon" to "lon")
                         }
                         parameters.forEach { (name, input) -> parameter(name, "query", "\$inputs.$input") }
-                        if (sourceName == "brightsky" && operation == "WeatherForecast") {
-                            parameter("date", "query", "\$inputs.date")
-                        }
                         if (sourceName == "openMeteo") {
                             mapOf(
                                 "current" to OpenMeteo.CURRENT_VARIABLES,
@@ -95,6 +92,9 @@ object WeatherWorkflows {
                                 "wind_speed_unit" to "ms",
                                 "timezone" to "auto",
                             ).forEach { (name, value) -> parameter(name, "query", value) }
+                        }
+                        if (sourceName == "brightsky" && operation == "WeatherForecast") {
+                            parameter("date", "query", "\$inputs.date")
                         }
                         output("providerResponse", "\$response.body")
                     }

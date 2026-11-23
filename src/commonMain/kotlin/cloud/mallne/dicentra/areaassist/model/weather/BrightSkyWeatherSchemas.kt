@@ -1,6 +1,7 @@
 package cloud.mallne.dicentra.areaassist.model.weather
 
 import cloud.mallne.dicentra.weaver.core.specification.ObjectType
+import cloud.mallne.dicentra.weaver.core.specification.EmptyCaseHandling
 import cloud.mallne.dicentra.weaver.core.specification.Wol
 import cloud.mallne.dicentra.weaver.core.specification.WolAccessorPath
 import cloud.mallne.dicentra.weaver.core.specification.WeaverSchemaBuilder
@@ -380,7 +381,7 @@ object BrightSkyWeatherSchemas {
         conversion: IntervalConversion,
     ) {
         if (conversion == IntervalConversion.None) {
-            transform(name, accessor.asExpression()) {
+            transform(name, accessor.asExpression(), emptyCase = EmptyCaseHandling.Null) {
                 objectValue {
                     source(WeatherAmount::value, accessor)
                     use(WeatherAmount::periodMinutes, "period$periodMinutes")
@@ -399,7 +400,7 @@ object BrightSkyWeatherSchemas {
                     IntervalConversion.None -> error("Handled above")
                 }
             }
-            transform(name, accessor.asExpression()) {
+            transform(name, accessor.asExpression(), emptyCase = EmptyCaseHandling.Null) {
                 objectValue {
                     use(WeatherAmount::value, "${name}Value")
                     use(WeatherAmount::periodMinutes, "period$periodMinutes")

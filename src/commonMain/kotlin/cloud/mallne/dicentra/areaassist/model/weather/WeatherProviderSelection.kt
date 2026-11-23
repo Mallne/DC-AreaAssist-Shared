@@ -19,13 +19,11 @@ object WeatherProviderSelection {
         latitude: Double,
         longitude: Double,
     ): List<WeatherProviderCandidate<T>> {
-        val point = Point(longitude, latitude)
-        val eligible = candidates.filter { candidate ->
-            candidate.options.coverage?.let { boundary ->
-                boundary.coordinates.isEmpty() || CalculationExtensions.rayCast(point, boundary)
-            } ?: true
-        }
-        return eligible.sortedWith(
+        return order(candidates.filter { isEligible(it.options, latitude, longitude) })
+    }
+
+    fun <T> order(candidates: List<WeatherProviderCandidate<T>>): List<WeatherProviderCandidate<T>> =
+        candidates.sortedWith(
             compareBy<WeatherProviderCandidate<T>> {
                 it.options.coverage?.coordinates?.isNotEmpty() != true
             }
@@ -33,5 +31,10 @@ object WeatherProviderSelection {
                 .thenBy { it.options.priority }
                 .thenBy { it.options.providerId.orEmpty() }
         )
+
+    fun isEligible(options: WeatherServiceOptions, latitude: Double, longitude: Double): Boolean {
+        val boundary = options.coverage ?: return true
+        if (boundary.coordinates.isEmpty()) return true
+        return CalculationExtensions.rayCast(Point(longitude, latitude), boundary)
     }
 }

@@ -44,8 +44,8 @@ class SourceResponsePipelineTest {
             withContext(capture) {
                 service.requestContextful<JsonElement, NoBody>(
                     requestParams = RequestParameters(mutableMapOf(
-                        "latitude" to RequestParameter.Single(52.52),
-                        "longitude" to RequestParameter.Single(13.41),
+                        "lat" to RequestParameter.Single(52.52),
+                        "lon" to RequestParameter.Single(13.41),
                     )),
                 )
             }

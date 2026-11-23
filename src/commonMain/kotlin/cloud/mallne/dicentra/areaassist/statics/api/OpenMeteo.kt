@@ -10,6 +10,7 @@ import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviat
 import cloud.mallne.dicentra.aviator.core.AviatorExtensionSpec.`x-dicentra-aviator-pluginMaterialization`
 import cloud.mallne.dicentra.aviator.plugin.weaver.WeaverPlugin
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.builtins.serializer
 import cloud.mallne.dicentra.aviator.core.ServiceMethods
 import io.ktor.openapi.*
 
@@ -77,15 +78,15 @@ object OpenMeteo : ApiObject {
                                 schema = JsonSchema(type = JsonType.NUMBER, minimum = -180.0, maximum = 180.0)
                             }
                             query("elevation") { description = "Elevation in meters; nan disables statistical downscaling."; schema = JsonSchema(type = JsonType.NUMBER) }
-                            query("current") { description = "Comma-separated current variables."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("hourly") { description = "Comma-separated hourly variables."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("daily") { description = "Comma-separated daily variables."; schema = JsonSchema(type = JsonType.STRING) }
+                            query("current") { description = "Comma-separated current variables."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper(CURRENT_VARIABLES, String.serializer())) }
+                            query("hourly") { description = "Comma-separated hourly variables."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper(HOURLY_VARIABLES, String.serializer())) }
+                            query("daily") { description = "Comma-separated daily variables."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper(DAILY_VARIABLES, String.serializer())) }
                             query("minutely_15") { description = "Comma-separated 15-minute variables."; schema = JsonSchema(type = JsonType.STRING) }
                             query("temperature_unit") { description = "celsius (default) or fahrenheit."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("wind_speed_unit") { description = "kmh (default), ms, mph, or kn."; schema = JsonSchema(type = JsonType.STRING) }
+                            query("wind_speed_unit") { description = "kmh (default), ms, mph, or kn."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper("ms", String.serializer())) }
                             query("precipitation_unit") { description = "mm (default) or inch."; schema = JsonSchema(type = JsonType.STRING) }
                             query("timeformat") { description = "iso8601 (default), unixtime, or utc_offset_seconds."; schema = JsonSchema(type = JsonType.STRING) }
-                            query("timezone") { description = "IANA timezone or auto. Required when requesting daily variables."; schema = JsonSchema(type = JsonType.STRING) }
+                            query("timezone") { description = "IANA timezone or auto. Required when requesting daily variables."; schema = JsonSchema(type = JsonType.STRING, default = GenericElementWrapper("auto", String.serializer())) }
                             query("past_days") { description = "Number of past days to include."; schema = JsonSchema(type = JsonType.INTEGER) }
                             query("forecast_days") { description = "Forecast range in days (1–16, model dependent)."; schema = JsonSchema(type = JsonType.INTEGER) }
                             query("past_hours") { description = "Number of past hourly steps to include."; schema = JsonSchema(type = JsonType.INTEGER) }
