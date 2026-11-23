@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ServersideActionHolder(
     val id: String,
-    val action: ServersideAction
+    val action: ServersideAction,
 )
